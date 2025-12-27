@@ -646,9 +646,50 @@
             days: []
         };
 
-        // Check if game is currently live based on sport duration
-        function isGameLive(gameTime, sport) {
+        // Check if game is currently live based on sport duration and date
+        function isGameLive(gameTime, sport, gameDate) {
             const now = new Date();
+            
+            // Map date strings to actual dates (SAT 27, SUN 28, etc.)
+            const dateMap = {
+                'SAT 27': new Date(2025, 11, 27),  // Dec 27
+                'SUN 28': new Date(2025, 11, 28),
+                'MON 29': new Date(2025, 11, 29),
+                'TUE 30': new Date(2025, 11, 30),
+                'WED 31': new Date(2025, 11, 31),
+                'THU 1': new Date(2026, 0, 1),     // Jan 1
+                'FRI 2': new Date(2026, 0, 2),
+                'SAT 3': new Date(2026, 0, 3),
+                'SUN 4': new Date(2026, 0, 4),
+                'MON 5': new Date(2026, 0, 5),
+                'TUE 6': new Date(2026, 0, 6),
+                'WED 7': new Date(2026, 0, 7),
+                'THU 8': new Date(2026, 0, 8),
+                'FRI 9': new Date(2026, 0, 9),
+                'SAT 10': new Date(2026, 0, 10),
+                'SUN 11': new Date(2026, 0, 11),
+                'TUE 13': new Date(2026, 0, 13),
+                'WED 14': new Date(2026, 0, 14),
+                'THU 15': new Date(2026, 0, 15),
+                'SUN 18': new Date(2026, 0, 18),
+                'MON 19': new Date(2026, 0, 19),
+                'SAT 24': new Date(2026, 0, 24),
+                'SAT 31': new Date(2026, 0, 31)
+            };
+            
+            const gameActualDate = dateMap[gameDate];
+            if (!gameActualDate) return false;
+            
+            // Check if game is today
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const gameDay = new Date(gameActualDate);
+            gameDay.setHours(0, 0, 0, 0);
+            
+            if (gameDay.getTime() !== today.getTime()) {
+                return false; // Game is not today
+            }
+            
             const timeParts = gameTime.match(/(\d{1,2}):(\d{2})\s(AM|PM)/);
             if (!timeParts) return false;
 
@@ -907,7 +948,7 @@
 
                     groupedByDate[date].forEach(game => {
                         const channelClass = getChannelClass(game.network);
-                        const liveBadge = isGameLive(game.time, game.sport) ? '<span class="live-badge">🔴 LIVE</span>' : '';
+                        const liveBadge = isGameLive(game.time, game.sport, game.date) ? '<span class="live-badge">🔴 LIVE</span>' : '';
                         html += `
                             <div class="game">
                                 <div class="game-info">
