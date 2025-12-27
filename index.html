@@ -98,6 +98,41 @@
             min-width: 250px;
         }
 
+        .search-box {
+            padding: 10px 14px;
+            border: 2px solid #ddd;
+            background: white;
+            color: #333;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #0f3460;
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
+        }
+
+        .search-box::placeholder {
+            color: #999;
+        }
+
+        .filter-dropdown {
+            padding: 10px 14px;
+            border: 2px solid #ddd;
+            background: white;
+            color: #333;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            min-width: 250px;
+        }
+
         .filter-dropdown:hover {
             border-color: #0f3460;
             background: #f0f3ff;
@@ -257,6 +292,27 @@
             white-space: nowrap;
         }
 
+        .live-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
         .channel-espn {
             background: #1d4ed8;
         }
@@ -359,6 +415,25 @@
         body.dark-mode .filter-dropdown:focus {
             border-color: #4a7ba7;
             box-shadow: 0 0 0 3px rgba(74, 123, 167, 0.1);
+        }
+
+        body.dark-mode .search-box {
+            border-color: #2a2a2a;
+            background: #1f1f1f;
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .search-box:focus {
+            border-color: #4a7ba7;
+            box-shadow: 0 0 0 3px rgba(74, 123, 167, 0.1);
+        }
+
+        body.dark-mode .search-box::placeholder {
+            color: #666;
+        }
+
+        body.dark-mode .live-badge {
+            background: #c0392b;
         }
 
         body.dark-mode .filter-btn {
@@ -525,6 +600,11 @@
 
         <div class="filters-section">
             <div class="filter-group">
+                <div class="filter-label">Search Games:</div>
+                <input type="text" id="searchInput" class="search-box" placeholder="Search team names or matchups..." onkeyup="updateSearch()">
+            </div>
+
+            <div class="filter-group">
                 <div class="filter-label">Filter by Network:</div>
                 <select id="networkFilter" class="filter-dropdown" onchange="updateNetworkFilter()">
                     <option value="">All Networks</option>
@@ -559,11 +639,32 @@
 
     <script>
         let allGames = [];
+        let searchQuery = '';
         let activeFilters = {
             networks: [],
             sports: [],
             days: []
         };
+
+        // Check if game is currently live
+        function isGameLive(gameTime) {
+            const now = new Date();
+            const timeParts = gameTime.match(/(\d{1,2}):(\d{2})\s(AM|PM)/);
+            if (!timeParts) return false;
+
+            let hours = parseInt(timeParts[1]);
+            const minutes = parseInt(timeParts[2]);
+            const period = timeParts[3];
+
+            if (period === 'PM' && hours !== 12) hours += 12;
+            if (period === 'AM' && hours === 12) hours = 0;
+
+            const gameDate = new Date();
+            gameDate.setHours(hours, minutes, 0, 0);
+
+            const timeDiff = Math.abs(now - gameDate) / 1000 / 60; // difference in minutes
+            return timeDiff < 180; // Show "Live Now" for 3 hours
+        }
 
         // Google Sheet Configuration
         const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
@@ -690,6 +791,12 @@
             displaySchedule();
         }
 
+        function updateSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchQuery = searchInput.value;
+            displaySchedule();
+        }
+
         function toggleFilter(type, value) {
             const filters = activeFilters[type];
             if (filters.includes(value)) {
@@ -717,8 +824,10 @@
             activeFilters.networks = [];
             activeFilters.sports = [];
             activeFilters.days = [];
+            searchQuery = '';
             document.getElementById('networkFilter').value = '';
             document.getElementById('dayFilter').value = '';
+            document.getElementById('searchInput').value = '';
             updateFilterButtons();
             displaySchedule();
         }
@@ -752,6 +861,13 @@
             if (activeFilters.days.length > 0) {
                 filteredGames = filteredGames.filter(g => activeFilters.days.includes(g.date));
             }
+            
+            // Apply search filter
+            if (searchQuery) {
+                filteredGames = filteredGames.filter(g => 
+                    g.matchup.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
 
             // Group by date
             const groupedByDate = {};
@@ -780,11 +896,12 @@
 
                     groupedByDate[date].forEach(game => {
                         const channelClass = getChannelClass(game.network);
+                        const liveBadge = isGameLive(game.time) ? '<span class="live-badge">🔴 LIVE</span>' : '';
                         html += `
                             <div class="game">
                                 <div class="game-info">
                                     <div class="game-league">${game.sport}</div>
-                                    <div class="game-matchup">${game.matchup}</div>
+                                    <div class="game-matchup">${game.matchup}${liveBadge}</div>
                                 </div>
                                 <div class="game-time">${game.time}</div>
                                 <div class="game-channel ${channelClass}">${game.network}</div>
