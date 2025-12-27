@@ -305,7 +305,143 @@
             text-align: center;
         }
 
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            color: #333;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.2em;
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .dark-mode-toggle:hover {
+            background: #e8e9ea;
+            border-color: #0f3460;
+        }
+
+        /* DARK MODE STYLES */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .container {
+            background: #1a1a1a;
+        }
+
+        body.dark-mode .filters-section {
+            background: #161616;
+            border-bottom-color: #2a2a2a;
+        }
+
+        body.dark-mode .filter-label {
+            color: #8899bb;
+        }
+
+        body.dark-mode .filter-dropdown {
+            border-color: #2a2a2a;
+            background: #1f1f1f;
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .filter-dropdown:hover {
+            border-color: #4a7ba7;
+            background: #252525;
+        }
+
+        body.dark-mode .filter-dropdown:focus {
+            border-color: #4a7ba7;
+            box-shadow: 0 0 0 3px rgba(74, 123, 167, 0.1);
+        }
+
+        body.dark-mode .filter-btn {
+            border-color: #2a2a2a;
+            background: #1f1f1f;
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .filter-btn:hover {
+            border-color: #4a7ba7;
+            background: #252525;
+        }
+
+        body.dark-mode .filter-btn.active {
+            background: #1565C0;
+            color: #d0d0d0;
+            border-color: #1565C0;
+        }
+
+        body.dark-mode .clear-filters {
+            background: #d63447;
+            color: #d0d0d0;
+        }
+
+        body.dark-mode .clear-filters:hover {
+            background: #b82940;
+        }
+
+        body.dark-mode .day-header {
+            background: linear-gradient(90deg, #1565C0 0%, #0d47a1 100%);
+            color: #d0d0d0;
+            border-left-color: #d63447;
+        }
+
+        body.dark-mode .game {
+            background: #1f1f1f;
+            border-color: #2a2a2a;
+        }
+
+        body.dark-mode .game-league {
+            color: #7a9cbb;
+        }
+
+        body.dark-mode .game-matchup {
+            color: #c0c0c0;
+        }
+
+        body.dark-mode .game-time {
+            color: #d63447;
+        }
+
+        body.dark-mode .game-channel {
+            color: #d0d0d0;
+        }
+
+        body.dark-mode .no-results {
+            color: #777;
+        }
+
+        body.dark-mode footer {
+            background: #161616;
+            border-top-color: #2a2a2a;
+            color: #888;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #1f1f1f;
+            border-color: #2a2a2a;
+            color: #b0b0b0;
+        }
+
+        body.dark-mode .dark-mode-toggle:hover {
+            background: #252525;
+            border-color: #4a7ba7;
+        }
+
         @media (max-width: 768px) {
+            .dark-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 1em;
+            }
             body {
                 padding: 20px 15px;
             }
@@ -379,6 +515,7 @@
     </style>
 </head>
 <body>
+    <button class="dark-mode-toggle" id="darkModeBtn" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
     <div class="container">
         <header>
             <h1>🏆 SPORTS TV SCHEDULE</h1>
@@ -432,6 +569,37 @@
         const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
         const SHEET_NAME = 'schedule_template';
         const API_KEY = 'AIzaSyCBBft_Uau-bxJqHvB7GG3Dj9pH_7OcLJg';
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            const body = document.body;
+            const btn = document.getElementById('darkModeBtn');
+            
+            body.classList.toggle('dark-mode');
+            
+            // Save preference to localStorage
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                btn.textContent = '☀️';
+                btn.title = 'Switch to Light Mode';
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                btn.textContent = '🌙';
+                btn.title = 'Switch to Dark Mode';
+            }
+        }
+
+        // Load dark mode preference on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
+            const btn = document.getElementById('darkModeBtn');
+            
+            if (darkModeEnabled) {
+                document.body.classList.add('dark-mode');
+                btn.textContent = '☀️';
+                btn.title = 'Switch to Light Mode';
+            }
+        });
 
         // Fetch data from Google Sheet
         async function loadScheduleData() {
