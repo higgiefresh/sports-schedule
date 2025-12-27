@@ -646,8 +646,8 @@
             days: []
         };
 
-        // Check if game is currently live
-        function isGameLive(gameTime) {
+        // Check if game is currently live based on sport duration
+        function isGameLive(gameTime, sport) {
             const now = new Date();
             const timeParts = gameTime.match(/(\d{1,2}):(\d{2})\s(AM|PM)/);
             if (!timeParts) return false;
@@ -659,11 +659,22 @@
             if (period === 'PM' && hours !== 12) hours += 12;
             if (period === 'AM' && hours === 12) hours = 0;
 
-            const gameDate = new Date();
-            gameDate.setHours(hours, minutes, 0, 0);
+            const gameStartTime = new Date();
+            gameStartTime.setHours(hours, minutes, 0, 0);
 
-            const timeDiff = Math.abs(now - gameDate) / 1000 / 60; // difference in minutes
-            return timeDiff < 180; // Show "Live Now" for 3 hours
+            // Game durations in minutes (including halftime/intermission)
+            const gameDurations = {
+                'College Football': 240,  // ~4 hours
+                'NFL': 225,                // ~3.75 hours
+                'NBA': 150,                // ~2.5 hours
+                'NHL': 150                 // ~2.5 hours
+            };
+
+            const duration = gameDurations[sport] || 180; // default 3 hours
+            const gameEndTime = new Date(gameStartTime.getTime() + duration * 60000);
+
+            // Game is live if current time is between start and end
+            return now >= gameStartTime && now <= gameEndTime;
         }
 
         // Google Sheet Configuration
@@ -896,7 +907,7 @@
 
                     groupedByDate[date].forEach(game => {
                         const channelClass = getChannelClass(game.network);
-                        const liveBadge = isGameLive(game.time) ? '<span class="live-badge">🔴 LIVE</span>' : '';
+                        const liveBadge = isGameLive(game.time, game.sport) ? '<span class="live-badge">🔴 LIVE</span>' : '';
                         html += `
                             <div class="game">
                                 <div class="game-info">
