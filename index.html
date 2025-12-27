@@ -594,7 +594,7 @@
     <div class="container">
         <header>
             <h1>🏆 SPORTS TV SCHEDULE</h1>
-            <p>All Times are in Eastern Time</p>
+            <p>Tampa Bay Area Market</p>
             <div class="date-range">December 27, 2025 – January 31, 2026</div>
         </header>
 
@@ -811,10 +811,17 @@
 
             // Create sport filter buttons
             const sportDiv = document.getElementById('sportFilters');
+            const sportEmojis = {
+                'College Football': '📢',
+                'NFL': '🏈',
+                'NBA': '🏀',
+                'NHL': '🏒',
+                'UFC': '🥊'
+            };
             sports.forEach(sport => {
                 const btn = document.createElement('button');
                 btn.className = 'filter-btn';
-                btn.textContent = sport;
+                btn.textContent = sportEmojis[sport] + ' ' + sport;
                 btn.onclick = () => toggleFilter('sports', sport);
                 sportDiv.appendChild(btn);
             });
@@ -949,10 +956,18 @@
                     groupedByDate[date].forEach(game => {
                         const channelClass = getChannelClass(game.network);
                         const liveBadge = isGameLive(game.time, game.sport, game.date) ? '<span class="live-badge">🔴 LIVE</span>' : '';
+                        const sportEmojis = {
+                            'College Football': '📢',
+                            'NFL': '🏈',
+                            'NBA': '🏀',
+                            'NHL': '🏒',
+                            'UFC': '🥊'
+                        };
+                        const sportDisplay = sportEmojis[game.sport] ? sportEmojis[game.sport] + ' ' + game.sport : game.sport;
                         html += `
                             <div class="game">
                                 <div class="game-info">
-                                    <div class="game-league">${game.sport}</div>
+                                    <div class="game-league">${sportDisplay}</div>
                                     <div class="game-matchup">${game.matchup}${liveBadge}</div>
                                 </div>
                                 <div class="game-time">${game.time}</div>
