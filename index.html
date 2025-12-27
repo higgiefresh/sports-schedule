@@ -389,7 +389,9 @@
         <div class="filters-section">
             <div class="filter-group">
                 <div class="filter-label">Filter by Network:</div>
-                <div class="filter-buttons" id="networkFilters"></div>
+                <select id="networkFilter" class="filter-dropdown" onchange="updateNetworkFilter()">
+                    <option value="">All Networks</option>
+                </select>
             </div>
 
             <div class="filter-group">
@@ -477,14 +479,13 @@
             const sports = [...new Set(allGames.map(g => g.sport))].sort();
             const days = [...new Set(allGames.map(g => g.date))];
 
-            // Create network filter buttons
-            const networkDiv = document.getElementById('networkFilters');
+            // Create network filter dropdown
+            const networkSelect = document.getElementById('networkFilter');
             networks.forEach(network => {
-                const btn = document.createElement('button');
-                btn.className = 'filter-btn';
-                btn.textContent = network;
-                btn.onclick = () => toggleFilter('networks', network);
-                networkDiv.appendChild(btn);
+                const option = document.createElement('option');
+                option.value = network;
+                option.textContent = network;
+                networkSelect.appendChild(option);
             });
 
             // Create sport filter buttons
@@ -505,6 +506,13 @@
                 option.textContent = day;
                 daySelect.appendChild(option);
             });
+        }
+
+        function updateNetworkFilter() {
+            const networkSelect = document.getElementById('networkFilter');
+            const selectedNetwork = networkSelect.value;
+            activeFilters.networks = selectedNetwork ? [selectedNetwork] : [];
+            displaySchedule();
         }
 
         function updateDayFilter() {
@@ -541,6 +549,7 @@
             activeFilters.networks = [];
             activeFilters.sports = [];
             activeFilters.days = [];
+            document.getElementById('networkFilter').value = '';
             document.getElementById('dayFilter').value = '';
             updateFilterButtons();
             displaySchedule();
