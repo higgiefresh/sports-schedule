@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports TV Schedule - Tampa Bay Area</title>
+    <title>🏆 🥊 🏈 Sports On TV 🏒 🏀 🏆</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🏆</text></svg>">
     <style>
         * {
@@ -56,7 +56,36 @@
             padding: 8px 16px;
             border-radius: 20px;
             display: inline-block;
+            color: white;
         }
+
+        .timezone-selector {
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .timezone-selector label {
+            font-weight: 600;
+            color: white;
+        }
+
+        .timezone-selector select {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f3460;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .timezone-selector select:hover {
+            background: white;
+        }
+
 
         .filters-section {
             padding: 25px 30px;
@@ -388,6 +417,19 @@
             color: #b0b0b0;
         }
 
+        body.dark-mode .date-range {
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .timezone-selector label {
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .timezone-selector select {
+            background: rgba(200, 200, 200, 0.9);
+            color: #0f3460;
+        }
+
         body.dark-mode .container {
             background: #1a1a1a;
         }
@@ -593,9 +635,17 @@
     <button class="dark-mode-toggle" id="darkModeBtn" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
     <div class="container">
         <header>
-            <h1>🏆 SPORTS TV SCHEDULE</h1>
-            <p>Tampa Bay Area Market</p>
-            <div class="date-range">December 27, 2025 – January 31, 2026</div>
+            <h1>🏆 🥊 🏈 SPORTS ON TV 🏒 🏀 🏆</h1>
+            <div class="timezone-selector">
+                <label for="timezoneSelect">Time Zone:</label>
+                <select id="timezoneSelect" onchange="updateTimezone()">
+                    <option value="EST">Eastern (EST)</option>
+                    <option value="CST">Central (CST)</option>
+                    <option value="MST">Mountain (MST)</option>
+                    <option value="PST">Pacific (PST)</option>
+                </select>
+            </div>
+            <div class="date-range" id="dateRange"></div>
         </header>
 
         <div class="filters-section">
@@ -640,11 +690,102 @@
     <script>
         let allGames = [];
         let searchQuery = '';
+        let currentTimezone = 'EST';
         let activeFilters = {
             networks: [],
             sports: [],
             days: []
         };
+
+        // Update date range dynamically
+        function updateDateRange() {
+            const today = new Date();
+            const endDate = new Date(today);
+            endDate.setMonth(endDate.getMonth() + 1);
+            
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            const startStr = today.toLocaleDateString('en-US', options);
+            const endStr = endDate.toLocaleDateString('en-US', options);
+            
+            document.getElementById('dateRange').textContent = `${startStr} – ${endStr}`;
+        }
+
+        // Update timezone
+        function updateTimezone() {
+            const select = document.getElementById('timezoneSelect');
+            currentTimezone = select.value;
+            displaySchedule();
+        }
+
+        // Convert time based on timezone
+        function convertTimeByTimezone(estTime) {
+            const timeParts = estTime.match(/(\d{1,2}):(\d{2})\s(AM|PM)/);
+            if (!timeParts) return estTime;
+
+            let hours = parseInt(timeParts[1]);
+            const minutes = timeParts[2];
+            const period = timeParts[3];
+
+            if (period === 'PM' && hours !== 12) hours += 12;
+            if (period === 'AM' && hours === 12) hours = 0;
+
+            // Convert from EST (0) to selected timezone
+            const timezoneOffsets = {
+                'EST': 0,
+                'CST': -1,
+                'MST': -2,
+                'PST': -3
+            };
+
+            let convertedHours = hours + timezoneOffsets[currentTimezone];
+            if (convertedHours < 0) convertedHours += 24;
+            if (convertedHours >= 24) convertedHours -= 24;
+
+            const convertedPeriod = convertedHours < 12 ? 'AM' : 'PM';
+            const displayHours = convertedHours % 12 === 0 ? 12 : convertedHours % 12;
+
+            return `${displayHours}:${minutes} ${convertedPeriod} ${currentTimezone}`;
+        }
+
+        // Check if event is in the past
+        function isPastEvent(gameDate) {
+            const dateMap = {
+                'SAT 27': new Date(2025, 11, 27),
+                'SUN 28': new Date(2025, 11, 28),
+                'MON 29': new Date(2025, 11, 29),
+                'TUE 30': new Date(2025, 11, 30),
+                'WED 31': new Date(2025, 11, 31),
+                'THU 1': new Date(2026, 0, 1),
+                'FRI 2': new Date(2026, 0, 2),
+                'SAT 3': new Date(2026, 0, 3),
+                'SUN 4': new Date(2026, 0, 4),
+                'MON 5': new Date(2026, 0, 5),
+                'TUE 6': new Date(2026, 0, 6),
+                'WED 7': new Date(2026, 0, 7),
+                'THU 8': new Date(2026, 0, 8),
+                'FRI 9': new Date(2026, 0, 9),
+                'SAT 10': new Date(2026, 0, 10),
+                'SUN 11': new Date(2026, 0, 11),
+                'TUE 13': new Date(2026, 0, 13),
+                'WED 14': new Date(2026, 0, 14),
+                'THU 15': new Date(2026, 0, 15),
+                'SUN 18': new Date(2026, 0, 18),
+                'MON 19': new Date(2026, 0, 19),
+                'SAT 24': new Date(2026, 0, 24),
+                'SAT 31': new Date(2026, 0, 31)
+            };
+
+            const gameActualDate = dateMap[gameDate];
+            if (!gameActualDate) return true;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const gameDay = new Date(gameActualDate);
+            gameDay.setHours(0, 0, 0, 0);
+
+            return gameDay < today;
+        }
+
 
         // Check if game is currently live based on sport duration and date
         function isGameLive(gameTime, sport, gameDate) {
@@ -752,6 +893,9 @@
                 btn.textContent = '☀️';
                 btn.title = 'Switch to Light Mode';
             }
+
+            // Update date range on page load
+            updateDateRange();
         });
 
         // Fetch data from Google Sheet
@@ -910,6 +1054,9 @@
         function displaySchedule() {
             let filteredGames = allGames;
 
+            // Filter out past events
+            filteredGames = filteredGames.filter(g => !isPastEvent(g.date));
+
             // Apply filters
             if (activeFilters.networks.length > 0) {
                 filteredGames = filteredGames.filter(g => activeFilters.networks.includes(g.network));
@@ -964,13 +1111,14 @@
                             'UFC': '🥊'
                         };
                         const sportDisplay = sportEmojis[game.sport] ? sportEmojis[game.sport] + ' ' + game.sport : game.sport;
+                        const displayTime = convertTimeByTimezone(game.time);
                         html += `
                             <div class="game">
                                 <div class="game-info">
                                     <div class="game-league">${sportDisplay}</div>
                                     <div class="game-matchup">${game.matchup}${liveBadge}</div>
                                 </div>
-                                <div class="game-time">${game.time}</div>
+                                <div class="game-time">${displayTime}</div>
                                 <div class="game-channel ${channelClass}">${game.network}</div>
                             </div>
                         `;
