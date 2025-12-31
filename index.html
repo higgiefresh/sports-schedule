@@ -53,6 +53,37 @@
             letter-spacing: 0.5px;
         }
 
+        .dark-mode-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #e6e8ec;
+            border: none;
+            color: #2d3436;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                3px 3px 7px #bec0c6,
+                -3px -3px 7px #ffffff;
+            z-index: 100;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #252844;
+            color: #f0f0f0;
+            box-shadow: 
+                3px 3px 7px #151b2f,
+                -3px -3px 7px #353d56;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 300px 1fr;
@@ -98,6 +129,48 @@
 
         body.dark-mode .filter-label {
             color: #e0e0e0;
+        }
+
+        .search-box, .filter-dropdown {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 12px;
+            background: #e6e8ec;
+            color: #2d3436;
+            font-weight: 500;
+            box-shadow: 
+                inset 2px 2px 5px #bec0c6,
+                inset -3px -3px 7px #ffffff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        body.dark-mode .search-box,
+        body.dark-mode .filter-dropdown {
+            background: #252844;
+            color: #f0f0f0;
+            box-shadow: 
+                inset 2px 2px 5px #151b2f,
+                inset -3px -3px 7px #353d56;
+        }
+
+        .search-box:hover, .search-box:focus,
+        .filter-dropdown:hover, .filter-dropdown:focus {
+            box-shadow: 
+                inset 3px 3px 7px #bec0c6,
+                inset -4px -4px 10px #ffffff;
+            outline: none;
+        }
+
+        body.dark-mode .search-box:hover, 
+        body.dark-mode .search-box:focus,
+        body.dark-mode .filter-dropdown:hover, 
+        body.dark-mode .filter-dropdown:focus {
+            box-shadow: 
+                inset 3px 3px 7px #151b2f,
+                inset -4px -4px 10px #353d56;
         }
 
         .sport-buttons {
@@ -361,20 +434,29 @@
 
         .no-results {
             text-align: center;
-            padding: 40px;
-            color: #666;
-            font-style: italic;
+            color: #2d3436;
+            padding: 60px 30px;
+            font-size: 1.1em;
+            background: #e6e8ec;
+            border-radius: 20px;
+            box-shadow: 
+                5px 5px 10px #bec0c6,
+                -5px -5px 10px #ffffff;
         }
 
         body.dark-mode .no-results {
-            color: #999;
+            background: #252844;
+            color: #f0f0f0;
+            box-shadow: 
+                5px 5px 10px #151b2f,
+                -5px -5px 10px #353d56;
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
-            color: #666;
+            padding: 60px 30px;
             font-size: 1.1em;
+            color: #666;
         }
 
         body.dark-mode .loading {
@@ -413,6 +495,8 @@
     </style>
 </head>
 <body>
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+
     <div class="container">
         <header>
             <h1>🏆 SPORTS TV SCHEDULE</h1>
@@ -420,10 +504,27 @@
         </header>
 
         <div class="main-content">
-            <div class="filters-section">
+            <aside class="filters-section">
+                <div class="filter-group">
+                    <div class="filter-label">Search</div>
+                    <input type="text" class="search-box" id="searchBox" placeholder="Find teams..." onkeyup="applyFilters()">
+                </div>
+
                 <div class="filter-group">
                     <div class="filter-label">Network</div>
-                    <div class="sport-buttons" id="networkFilters"></div>
+                    <select class="filter-dropdown" id="networkDropdown" onchange="applyFilters()">
+                        <option value="">All Networks</option>
+                        <option value="ESPN">ESPN</option>
+                        <option value="CBS">CBS</option>
+                        <option value="NBC">NBC</option>
+                        <option value="ABC">ABC</option>
+                        <option value="FOX">FOX</option>
+                        <option value="Peacock">Peacock</option>
+                        <option value="Paramount+">Paramount+</option>
+                        <option value="Prime Video">Prime Video</option>
+                        <option value="ESPN+">ESPN+</option>
+                        <option value="TNT">TNT</option>
+                    </select>
                 </div>
 
                 <div class="filter-group">
@@ -433,21 +534,28 @@
 
                 <div class="filter-group">
                     <div class="filter-label">Day</div>
-                    <div class="sport-buttons" id="dayFilters"></div>
+                    <select class="filter-dropdown" id="dayDropdown" onchange="applyFilters()">
+                        <option value="">All Days</option>
+                    </select>
                 </div>
 
-                <button class="clear-filters" onclick="clearFilters()">Clear Filters</button>
-            </div>
+                <button class="clear-filters" onclick="clearAllFilters()">Clear Filters</button>
+            </aside>
 
-            <div class="schedule" id="schedule">
+            <main class="schedule" id="schedule">
                 <div class="loading">Loading schedule...</div>
-            </div>
+            </main>
         </div>
     </div>
 
     <script>
         let allGames = [];
-        let activeFilters = { networks: [], sports: [], days: [] };
+        let filters = {
+            search: '',
+            network: '',
+            sport: '',
+            day: ''
+        };
 
         // YOUR CONFIGURED CREDENTIALS
         const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
@@ -462,7 +570,7 @@
 
                 if (data.values) {
                     parseGamesFromSheet(data.values);
-                    initializeFilters();
+                    populateFilterDropdowns();
                     displaySchedule();
                 } else {
                     throw new Error('No data returned');
@@ -496,49 +604,44 @@
             }
         }
 
-        function initializeFilters() {
-            const networks = [...new Set(allGames.map(g => g.network))].sort();
+        function populateFilterDropdowns() {
             const sports = [...new Set(allGames.map(g => g.sport))].sort();
             const days = [...new Set(allGames.map(g => g.date))];
 
-            document.getElementById('networkFilters').innerHTML = networks.map(n => 
-                `<button class="filter-btn" onclick="toggleFilter('networks', '${n}')" title="${n}">${n}</button>`
+            // Populate sport buttons
+            const sportDiv = document.getElementById('sportFilters');
+            sportDiv.innerHTML = sports.map(sport => 
+                `<button class="filter-btn" onclick="toggleSportFilter('${sport}')">${sport}</button>`
             ).join('');
 
-            document.getElementById('sportFilters').innerHTML = sports.map(s => 
-                `<button class="filter-btn" onclick="toggleFilter('sports', '${s}')">${s}</button>`
-            ).join('');
-
-            document.getElementById('dayFilters').innerHTML = days.map(d => 
-                `<button class="filter-btn" onclick="toggleFilter('days', '${d}')">${d}</button>`
-            ).join('');
+            // Populate day dropdown
+            const dayDropdown = document.getElementById('dayDropdown');
+            dayDropdown.innerHTML = '<option value="">All Days</option>' + 
+                days.map(day => `<option value="${day}">${day}</option>`).join('');
         }
 
-        function toggleFilter(type, value) {
-            const filters = activeFilters[type];
-            if (filters.includes(value)) {
-                filters.splice(filters.indexOf(value), 1);
-            } else {
-                filters.push(value);
-            }
-            updateFilterButtons();
+        function toggleSportFilter(sport) {
+            const btn = event.target;
+            btn.classList.toggle('active');
+            filters.sport = Array.from(document.querySelectorAll('.filter-btn.active'))
+                .map(b => b.textContent)
+                .join(',');
+            applyFilters();
+        }
+
+        function applyFilters() {
+            filters.search = document.getElementById('searchBox').value.toLowerCase();
+            filters.network = document.getElementById('networkDropdown').value;
+            filters.day = document.getElementById('dayDropdown').value;
             displaySchedule();
         }
 
-        function updateFilterButtons() {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                const value = btn.textContent.trim();
-                const isActive = 
-                    activeFilters.networks.includes(value) ||
-                    activeFilters.sports.includes(value) ||
-                    activeFilters.days.includes(value);
-                btn.classList.toggle('active', isActive);
-            });
-        }
-
-        function clearFilters() {
-            activeFilters = { networks: [], sports: [], days: [] };
-            updateFilterButtons();
+        function clearAllFilters() {
+            document.getElementById('searchBox').value = '';
+            document.getElementById('networkDropdown').value = '';
+            document.getElementById('dayDropdown').value = '';
+            document.querySelectorAll('.filter-btn.active').forEach(btn => btn.classList.remove('active'));
+            filters = { search: '', network: '', sport: '', day: '' };
             displaySchedule();
         }
 
@@ -559,13 +662,31 @@
         function displaySchedule() {
             let filtered = allGames;
 
-            if (activeFilters.networks.length > 0) 
-                filtered = filtered.filter(g => activeFilters.networks.includes(g.network));
-            if (activeFilters.sports.length > 0) 
-                filtered = filtered.filter(g => activeFilters.sports.includes(g.sport));
-            if (activeFilters.days.length > 0) 
-                filtered = filtered.filter(g => activeFilters.days.includes(g.date));
+            // Apply search
+            if (filters.search) {
+                filtered = filtered.filter(g => 
+                    g.matchup.toLowerCase().includes(filters.search) ||
+                    g.sport.toLowerCase().includes(filters.search)
+                );
+            }
 
+            // Apply network filter
+            if (filters.network) {
+                filtered = filtered.filter(g => g.network === filters.network);
+            }
+
+            // Apply sport filter
+            if (filters.sport) {
+                const sports = filters.sport.split(',');
+                filtered = filtered.filter(g => sports.includes(g.sport));
+            }
+
+            // Apply day filter
+            if (filters.day) {
+                filtered = filtered.filter(g => g.date === filters.day);
+            }
+
+            // Group by date
             const grouped = {};
             filtered.forEach(game => {
                 if (!grouped[game.date]) grouped[game.date] = [];
@@ -599,6 +720,16 @@
             }
 
             document.getElementById('schedule').innerHTML = html;
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
         }
 
         window.addEventListener('load', loadScheduleData);
