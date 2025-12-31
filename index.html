@@ -758,42 +758,40 @@
                 const currentMonth = today.getMonth();
                 const currentDay = today.getDate();
                 
-                // Handle abbreviated format like "SUN 28" or "MON 29"
-                if (!dateStr.includes(',')) {
-                    day = parseInt(dateStr.split(' ')[1]);
-                    
-                    // Start with current month
-                    month = currentMonth;
-                    let testDate = new Date(year, month, day);
-                    
-                    // If this date is in the past, try next month
-                    if (testDate < today) {
-                        month = (currentMonth + 1) % 12;
-                        if (month === 0) year++;
-                        testDate = new Date(year, month, day);
-                    }
-                } else {
-                    // Handle full format like "Wednesday, December 31"
+                // Handle full format like "Wednesday, December 31"
+                if (dateStr.includes(',')) {
                     const parts = dateStr.split(', ');
                     if (parts.length >= 2) {
                         const monthDay = parts[1].split(' ');
                         month = monthsOfYear.indexOf(monthDay[0]);
                         day = parseInt(monthDay[1]);
                         
-                        // Create a test date to see if it's in the past or future
-                        let testDate = new Date(year, month, day);
-                        
-                        // If parsed date is in the past, it might be because:
-                        // 1. It's a past month in the current year
-                        // 2. It's December from last year
-                        
-                        if (testDate < today) {
-                            // Try next year
-                            testDate = new Date(year + 1, month, day);
-                            if (testDate >= today) {
+                        // If we're in December (month 11):
+                        // - December dates = current year (2025)
+                        // - January+ dates = next year (2026)
+                        if (currentMonth === 11) {  // We're in December
+                            if (month === 11) {     // It's also December
+                                year = new Date().getFullYear();  // Use current year
+                            } else if (month === 0) {  // It's January
+                                year = new Date().getFullYear() + 1;  // Use next year
+                            }
+                        } else {
+                            // We're not in December - use simple logic
+                            let testDate = new Date(year, month, day);
+                            if (testDate < today) {
                                 year++;
                             }
                         }
+                    }
+                } else {
+                    // Handle abbreviated format like "SUN 28"
+                    day = parseInt(dateStr.split(' ')[1]);
+                    month = currentMonth;
+                    let testDate = new Date(year, month, day);
+                    
+                    if (testDate < today) {
+                        month = (currentMonth + 1) % 12;
+                        if (month === 0) year++;
                     }
                 }
                 
