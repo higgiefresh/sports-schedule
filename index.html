@@ -752,11 +752,35 @@
             try {
                 const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June',
                     'July', 'August', 'September', 'October', 'November', 'December'];
+                const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                 
-                const dateParts = dateStr.split(', ');
-                const monthDay = dateParts[1].split(' ');
-                const month = monthsOfYear.indexOf(monthDay[0]);
-                const day = parseInt(monthDay[1]);
+                let month, day, year = new Date().getFullYear();
+                
+                // Handle abbreviated format like "SUN 28"
+                if (dateStr.includes(' ') && !dateStr.includes(',')) {
+                    const parts = dateStr.split(' ');
+                    day = parseInt(parts[1]);
+                    
+                    // Try to determine month based on current date context
+                    const today = new Date();
+                    const currentYear = today.getFullYear();
+                    const currentMonth = today.getMonth();
+                    const currentDay = today.getDate();
+                    
+                    // Assume the day is in the current month or next month
+                    if (day >= currentDay) {
+                        month = currentMonth;
+                    } else {
+                        month = (currentMonth + 1) % 12;
+                        if (month < currentMonth) year++;
+                    }
+                } else {
+                    // Handle full format like "Wednesday, December 31"
+                    const parts = dateStr.split(', ');
+                    const monthDay = parts[1].split(' ');
+                    month = monthsOfYear.indexOf(monthDay[0]);
+                    day = parseInt(monthDay[1]);
+                }
                 
                 const timeParts = timeStr.match(/(\d+):(\d+) (AM|PM)/);
                 let hours = parseInt(timeParts[1]);
@@ -766,7 +790,6 @@
                 if (ampm === 'PM' && hours !== 12) hours += 12;
                 if (ampm === 'AM' && hours === 12) hours = 0;
                 
-                const year = new Date().getFullYear();
                 return new Date(year, month, day, hours, minutes);
             } catch (e) {
                 return new Date();
