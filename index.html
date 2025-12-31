@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Design Option 2D: Purple & Violet Neumorphism</title>
+    <title>HiggiePlex Sports Schedule</title>
     <style>
         * {
             margin: 0;
@@ -44,88 +44,6 @@
             font-weight: 700;
             margin-bottom: 20px;
             letter-spacing: -1px;
-        }
-
-        .timezone-selector {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            background: #e6e8ec;
-            padding: 18px 30px;
-            border-radius: 20px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 
-                inset 2px 2px 5px #bec0c6,
-                inset -3px -3px 7px #ffffff;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .timezone-selector {
-            background: #252844;
-            box-shadow: 
-                inset 2px 2px 5px #151b2f,
-                inset -3px -3px 7px #353d56;
-        }
-
-        .timezone-selector:hover {
-            box-shadow: 
-                inset 3px 3px 7px #bec0c6,
-                inset -4px -4px 10px #ffffff;
-        }
-
-        body.dark-mode .timezone-selector:hover {
-            box-shadow: 
-                inset 3px 3px 7px #151b2f,
-                inset -4px -4px 10px #353d56;
-        }
-
-        .timezone-selector label {
-            font-weight: 700;
-            color: #2d3436;
-        }
-
-        body.dark-mode .timezone-selector label {
-            color: #f0f0f0;
-        }
-
-        .timezone-selector select {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 10px;
-            background: #e6e8ec;
-            color: #2d3436;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 
-                2px 2px 5px #bec0c6,
-                -3px -3px 7px #ffffff;
-            transition: all 0.3s ease;
-        }
-
-        body.dark-mode .timezone-selector select {
-            background: #252844;
-            color: #f0f0f0;
-            box-shadow: 
-                2px 2px 5px #151b2f,
-                -3px -3px 7px #353d56;
-        }
-
-        .timezone-selector select:hover,
-        .timezone-selector select:focus {
-            box-shadow: 
-                3px 3px 7px #bec0c6,
-                -4px -4px 10px #ffffff;
-        }
-
-        body.dark-mode .timezone-selector select:hover,
-        body.dark-mode .timezone-selector select:focus {
-            box-shadow: 
-                3px 3px 7px #151b2f,
-                -4px -4px 10px #353d56;
         }
 
         .date-range {
@@ -180,46 +98,6 @@
 
         body.dark-mode .filter-label {
             color: #e0e0e0;
-        }
-
-        .filter-dropdown, .search-box {
-            width: 100%;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 12px;
-            background: #e6e8ec;
-            color: #2d3436;
-            font-weight: 500;
-            box-shadow: 
-                inset 2px 2px 5px #bec0c6,
-                inset -3px -3px 7px #ffffff;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        body.dark-mode .filter-dropdown,
-        body.dark-mode .search-box {
-            background: #252844;
-            color: #f0f0f0;
-            box-shadow: 
-                inset 2px 2px 5px #151b2f,
-                inset -3px -3px 7px #353d56;
-        }
-
-        .filter-dropdown:hover, .filter-dropdown:focus,
-        .search-box:hover, .search-box:focus {
-            box-shadow: 
-                inset 3px 3px 7px #bec0c6,
-                inset -4px -4px 10px #ffffff;
-        }
-
-        body.dark-mode .filter-dropdown:hover,
-        body.dark-mode .filter-dropdown:focus,
-        body.dark-mode .search-box:hover,
-        body.dark-mode .search-box:focus {
-            box-shadow: 
-                inset 3px 3px 7px #151b2f,
-                inset -4px -4px 10px #353d56;
         }
 
         .sport-buttons {
@@ -288,6 +166,7 @@
             text-transform: uppercase;
             font-size: 0.9em;
             letter-spacing: 0.5px;
+            margin-top: 10px;
         }
 
         body.dark-mode .clear-filters {
@@ -424,20 +303,16 @@
             color: #f0f0f0;
         }
 
-        .live-badge {
-            background: #ff6b6b;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 20px;
+        .game-bowl {
             font-size: 0.75em;
-            font-weight: 700;
-            margin-left: 10px;
-            animation: pulse 1.5s infinite;
+            color: #8b5cf6;
+            font-weight: 600;
+            margin-top: 4px;
+            font-style: italic;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        body.dark-mode .game-bowl {
+            color: #c4b5fd;
         }
 
         .game-time {
@@ -453,15 +328,15 @@
         }
 
         .game-channel {
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 10px 16px;
+            border-radius: 12px;
             font-weight: 700;
             font-size: 0.85em;
             color: white;
             text-align: center;
-            min-width: 85px;
+            min-width: 100px;
             box-shadow: 
-                2px 2px 5px rgba(0, 0, 0, 0.2),
+                3px 3px 8px rgba(0, 0, 0, 0.2),
                 -2px -2px 5px rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
@@ -470,91 +345,60 @@
             transform: scale(1.05);
         }
 
-        /* Network colors - Much more distinct */
-        .game-channel.espn { background: linear-gradient(135deg, #1e3a8a, #3b82f6); }
-        .game-channel.cbs { background: linear-gradient(135deg, #7c2d12, #ea580c); }
-        .game-channel.nbc { background: linear-gradient(135deg, #831843, #ec4899); }
-        .game-channel.fox { background: linear-gradient(135deg, #1e293b, #64748b); }
-        .game-channel.abc { background: linear-gradient(135deg, #065f46, #10b981); }
-        .game-channel.paramount { background: linear-gradient(135deg, #4c1d95, #a855f7); }
+        /* Network Colors - Neumorphic Gradients */
+        .channel-espn { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); }
+        .channel-abc { background: linear-gradient(135deg, #00a651 0%, #059669 100%); }
+        .channel-fox { background: linear-gradient(135deg, #003da5 0%, #0369a1 100%); }
+        .channel-cbs { background: linear-gradient(135deg, #c41e3a 0%, #a71930 100%); }
+        .channel-nbc { background: linear-gradient(135deg, #f47920 0%, #ea580c 100%); }
+        .channel-peacock { background: linear-gradient(135deg, #553399 0%, #6d28d9 100%); }
+        .channel-paramount { background: linear-gradient(135deg, #0033a0 0%, #003399 100%); }
+        .channel-primevideo { background: linear-gradient(135deg, #00a8e1 0%, #0284c7 100%); }
+        .channel-tnt { background: linear-gradient(135deg, #333333 0%, #111111 100%); }
+        .channel-cwnetwork { background: linear-gradient(135deg, #e50000 0%, #dc2626 100%); }
+        .channel-nflnet { background: linear-gradient(135deg, #1f4788 0%, #1e3a5f 100%); }
+        .channel-espnplus { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); }
 
         .no-results {
             text-align: center;
-            color: #2d3436;
-            padding: 60px 30px;
-            font-size: 1.1em;
-            background: #e6e8ec;
-            border-radius: 20px;
-            box-shadow: 
-                5px 5px 10px #bec0c6,
-                -5px -5px 10px #ffffff;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
         }
 
         body.dark-mode .no-results {
-            background: #252844;
-            color: #f0f0f0;
-            box-shadow: 
-                5px 5px 10px #151b2f,
-                -5px -5px 10px #353d56;
+            color: #999;
         }
 
-        .dark-mode-toggle {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            background: #e6e8ec;
-            border: none;
-            color: #2d3436;
-            font-size: 1.5em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 
-                3px 3px 7px #bec0c6,
-                -3px -3px 7px #ffffff;
-            z-index: 100;
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1em;
         }
 
-        body.dark-mode .dark-mode-toggle {
-            background: #252844;
-            color: #f0f0f0;
-            box-shadow: 
-                3px 3px 7px #151b2f,
-                -3px -3px 7px #353d56;
+        body.dark-mode .loading {
+            color: #999;
         }
 
-        .dark-mode-toggle:hover {
-            transform: scale(1.1);
-            box-shadow: 
-                4px 4px 10px #bec0c6,
-                -4px -4px 10px #ffffff;
-        }
-
-        body.dark-mode .dark-mode-toggle:hover {
-            box-shadow: 
-                4px 4px 10px #151b2f,
-                -4px -4px 10px #353d56;
-        }
-
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
-
+            
             .filters-section {
-                position: relative;
-                top: 0;
+                position: static;
             }
+        }
 
+        @media (max-width: 768px) {
             header h1 {
-                font-size: 2em;
+                font-size: 1.8em;
             }
 
             .game {
                 grid-template-columns: 1fr;
-                gap: 12px;
+                gap: 10px;
             }
 
             .game-time {
@@ -563,133 +407,202 @@
             }
 
             .game-channel {
-                width: 100%;
+                min-width: auto;
             }
         }
     </style>
 </head>
 <body>
-    <button class="dark-mode-toggle" id="darkModeBtn" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
-    
     <div class="container">
         <header>
-            <h1>🏆 🥊 🏈 SPORTS ON TV 🏒 🏀 🏆</h1>
-            <div class="timezone-selector">
-                <label for="timezoneSelect">Timezone:</label>
-                <select id="timezoneSelect">
-                    <option value="EST">Eastern (EST)</option>
-                    <option value="CST">Central (CST)</option>
-                    <option value="MST">Mountain (MST)</option>
-                    <option value="PST">Pacific (PST)</option>
-                </select>
-            </div>
-            <div class="date-range" id="dateRange">Dec 27 - Jan 31</div>
+            <h1>🏆 SPORTS TV SCHEDULE</h1>
+            <p class="date-range">December 27, 2025 – January 31, 2026</p>
         </header>
 
         <div class="main-content">
-            <aside class="filters-section">
-                <div class="filter-group">
-                    <div class="filter-label">Search</div>
-                    <input type="text" class="search-box" placeholder="Find teams...">
-                </div>
-
+            <div class="filters-section">
                 <div class="filter-group">
                     <div class="filter-label">Network</div>
-                    <select class="filter-dropdown">
-                        <option>All Networks</option>
-                        <option>ESPN</option>
-                        <option>CBS</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <div class="filter-label">Day</div>
-                    <select class="filter-dropdown">
-                        <option>All Days</option>
-                        <option>Today</option>
-                        <option>Tomorrow</option>
-                    </select>
+                    <div class="sport-buttons" id="networkFilters"></div>
                 </div>
 
                 <div class="filter-group">
                     <div class="filter-label">Sport</div>
-                    <div class="sport-buttons">
-                        <button class="filter-btn active">📯 CFB</button>
-                        <button class="filter-btn active">🏈 NFL</button>
-                        <button class="filter-btn active">🏀 NBA</button>
-                        <button class="filter-btn active">🏒 NHL</button>
-                        <button class="filter-btn active">🥊 UFC</button>
-                    </div>
+                    <div class="sport-buttons" id="sportFilters"></div>
                 </div>
 
-                <button class="clear-filters">Clear Filters</button>
-            </aside>
-
-            <main class="schedule">
-                <div class="date-section">
-                    <div class="day-header">SAT 28 DEC</div>
-                    <div class="games-container">
-                        <div class="game">
-                            <div class="game-info">
-                                <div class="game-league">📯 COLLEGE FOOTBALL</div>
-                                <div class="game-matchup">Georgia Southern vs Appalachian State <span class="live-badge">🔴 LIVE</span></div>
-                            </div>
-                            <div class="game-time">12:00 PM EST</div>
-                            <div class="game-channel espn">ESPN</div>
-                        </div>
-
-                        <div class="game">
-                            <div class="game-info">
-                                <div class="game-league">🏈 NFL</div>
-                                <div class="game-matchup">New Orleans Saints at Tennessee Titans</div>
-                            </div>
-                            <div class="game-time">1:00 PM EST</div>
-                            <div class="game-channel cbs">CBS</div>
-                        </div>
-
-                        <div class="game">
-                            <div class="game-info">
-                                <div class="game-league">🏀 NBA</div>
-                                <div class="game-matchup">Los Angeles Lakers vs Golden State Warriors</div>
-                            </div>
-                            <div class="game-time">3:30 PM EST</div>
-                            <div class="game-channel abc">ABC</div>
-                        </div>
-                    </div>
+                <div class="filter-group">
+                    <div class="filter-label">Day</div>
+                    <div class="sport-buttons" id="dayFilters"></div>
                 </div>
 
-                <div class="date-section">
-                    <div class="day-header">SUN 29 DEC</div>
-                    <div class="games-container">
-                        <div class="game">
-                            <div class="game-info">
-                                <div class="game-league">🏒 NHL</div>
-                                <div class="game-matchup">New York Rangers vs Boston Bruins</div>
-                            </div>
-                            <div class="game-time">7:00 PM EST</div>
-                            <div class="game-channel nbc">NBC</div>
-                        </div>
+                <button class="clear-filters" onclick="clearFilters()">Clear Filters</button>
+            </div>
 
-                        <div class="game">
-                            <div class="game-info">
-                                <div class="game-league">🥊 UFC</div>
-                                <div class="game-matchup">UFC 324: Gaethje vs Pimblett</div>
-                            </div>
-                            <div class="game-time">9:00 PM EST</div>
-                            <div class="game-channel paramount">PARAMOUNT+</div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+            <div class="schedule" id="schedule">
+                <div class="loading">Loading schedule...</div>
+            </div>
         </div>
     </div>
 
     <script>
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const btn = document.getElementById('darkModeBtn');
-            btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        let allGames = [];
+        let activeFilters = { networks: [], sports: [], days: [] };
+
+        // YOUR CONFIGURED CREDENTIALS
+        const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
+        const SHEET_NAME = 'schedule_template';
+        const API_KEY = 'AIzaSyCBBft_Uau-bxJqHvB7GG3Dj9pH_7OcLJg';
+
+        async function loadScheduleData() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.values) {
+                    parseGamesFromSheet(data.values);
+                    initializeFilters();
+                    displaySchedule();
+                } else {
+                    throw new Error('No data returned');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('schedule').innerHTML = `
+                    <div class="loading" style="color: #c41e3a;">
+                        <strong>Error loading schedule</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
         }
+
+        function parseGamesFromSheet(values) {
+            allGames = [];
+            
+            for (let i = 1; i < values.length; i++) {
+                const row = values[i];
+                if (row.length >= 5) {
+                    allGames.push({
+                        date: row[0].trim(),
+                        time: row[1].trim(),
+                        matchup: row[2].trim(),
+                        network: row[3].trim(),
+                        sport: row[4].trim(),
+                        bowlName: row[5] ? row[5].trim() : ''
+                    });
+                }
+            }
+        }
+
+        function initializeFilters() {
+            const networks = [...new Set(allGames.map(g => g.network))].sort();
+            const sports = [...new Set(allGames.map(g => g.sport))].sort();
+            const days = [...new Set(allGames.map(g => g.date))];
+
+            document.getElementById('networkFilters').innerHTML = networks.map(n => 
+                `<button class="filter-btn" onclick="toggleFilter('networks', '${n}')" title="${n}">${n}</button>`
+            ).join('');
+
+            document.getElementById('sportFilters').innerHTML = sports.map(s => 
+                `<button class="filter-btn" onclick="toggleFilter('sports', '${s}')">${s}</button>`
+            ).join('');
+
+            document.getElementById('dayFilters').innerHTML = days.map(d => 
+                `<button class="filter-btn" onclick="toggleFilter('days', '${d}')">${d}</button>`
+            ).join('');
+        }
+
+        function toggleFilter(type, value) {
+            const filters = activeFilters[type];
+            if (filters.includes(value)) {
+                filters.splice(filters.indexOf(value), 1);
+            } else {
+                filters.push(value);
+            }
+            updateFilterButtons();
+            displaySchedule();
+        }
+
+        function updateFilterButtons() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                const value = btn.textContent.trim();
+                const isActive = 
+                    activeFilters.networks.includes(value) ||
+                    activeFilters.sports.includes(value) ||
+                    activeFilters.days.includes(value);
+                btn.classList.toggle('active', isActive);
+            });
+        }
+
+        function clearFilters() {
+            activeFilters = { networks: [], sports: [], days: [] };
+            updateFilterButtons();
+            displaySchedule();
+        }
+
+        function getChannelClass(network) {
+            const normalized = network.toLowerCase().replace(/\s+/g, '').replace(/[^\w]/g, '');
+            const classMap = {
+                'espn': 'channel-espn', 'abc': 'channel-abc', 'fox': 'channel-fox',
+                'cbs': 'channel-cbs', 'nbc': 'channel-nbc', 'peacock': 'channel-peacock',
+                'paramount': 'channel-paramount', 'paramountplus': 'channel-paramount',
+                'primevideo': 'channel-primevideo', 'prime': 'channel-primevideo',
+                'tnt': 'channel-tnt', 'cwnetwork': 'channel-cwnetwork',
+                'nflnet': 'channel-nflnet', 'nflnetwork': 'channel-nflnet',
+                'espnplus': 'channel-espnplus'
+            };
+            return classMap[normalized] || 'channel-espn';
+        }
+
+        function displaySchedule() {
+            let filtered = allGames;
+
+            if (activeFilters.networks.length > 0) 
+                filtered = filtered.filter(g => activeFilters.networks.includes(g.network));
+            if (activeFilters.sports.length > 0) 
+                filtered = filtered.filter(g => activeFilters.sports.includes(g.sport));
+            if (activeFilters.days.length > 0) 
+                filtered = filtered.filter(g => activeFilters.days.includes(g.date));
+
+            const grouped = {};
+            filtered.forEach(game => {
+                if (!grouped[game.date]) grouped[game.date] = [];
+                grouped[game.date].push(game);
+            });
+
+            const sorted = Object.keys(grouped).sort();
+            let html = '';
+
+            if (sorted.length === 0) {
+                html = '<div class="no-results">No games match your filters. Try adjusting your selection.</div>';
+            } else {
+                sorted.forEach(date => {
+                    html += `<div class="date-section"><div class="day-header">${date}</div><div class="games-container">`;
+                    grouped[date].forEach(game => {
+                        const bowlHTML = game.bowlName ? `<div class="game-bowl">${game.bowlName}</div>` : '';
+                        html += `
+                            <div class="game">
+                                <div class="game-info">
+                                    <div class="game-league">${game.sport}</div>
+                                    <div class="game-matchup">${game.matchup}</div>
+                                    ${bowlHTML}
+                                </div>
+                                <div class="game-time">${game.time}</div>
+                                <div class="game-channel ${getChannelClass(game.network)}">${game.network}</div>
+                            </div>
+                        `;
+                    });
+                    html += '</div></div>';
+                });
+            }
+
+            document.getElementById('schedule').innerHTML = html;
+        }
+
+        window.addEventListener('load', loadScheduleData);
+        setInterval(loadScheduleData, 300000);
     </script>
 </body>
 </html>
