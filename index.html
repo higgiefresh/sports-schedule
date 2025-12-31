@@ -727,6 +727,31 @@
             }
         }
 
+        function parseGameDate(dateStr, timeStr) {
+            try {
+                const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+                
+                const dateParts = dateStr.split(', ');
+                const monthDay = dateParts[1].split(' ');
+                const month = monthsOfYear.indexOf(monthDay[0]);
+                const day = parseInt(monthDay[1]);
+                
+                const timeParts = timeStr.match(/(\d+):(\d+) (AM|PM)/);
+                let hours = parseInt(timeParts[1]);
+                const minutes = parseInt(timeParts[2]);
+                const ampm = timeParts[3];
+                
+                if (ampm === 'PM' && hours !== 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+                
+                const year = new Date().getFullYear();
+                return new Date(year, month, day, hours, minutes);
+            } catch (e) {
+                return new Date();
+            }
+        }
+
         async function loadScheduleData() {
             try {
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
