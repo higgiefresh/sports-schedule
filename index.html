@@ -54,6 +54,13 @@
             letter-spacing: 0.5px;
         }
 
+        .current-date {
+            font-weight: 700;
+            margin-top: 15px;
+            font-size: 1.1em;
+            letter-spacing: 0.5px;
+        }
+
         .timezone-selector {
             display: flex;
             align-items: center;
@@ -525,6 +532,8 @@
         .channel-cwnetwork { background: linear-gradient(135deg, #e50000 0%, #dc2626 100%); }
         .channel-nflnet { background: linear-gradient(135deg, #1f4788 0%, #1e3a5f 100%); }
         .channel-espnplus { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); }
+        .channel-thespot { background: linear-gradient(135deg, #ff6b42 0%, #ff8566 100%); }
+        .channel-wxpx { background: linear-gradient(135deg, #ff6b42 0%, #ff8566 100%); }
 
         .no-results {
             text-align: center;
@@ -594,7 +603,7 @@
     <div class="container">
         <header>
             <h1>🏆 Sports On TV 🏆</h1>
-            <p class="date-range">December 27, 2025 – January 31, 2026</p>
+            <p class="current-date" id="currentDate">Loading...</p>
             <div class="timezone-selector">
                 <label for="timezoneSelect">Timezone:</label>
                 <select id="timezoneSelect" onchange="updateTimezone()">
@@ -811,7 +820,8 @@
                 'primevideo': 'channel-primevideo', 'prime': 'channel-primevideo',
                 'tnt': 'channel-tnt', 'cwnetwork': 'channel-cwnetwork',
                 'nflnet': 'channel-nflnet', 'nflnetwork': 'channel-nflnet',
-                'espnplus': 'channel-espnplus'
+                'espnplus': 'channel-espnplus',
+                'thespot': 'channel-thespot', 'wxpx': 'channel-wxpx'
             };
             return classMap[normalized] || 'channel-espn';
         }
@@ -843,6 +853,14 @@
                 filtered = filtered.filter(g => g.date === filters.day);
             }
 
+            // Filter out past events - only show today and future
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            filtered = filtered.filter(game => {
+                const gameDate = parseGameDate(game.date, game.time);
+                return gameDate >= todayStart;
+            });
+
             // Group by date
             const grouped = {};
             filtered.forEach(game => {
@@ -869,7 +887,7 @@
             let html = '';
 
             if (sorted.length === 0) {
-                html = '<div class="no-results">No games match your filters. Try adjusting your selection.</div>';
+                html = '<div class="no-results">No upcoming games. Check back soon!</div>';
             } else {
                 sorted.forEach(date => {
                     html += `<div class="date-section"><div class="day-header">${date}</div><div class="games-container">`;
@@ -914,6 +932,23 @@
 
         window.addEventListener('load', loadScheduleData);
         setInterval(loadScheduleData, 300000);
+        
+        // Display current date on load
+        function displayCurrentDate() {
+            const today = new Date();
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const dayName = days[today.getDay()];
+            const date = today.getDate();
+            const monthName = months[today.getMonth()];
+            
+            const formattedDate = `${dayName} ${date}, ${monthName}`;
+            document.getElementById('currentDate').textContent = formattedDate;
+        }
+        
+        displayCurrentDate();
     </script>
 </body>
 </html>
