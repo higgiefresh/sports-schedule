@@ -850,6 +850,21 @@
                 grouped[game.date].push(game);
             });
 
+            // Sort games within each day by start time
+            Object.keys(grouped).forEach(date => {
+                grouped[date].sort((a, b) => {
+                    const timeToMinutes = (timeStr) => {
+                        const [time, period] = timeStr.split(' ');
+                        const [hours, minutes] = time.split(':');
+                        let hour = parseInt(hours);
+                        if (period === 'PM' && hour !== 12) hour += 12;
+                        if (period === 'AM' && hour === 12) hour = 0;
+                        return hour * 60 + parseInt(minutes);
+                    };
+                    return timeToMinutes(a.time) - timeToMinutes(b.time);
+                });
+            });
+
             const sorted = Object.keys(grouped).sort();
             let html = '';
 
