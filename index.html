@@ -1067,7 +1067,36 @@
                 });
             });
 
-            const sorted = Object.keys(grouped).sort();
+            // Get dates in chronological order (don't use .sort() which sorts alphabetically)
+            const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const sorted = Object.keys(grouped).sort((a, b) => {
+                try {
+                    const aParts = a.split(', ');
+                    const bParts = b.split(', ');
+                    
+                    const aMonthDay = aParts[1].split(' ');
+                    const bMonthDay = bParts[1].split(' ');
+                    
+                    const aMonth = monthOrder.indexOf(aMonthDay[0]);
+                    const bMonth = monthOrder.indexOf(bMonthDay[0]);
+                    const aDay = parseInt(aMonthDay[1]);
+                    const bDay = parseInt(bMonthDay[1]);
+                    
+                    let aYear = 2025;
+                    if (aMonth === 0) aYear = 2026;
+                    
+                    let bYear = 2025;
+                    if (bMonth === 0) bYear = 2026;
+                    
+                    if (aYear !== bYear) return aYear - bYear;
+                    if (aMonth !== bMonth) return aMonth - bMonth;
+                    return aDay - bDay;
+                } catch (e) {
+                    return 0;
+                }
+            });
             let html = '';
 
             if (sorted.length === 0) {
