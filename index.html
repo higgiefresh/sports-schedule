@@ -555,6 +555,27 @@
                 -5px -5px 10px #353d56;
         }
 
+        .live-badge {
+            display: inline-block;
+            background: #ff4444;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
         .loading {
             text-align: center;
             padding: 60px 30px;
@@ -752,6 +773,25 @@
             }
         }
 
+        // Check if game is currently live based on sport duration
+        function isGameLive(gameDate, sport) {
+            const now = new Date();
+            
+            // Game durations in minutes (including halftime/intermission)
+            const gameDurations = {
+                'NCAAF': 240,      // ~4 hours
+                'NFL': 225,        // ~3.75 hours
+                'NBA': 150,        // ~2.5 hours
+                'NHL': 150         // ~2.5 hours
+            };
+
+            const duration = gameDurations[sport] || 180; // default 3 hours
+            const gameEndTime = new Date(gameDate.getTime() + duration * 60000);
+
+            // Game is live if current time is between start and end
+            return now >= gameDate && now <= gameEndTime;
+        }
+
         async function loadScheduleData() {
             try {
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
@@ -920,11 +960,14 @@
                         const emoji = sportEmojis[game.sport] || '🎮';
                         const bowlHTML = game.bowlName ? `<div class="game-bowl">${game.bowlName}</div>` : '';
                         const convertedTime = convertTime(game.time);
+                        const gameDate = parseGameDate(game.date, game.time);
+                        const isLive = isGameLive(gameDate, game.sport);
+                        const liveBadge = isLive ? '<span class="live-badge">🔴 LIVE</span>' : '';
                         html += `
                             <div class="game">
                                 <div class="game-info">
                                     <div class="game-league">${emoji} ${game.sport.toUpperCase()}</div>
-                                    <div class="game-matchup">${game.matchup}</div>
+                                    <div class="game-matchup">${game.matchup}${liveBadge}</div>
                                     ${bowlHTML}
                                 </div>
                                 <div class="game-time">${convertedTime}</div>
