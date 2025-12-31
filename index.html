@@ -755,12 +755,12 @@
                 
                 let month, day, year = new Date().getFullYear();
                 const today = new Date();
+                const currentMonth = today.getMonth();
+                const currentDay = today.getDate();
                 
                 // Handle abbreviated format like "SUN 28" or "MON 29"
                 if (!dateStr.includes(',')) {
                     day = parseInt(dateStr.split(' ')[1]);
-                    const currentMonth = today.getMonth();
-                    const currentDay = today.getDate();
                     
                     // Start with current month
                     month = currentMonth;
@@ -771,12 +771,6 @@
                         month = (currentMonth + 1) % 12;
                         if (month === 0) year++;
                         testDate = new Date(year, month, day);
-                        
-                        // If still in the past (shouldn't happen), try previous month
-                        if (testDate < today) {
-                            month = currentMonth;
-                            year = today.getFullYear();
-                        }
                     }
                 } else {
                     // Handle full format like "Wednesday, December 31"
@@ -786,15 +780,19 @@
                         month = monthsOfYear.indexOf(monthDay[0]);
                         day = parseInt(monthDay[1]);
                         
-                        const currentMonth = today.getMonth();
+                        // Create a test date to see if it's in the past or future
+                        let testDate = new Date(year, month, day);
                         
-                        // If the month is December (11) and we're not in December, it's last year's December
-                        if (month === 11 && currentMonth !== 11) {
-                            year--;
-                        }
-                        // If the month is January (0) and we're in December, it's next year's January
-                        else if (month === 0 && currentMonth === 11) {
-                            year++;
+                        // If parsed date is in the past, it might be because:
+                        // 1. It's a past month in the current year
+                        // 2. It's December from last year
+                        
+                        if (testDate < today) {
+                            // Try next year
+                            testDate = new Date(year + 1, month, day);
+                            if (testDate >= today) {
+                                year++;
+                            }
                         }
                     }
                 }
