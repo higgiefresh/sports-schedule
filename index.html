@@ -871,6 +871,81 @@
                     });
                 }
             }
+            
+            // Sort games chronologically
+            const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            allGames.sort((a, b) => {
+                try {
+                    // Parse dates like "Wednesday, December 31"
+                    const aParts = a.date.split(', ');
+                    const bParts = b.date.split(', ');
+                    
+                    const aMonthDay = aParts[1].split(' ');
+                    const bMonthDay = bParts[1].split(' ');
+                    
+                    const aMonth = monthOrder.indexOf(aMonthDay[0]);
+                    const bMonth = monthOrder.indexOf(bMonthDay[0]);
+                    const aDay = parseInt(aMonthDay[1]);
+                    const bDay = parseInt(bMonthDay[1]);
+                    
+                    // December 2025 comes before January 2026
+                    let aYear = 2025;
+                    if (aMonth === 0) aYear = 2026; // January
+                    
+                    let bYear = 2025;
+                    if (bMonth === 0) bYear = 2026; // January
+                    
+                    // Parse times
+                    const aTimeMatch = a.time.match(/(\d+):(\d+)\s(AM|PM)/);
+                    const bTimeMatch = b.time.match(/(\d+):(\d+)\s(AM|PM)/);
+                    
+                    let aHours = parseInt(aTimeMatch[1]);
+                    const aMinutes = parseInt(aTimeMatch[2]);
+                    const aAmpm = aTimeMatch[3];
+                    if (aAmpm === 'PM' && aHours !== 12) aHours += 12;
+                    if (aAmpm === 'AM' && aHours === 12) aHours = 0;
+                    
+                    let bHours = parseInt(bTimeMatch[1]);
+                    const bMinutes = parseInt(bTimeMatch[2]);
+                    const bAmpm = bTimeMatch[3];
+                    if (bAmpm === 'PM' && bHours !== 12) bHours += 12;
+                    if (bAmpm === 'AM' && bHours === 12) bHours = 0;
+                    
+                    // Compare: year -> month -> day -> hours -> minutes
+                    if (aYear !== bYear) return aYear - bYear;
+                    if (aMonth !== bMonth) return aMonth - bMonth;
+                    if (aDay !== bDay) return aDay - bDay;
+                    if (aHours !== bHours) return aHours - bHours;
+                    return aMinutes - bMinutes;
+                } catch (e) {
+                    console.error('Sort error:', e);
+                    return 0;
+                }
+            });
+            
+            // Filter to keep only today and future dates
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            allGames = allGames.filter(game => {
+                try {
+                    const gameParts = game.date.split(', ');
+                    const gameMonthDay = gameParts[1].split(' ');
+                    const gameMonth = monthOrder.indexOf(gameMonthDay[0]);
+                    const gameDay = parseInt(gameMonthDay[1]);
+                    
+                    let gameYear = 2025;
+                    if (gameMonth === 0) gameYear = 2026; // January
+                    
+                    const gameDate = new Date(gameYear, gameMonth, gameDay);
+                    return gameDate >= today;
+                } catch (e) {
+                    console.error('Filter error:', e);
+                    return true; // Keep if parsing fails
+                }
+            });
         }
 
         function populateFilterDropdowns() {
@@ -969,21 +1044,6 @@
             if (filters.day) {
                 filtered = filtered.filter(g => g.date === filters.day);
             }
-
-            // Filter out past events - only show today and future
-            const now = new Date();
-            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            
-            filtered = filtered.filter(game => {
-                try {
-                    const gameDate = parseGameDate(game.date, game.time);
-                    // Include today and all future dates
-                    return gameDate >= todayStart;
-                } catch (e) {
-                    console.error('Date parse error for:', game.date, game.time);
-                    return true; // Include if parsing fails, don't hide it
-                }
-            });
 
             // Group by date
             const grouped = {};
