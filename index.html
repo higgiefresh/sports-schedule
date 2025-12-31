@@ -785,6 +785,17 @@
                         const monthDay = parts[1].split(' ');
                         month = monthsOfYear.indexOf(monthDay[0]);
                         day = parseInt(monthDay[1]);
+                        
+                        const currentMonth = today.getMonth();
+                        
+                        // If the month is December (11) and we're not in December, it's last year's December
+                        if (month === 11 && currentMonth !== 11) {
+                            year--;
+                        }
+                        // If the month is January (0) and we're in December, it's next year's January
+                        else if (month === 0 && currentMonth === 11) {
+                            year++;
+                        }
                     }
                 }
                 
