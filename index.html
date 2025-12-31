@@ -933,9 +933,11 @@
                 }
             });
             
-            // Filter to keep only today and future dates
+            // Filter to keep only today and future dates (using EST)
             const now = new Date();
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            // Convert to EST by subtracting 5 hours from UTC
+            const estNow = new Date(now.getTime() - (5 * 60 * 60 * 1000));
+            const today = new Date(estNow.getUTCFullYear(), estNow.getUTCMonth(), estNow.getUTCDate());
             
             allGames = allGames.filter(game => {
                 try {
