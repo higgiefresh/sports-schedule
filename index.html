@@ -869,8 +869,42 @@
             for (let i = 1; i < values.length; i++) {
                 const row = values[i];
                 if (row.length >= 5) {
+                    let dateStr = row[0].trim();
+                    
+                    // Fix date if it's off by one day (Apps Script timezone issue)
+                    // Check if the day name doesn't match the actual day
+                    const dateMatch = dateStr.match(/^(\w+),\s+(\w+)\s+(\d+)$/);
+                    if (dateMatch) {
+                        const dayName = dateMatch[1];
+                        const monthName = dateMatch[2];
+                        const dayNum = parseInt(dateMatch[3]);
+                        
+                        // Parse the date to check if day name is correct
+                        const monthIndex = ['January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December']
+                            .indexOf(monthName);
+                        
+                        if (monthIndex !== -1) {
+                            // Assume year is 2025 for Dec, 2026 for Jan+
+                            let year = 2025;
+                            if (monthIndex === 0) year = 2026; // January
+                            
+                            const testDate = new Date(year, monthIndex, dayNum);
+                            const actualDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][testDate.getDay()];
+                            
+                            // If the day name doesn't match, it's off by one - add a day
+                            if (actualDayName !== dayName) {
+                                const correctedDate = new Date(year, monthIndex, dayNum + 1);
+                                const correctedDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][correctedDate.getDay()];
+                                const correctedMonth = ['January', 'February', 'March', 'April', 'May', 'June',
+                                    'July', 'August', 'September', 'October', 'November', 'December'][correctedDate.getMonth()];
+                                dateStr = `${correctedDayName}, ${correctedMonth} ${correctedDate.getDate()}`;
+                            }
+                        }
+                    }
+                    
                     allGames.push({
-                        date: row[0].trim(),
+                        date: dateStr,
                         time: row[1].trim(),
                         matchup: row[2].trim(),
                         network: row[3].trim(),
