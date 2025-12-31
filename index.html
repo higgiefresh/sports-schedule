@@ -896,10 +896,23 @@
 
         function toggleSportFilter(sport) {
             const btn = event.target.closest('.filter-btn');
-            btn.classList.toggle('active');
-            filters.sport = Array.from(document.querySelectorAll('.filter-btn.active'))
-                .map(b => b.textContent.trim().split(' ').slice(1).join(' '))
-                .join(',');
+            
+            // Remove active class from all sport buttons
+            document.querySelectorAll('#sportFilters .filter-btn').forEach(b => {
+                b.classList.remove('active');
+            });
+            
+            // Add active class to clicked button (unless it's already active, then deselect)
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('active');
+                filters.sport = '';
+            } else {
+                btn.classList.add('active');
+                // Extract just the sport name (remove emoji)
+                const sportName = btn.textContent.trim().split(' ').slice(1).join(' ');
+                filters.sport = sportName;
+            }
+            
             applyFilters();
         }
 
@@ -964,9 +977,16 @@
             // Filter out past events - only show today and future
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
             filtered = filtered.filter(game => {
-                const gameDate = parseGameDate(game.date, game.time);
-                return gameDate >= todayStart;
+                try {
+                    const gameDate = parseGameDate(game.date, game.time);
+                    // Include today and all future dates
+                    return gameDate >= todayStart;
+                } catch (e) {
+                    console.error('Date parse error for:', game.date, game.time);
+                    return true; // Include if parsing fails, don't hide it
+                }
             });
 
             // Group by date
