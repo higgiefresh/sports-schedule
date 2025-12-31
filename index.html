@@ -614,6 +614,13 @@
                 </div>
 
                 <div class="filter-group">
+                    <div class="filter-label">Day</div>
+                    <select class="filter-dropdown" id="dayDropdown" onchange="applyFilters()">
+                        <option value="">All Days</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
                     <div class="filter-label">Network</div>
                     <select class="filter-dropdown" id="networkDropdown" onchange="applyFilters()">
                         <option value="">All Networks</option>
@@ -633,13 +640,6 @@
                 <div class="filter-group">
                     <div class="filter-label">Sport</div>
                     <div class="sport-buttons" id="sportFilters"></div>
-                </div>
-
-                <div class="filter-group">
-                    <div class="filter-label">Day</div>
-                    <select class="filter-dropdown" id="dayDropdown" onchange="applyFilters()">
-                        <option value="">All Days</option>
-                    </select>
                 </div>
 
                 <button class="clear-filters" onclick="clearAllFilters()">Clear Filters</button>
