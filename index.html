@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HiggiePlex Sports Schedule</title>
+    <title>Sports On TV</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238b5cf6' width='100' height='100'/><text x='50' y='70' font-size='70' text-anchor='middle' dominant-baseline='middle'>🏆</text></svg>">
     <style>
         * {
             margin: 0;
@@ -53,17 +54,100 @@
             letter-spacing: 0.5px;
         }
 
+        .timezone-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            background: #e6e8ec;
+            padding: 18px 30px;
+            border-radius: 20px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 
+                inset 2px 2px 5px #bec0c6,
+                inset -3px -3px 7px #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .timezone-selector {
+            background: #252844;
+            box-shadow: 
+                inset 2px 2px 5px #151b2f,
+                inset -3px -3px 7px #353d56;
+        }
+
+        .timezone-selector:hover {
+            box-shadow: 
+                inset 3px 3px 7px #bec0c6,
+                inset -4px -4px 10px #ffffff;
+        }
+
+        body.dark-mode .timezone-selector:hover {
+            box-shadow: 
+                inset 3px 3px 7px #151b2f,
+                inset -4px -4px 10px #353d56;
+        }
+
+        .timezone-selector label {
+            font-weight: 700;
+            color: #2d3436;
+        }
+
+        body.dark-mode .timezone-selector label {
+            color: #f0f0f0;
+        }
+
+        .timezone-selector select {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: #e6e8ec;
+            color: #2d3436;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 
+                2px 2px 5px #bec0c6,
+                -3px -3px 7px #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .timezone-selector select {
+            background: #252844;
+            color: #f0f0f0;
+            box-shadow: 
+                2px 2px 5px #151b2f,
+                -3px -3px 7px #353d56;
+        }
+
+        .timezone-selector select:hover,
+        .timezone-selector select:focus {
+            box-shadow: 
+                3px 3px 7px #bec0c6,
+                -4px -4px 10px #ffffff;
+            outline: none;
+        }
+
+        body.dark-mode .timezone-selector select:hover,
+        body.dark-mode .timezone-selector select:focus {
+            box-shadow: 
+                3px 3px 7px #151b2f,
+                -4px -4px 10px #353d56;
+        }
+
         .dark-mode-toggle {
             position: fixed;
-            top: 30px;
+            bottom: 30px;
             right: 30px;
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: #e6e8ec;
             border: none;
             color: #2d3436;
-            font-size: 1.5em;
+            font-size: 1.3em;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 
@@ -82,6 +166,16 @@
 
         .dark-mode-toggle:hover {
             transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .dark-mode-toggle {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1em;
+            }
         }
 
         .main-content {
@@ -501,6 +595,15 @@
         <header>
             <h1>🏆 SPORTS TV SCHEDULE</h1>
             <p class="date-range">December 27, 2025 – January 31, 2026</p>
+            <div class="timezone-selector">
+                <label for="timezoneSelect">Timezone:</label>
+                <select id="timezoneSelect" onchange="updateTimezone()">
+                    <option value="EST">Eastern (EST)</option>
+                    <option value="CST">Central (CST)</option>
+                    <option value="MST">Mountain (MST)</option>
+                    <option value="PST">Pacific (PST)</option>
+                </select>
+            </div>
         </header>
 
         <div class="main-content">
@@ -550,6 +653,7 @@
 
     <script>
         let allGames = [];
+        let currentTimezone = 'EST';
         let filters = {
             search: '',
             network: '',
@@ -557,10 +661,62 @@
             day: ''
         };
 
+        // Sport emoji mapping
+        const sportEmojis = {
+            'College Football': '📢',
+            'NFL': '🏈',
+            'NBA': '🏀',
+            'NHL': '🏒',
+            'UFC': '🥊'
+        };
+
+        // Timezone offset mapping (hours from EST)
+        const timezoneOffsets = {
+            'EST': 0,
+            'CST': -1,
+            'MST': -2,
+            'PST': -3
+        };
+
         // YOUR CONFIGURED CREDENTIALS
         const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
         const SHEET_NAME = 'schedule_template';
         const API_KEY = 'AIzaSyCBBft_Uau-bxJqHvB7GG3Dj9pH_7OcLJg';
+
+        function updateTimezone() {
+            currentTimezone = document.getElementById('timezoneSelect').value;
+            localStorage.setItem('selectedTimezone', currentTimezone);
+            displaySchedule();
+        }
+
+        function convertTime(timeStr) {
+            if (!timeStr) return timeStr;
+            
+            try {
+                // Parse time like "12:00 PM"
+                const [time, period] = timeStr.split(' ');
+                const [hours, minutes] = time.split(':');
+                let hour = parseInt(hours);
+                
+                if (period === 'PM' && hour !== 12) hour += 12;
+                if (period === 'AM' && hour === 12) hour = 0;
+                
+                // Adjust for timezone
+                const offset = timezoneOffsets[currentTimezone];
+                hour += offset;
+                
+                // Handle day wrapping
+                if (hour < 0) hour += 24;
+                if (hour >= 24) hour -= 24;
+                
+                const newPeriod = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                
+                return `${displayHour}:${minutes} ${newPeriod} ${currentTimezone}`;
+            } catch (e) {
+                return timeStr;
+            }
+        }
 
         async function loadScheduleData() {
             try {
@@ -608,11 +764,12 @@
             const sports = [...new Set(allGames.map(g => g.sport))].sort();
             const days = [...new Set(allGames.map(g => g.date))];
 
-            // Populate sport buttons
+            // Populate sport buttons with emojis
             const sportDiv = document.getElementById('sportFilters');
-            sportDiv.innerHTML = sports.map(sport => 
-                `<button class="filter-btn" onclick="toggleSportFilter('${sport}')">${sport}</button>`
-            ).join('');
+            sportDiv.innerHTML = sports.map(sport => {
+                const emoji = sportEmojis[sport] || '🎮';
+                return `<button class="filter-btn" onclick="toggleSportFilter('${sport}')">${emoji} ${sport}</button>`;
+            }).join('');
 
             // Populate day dropdown
             const dayDropdown = document.getElementById('dayDropdown');
@@ -621,10 +778,10 @@
         }
 
         function toggleSportFilter(sport) {
-            const btn = event.target;
+            const btn = event.target.closest('.filter-btn');
             btn.classList.toggle('active');
             filters.sport = Array.from(document.querySelectorAll('.filter-btn.active'))
-                .map(b => b.textContent)
+                .map(b => b.textContent.trim().split(' ').slice(1).join(' '))
                 .join(',');
             applyFilters();
         }
@@ -702,15 +859,17 @@
                 sorted.forEach(date => {
                     html += `<div class="date-section"><div class="day-header">${date}</div><div class="games-container">`;
                     grouped[date].forEach(game => {
+                        const emoji = sportEmojis[game.sport] || '🎮';
                         const bowlHTML = game.bowlName ? `<div class="game-bowl">${game.bowlName}</div>` : '';
+                        const convertedTime = convertTime(game.time);
                         html += `
                             <div class="game">
                                 <div class="game-info">
-                                    <div class="game-league">${game.sport}</div>
+                                    <div class="game-league">${emoji} ${game.sport.toUpperCase()}</div>
                                     <div class="game-matchup">${game.matchup}</div>
                                     ${bowlHTML}
                                 </div>
-                                <div class="game-time">${game.time}</div>
+                                <div class="game-time">${convertedTime}</div>
                                 <div class="game-channel ${getChannelClass(game.network)}">${game.network}</div>
                             </div>
                         `;
@@ -727,9 +886,15 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        // Load dark mode preference
+        // Load preferences on page load
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
+        }
+
+        const savedTimezone = localStorage.getItem('selectedTimezone');
+        if (savedTimezone) {
+            currentTimezone = savedTimezone;
+            document.getElementById('timezoneSelect').value = savedTimezone;
         }
 
         window.addEventListener('load', loadScheduleData);
