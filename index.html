@@ -797,10 +797,15 @@
                                 year = new Date().getFullYear() + 1;  // Use next year
                             }
                         } else {
-                            // We're not in December - compare full datetime, not just date
-                            let testDate = new Date(year, month, day, hours, minutes);
-                            if (testDate < today) {
-                                year++;
+                            // We're not in December
+                            // Games in Dec are next year, games in current month or later are this year
+                            if (month === 11) {  // December games are next year
+                                year = new Date().getFullYear() + 1;
+                            } else if (month >= currentMonth) {
+                                year = new Date().getFullYear();
+                            } else {
+                                // Month is earlier than current month (e.g., Jan when we're in Feb+)
+                                year = new Date().getFullYear() + 1;
                             }
                         }
                     }
@@ -837,9 +842,15 @@
 
             const duration = gameDurations[sport] || 180; // default 3 hours
             const gameEndTime = new Date(gameDate.getTime() + duration * 60000);
+            
+            const isLive = now >= gameDate && now <= gameEndTime;
+            
+            // Debug logging
+            if (sport === 'NCAAF' || sport === 'NHL') {
+                console.log(`${sport} game: Start=${gameDate.toLocaleString()}, End=${gameEndTime.toLocaleString()}, Now=${now.toLocaleString()}, isLive=${isLive}`);
+            }
 
-            // Game is live if current time is between start and end
-            return now >= gameDate && now <= gameEndTime;
+            return isLive;
         }
 
         async function loadScheduleData() {
