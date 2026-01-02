@@ -542,6 +542,7 @@
         .channel-espnplus { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); }
         .channel-thespot { background: linear-gradient(135deg, #ff6b42 0%, #ff8566 100%); }
         .channel-wxpx { background: linear-gradient(135deg, #ff6b42 0%, #ff8566 100%); }
+        .channel-nhln { background: linear-gradient(135deg, #003087 0%, #002766 100%); }
 
         .no-results {
             text-align: center;
@@ -672,6 +673,7 @@
                         <option value="Prime Video">Prime Video</option>
                         <option value="ESPN+">ESPN+</option>
                         <option value="TNT">TNT</option>
+                        <option value="NHLN">NHLN</option>
                     </select>
                 </div>
 
@@ -716,6 +718,9 @@
             'PST': -3
         };
 
+        // EST offset from UTC
+        const EST_OFFSET_HOURS = -5;
+
         // YOUR CONFIGURED CREDENTIALS
         const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
         const SHEET_NAME = 'schedule_template';
@@ -756,30 +761,39 @@
             }
         }
 
+        /**
+         * Parse game date and time from EST format into a Date object
+         * The Date object represents the game time in EST regardless of user's local timezone
+         */
         function parseGameDate(dateStr, timeStr) {
             try {
                 const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June',
                     'July', 'August', 'September', 'October', 'November', 'December'];
                 
-                let month, day, year = new Date().getFullYear();
-                const today = new Date();
-                const currentMonth = today.getMonth();
-                const currentDay = today.getDate();
+                let month, day, year;
                 
-                // Parse time first
-                const timeParts = timeStr.match(/(\d+):(\d+) (AM|PM)/);
-                let hours = 0, minutes = 0;
+                // Get current time in EST for year determination
+                const nowUTC = new Date();
+                const nowEST = new Date(nowUTC.getTime() + (EST_OFFSET_HOURS * 60 * 60 * 1000));
+                const currentMonth = nowEST.getUTCMonth();
+                const currentYear = nowEST.getUTCFullYear();
                 
-                if (timeParts) {
-                    hours = parseInt(timeParts[1]);
-                    minutes = parseInt(timeParts[2]);
-                    const ampm = timeParts[3];
-                    
-                    if (ampm === 'PM' && hours !== 12) hours += 12;
-                    if (ampm === 'AM' && hours === 12) hours = 0;
+                // Parse time
+                const timeParts = timeStr.match(/(\d+):(\d+)\s+(AM|PM)/);
+                if (!timeParts) {
+                    console.error('Invalid time format:', timeStr);
+                    return new Date();
                 }
                 
-                // Handle full format like "Wednesday, December 31"
+                let hours = parseInt(timeParts[1]);
+                const minutes = parseInt(timeParts[2]);
+                const ampm = timeParts[3];
+                
+                // Convert to 24-hour format
+                if (ampm === 'PM' && hours !== 12) hours += 12;
+                if (ampm === 'AM' && hours === 12) hours = 0;
+                
+                // Parse date - format: "Wednesday, December 31"
                 if (dateStr.includes(',')) {
                     const parts = dateStr.split(', ');
                     if (parts.length >= 2) {
@@ -787,25 +801,29 @@
                         month = monthsOfYear.indexOf(monthDay[0]);
                         day = parseInt(monthDay[1]);
                         
-                        // If we're in December (month 11):
-                        // - December dates = current year (2025)
-                        // - January+ dates = next year (2026)
+                        // Determine year based on current month in EST
                         if (currentMonth === 11) {  // We're in December
-                            if (month === 11) {     // It's also December
-                                year = new Date().getFullYear();  // Use current year
-                            } else if (month === 0) {  // It's January
-                                year = new Date().getFullYear() + 1;  // Use next year
+                            if (month === 11) {     // Game is in December
+                                year = currentYear;
+                            } else if (month === 0) {  // Game is in January
+                                year = currentYear + 1;
+                            } else {
+                                year = currentYear;
+                            }
+                        } else if (currentMonth === 0) {  // We're in January
+                            if (month === 11) {  // Game is in December (last year)
+                                year = currentYear - 1;
+                            } else {
+                                year = currentYear;
                             }
                         } else {
-                            // We're not in December
-                            // Games in Dec are next year, games in current month or later are this year
-                            if (month === 11) {  // December games are next year
-                                year = new Date().getFullYear() + 1;
+                            // For other months
+                            if (month === 11) {  // December games
+                                year = currentYear;
                             } else if (month >= currentMonth) {
-                                year = new Date().getFullYear();
+                                year = currentYear;
                             } else {
-                                // Month is earlier than current month (e.g., Jan when we're in Feb+)
-                                year = new Date().getFullYear() + 1;
+                                year = currentYear + 1;
                             }
                         }
                     }
@@ -813,22 +831,24 @@
                     // Handle abbreviated format like "SUN 28"
                     day = parseInt(dateStr.split(' ')[1]);
                     month = currentMonth;
-                    let testDate = new Date(year, month, day, hours, minutes);
-                    
-                    if (testDate < today) {
-                        month = (currentMonth + 1) % 12;
-                        if (month === 0) year++;
-                    }
+                    year = currentYear;
                 }
                 
-                return new Date(year, month, day, hours, minutes);
+                // Create UTC timestamp for EST time
+                // EST is UTC-5, so we add 5 hours to get the equivalent UTC time
+                const utcTime = Date.UTC(year, month, day, hours + 5, minutes);
+                
+                return new Date(utcTime);
             } catch (e) {
                 console.error('parseGameDate error:', e, 'dateStr:', dateStr, 'timeStr:', timeStr);
                 return new Date();
             }
         }
 
-        // Check if game is currently live based on sport duration
+        /**
+         * Check if game is currently live based on sport duration
+         * Now properly handles EST game times vs current UTC time
+         */
         function isGameLive(gameDate, sport) {
             const now = new Date();
             
@@ -845,11 +865,6 @@
             
             const isLive = now >= gameDate && now <= gameEndTime;
             
-            // Debug logging
-            if (sport === 'NCAAF' || sport === 'NHL') {
-                console.log(`${sport} game: Start=${gameDate.toLocaleString()}, End=${gameEndTime.toLocaleString()}, Now=${now.toLocaleString()}, isLive=${isLive}`);
-            }
-
             return isLive;
         }
 
@@ -886,27 +901,24 @@
                     let dateStr = row[0].trim();
                     
                     // Fix date if the day name doesn't match the actual day
-                    // (Apps Script timezone issue causes off-by-one day names)
                     const dateMatch = dateStr.match(/^(\w+),\s+(\w+)\s+(\d+)$/);
                     if (dateMatch) {
                         const dayName = dateMatch[1];
                         const monthName = dateMatch[2];
                         const dayNum = parseInt(dateMatch[3]);
                         
-                        // Parse the date to check if day name is correct
                         const monthIndex = ['January', 'February', 'March', 'April', 'May', 'June',
                             'July', 'August', 'September', 'October', 'November', 'December']
                             .indexOf(monthName);
                         
                         if (monthIndex !== -1) {
-                            // Assume year is 2025 for Dec, 2026 for Jan+
+                            // Determine year based on month
                             let year = 2025;
                             if (monthIndex === 0) year = 2026; // January
                             
                             const testDate = new Date(year, monthIndex, dayNum);
                             const actualDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][testDate.getDay()];
                             
-                            // If the day name doesn't match, replace it with the correct day name
                             if (actualDayName !== dayName) {
                                 dateStr = `${actualDayName}, ${monthName} ${dayNum}`;
                             }
@@ -930,7 +942,6 @@
             
             allGames.sort((a, b) => {
                 try {
-                    // Parse dates like "Wednesday, December 31"
                     const aParts = a.date.split(', ');
                     const bParts = b.date.split(', ');
                     
@@ -942,7 +953,6 @@
                     const aDay = parseInt(aMonthDay[1]);
                     const bDay = parseInt(bMonthDay[1]);
                     
-                    // December 2025 comes before January 2026
                     let aYear = 2025;
                     if (aMonth === 0) aYear = 2026; // January
                     
@@ -977,11 +987,14 @@
                 }
             });
             
-            // Filter to keep only today and future dates (using EST)
-            const now = new Date();
-            // Convert to EST by subtracting 5 hours from UTC
-            const estNow = new Date(now.getTime() - (5 * 60 * 60 * 1000));
-            const today = new Date(estNow.getUTCFullYear(), estNow.getUTCMonth(), estNow.getUTCDate());
+            // Filter to keep only today and future dates (using EST as baseline)
+            const nowUTC = new Date();
+            const nowEST = new Date(nowUTC.getTime() + (EST_OFFSET_HOURS * 60 * 60 * 1000));
+            const todayEST = new Date(Date.UTC(
+                nowEST.getUTCFullYear(), 
+                nowEST.getUTCMonth(), 
+                nowEST.getUTCDate()
+            ));
             
             allGames = allGames.filter(game => {
                 try {
@@ -993,11 +1006,11 @@
                     let gameYear = 2025;
                     if (gameMonth === 0) gameYear = 2026; // January
                     
-                    const gameDate = new Date(gameYear, gameMonth, gameDay);
-                    return gameDate >= today;
+                    const gameDate = new Date(Date.UTC(gameYear, gameMonth, gameDay));
+                    return gameDate >= todayEST;
                 } catch (e) {
                     console.error('Filter error:', e);
-                    return true; // Keep if parsing fails
+                    return true;
                 }
             });
         }
@@ -1033,7 +1046,6 @@
                 filters.sport = '';
             } else {
                 btn.classList.add('active');
-                // Extract just the sport name (remove emoji)
                 const sportName = btn.textContent.trim().split(' ').slice(1).join(' ');
                 filters.sport = sportName;
             }
@@ -1066,7 +1078,7 @@
                 'primevideo': 'channel-primevideo', 'prime': 'channel-primevideo',
                 'tnt': 'channel-tnt', 'cwnetwork': 'channel-cwnetwork',
                 'nflnet': 'channel-nflnet', 'nflnetwork': 'channel-nflnet',
-                'espnplus': 'channel-espnplus',
+                'espnplus': 'channel-espnplus', 'nhln': 'channel-nhln',
                 'thespot': 'channel-thespot', 'wxpx': 'channel-wxpx'
             };
             return classMap[normalized] || 'channel-espn';
@@ -1121,7 +1133,7 @@
                 });
             });
 
-            // Get dates in chronological order (don't use .sort() which sorts alphabetically)
+            // Get dates in chronological order
             const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
             
@@ -1151,6 +1163,7 @@
                     return 0;
                 }
             });
+            
             let html = '';
 
             if (sorted.length === 0) {
@@ -1214,7 +1227,7 @@
             const date = today.getDate();
             const monthName = months[today.getMonth()];
             
-            const formattedDate = `${dayName} ${date}, ${monthName}`;
+            const formattedDate = `${dayName}, ${monthName} ${date}`;
             document.getElementById('currentDate').textContent = formattedDate;
         }
         
