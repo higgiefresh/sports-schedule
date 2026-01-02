@@ -766,6 +766,19 @@
                 const currentMonth = today.getMonth();
                 const currentDay = today.getDate();
                 
+                // Parse time first
+                const timeParts = timeStr.match(/(\d+):(\d+) (AM|PM)/);
+                let hours = 0, minutes = 0;
+                
+                if (timeParts) {
+                    hours = parseInt(timeParts[1]);
+                    minutes = parseInt(timeParts[2]);
+                    const ampm = timeParts[3];
+                    
+                    if (ampm === 'PM' && hours !== 12) hours += 12;
+                    if (ampm === 'AM' && hours === 12) hours = 0;
+                }
+                
                 // Handle full format like "Wednesday, December 31"
                 if (dateStr.includes(',')) {
                     const parts = dateStr.split(', ');
@@ -784,8 +797,8 @@
                                 year = new Date().getFullYear() + 1;  // Use next year
                             }
                         } else {
-                            // We're not in December - use simple logic
-                            let testDate = new Date(year, month, day);
+                            // We're not in December - compare full datetime, not just date
+                            let testDate = new Date(year, month, day, hours, minutes);
                             if (testDate < today) {
                                 year++;
                             }
@@ -795,23 +808,13 @@
                     // Handle abbreviated format like "SUN 28"
                     day = parseInt(dateStr.split(' ')[1]);
                     month = currentMonth;
-                    let testDate = new Date(year, month, day);
+                    let testDate = new Date(year, month, day, hours, minutes);
                     
                     if (testDate < today) {
                         month = (currentMonth + 1) % 12;
                         if (month === 0) year++;
                     }
                 }
-                
-                const timeParts = timeStr.match(/(\d+):(\d+) (AM|PM)/);
-                if (!timeParts) return new Date();
-                
-                let hours = parseInt(timeParts[1]);
-                const minutes = parseInt(timeParts[2]);
-                const ampm = timeParts[3];
-                
-                if (ampm === 'PM' && hours !== 12) hours += 12;
-                if (ampm === 'AM' && hours === 12) hours = 0;
                 
                 return new Date(year, month, day, hours, minutes);
             } catch (e) {
