@@ -259,12 +259,12 @@ This project is a great example of:
 ## 📸 Screenshots
 
 ### Main Interface
-![Sports On TV - Main Interface](https://github.com/user-attachments/assets/3d610cc7-4c55-48fd-b64a-85c86fe6ff4d)
+![Sports On TV - Main Interface](https://github.com/user-attachments/assets/b430c4bf-cc4c-4607-b1b6-d0552d796a53)
 
 *Clean, modern UI with all upcoming games sorted chronologically*
 
 ### Search & Filter
-![Sports On TV - Search and Filter](https://github.com/user-attachments/assets/b430c4bf-cc4c-4607-b1b6-d0552d796a53)
+![Sports On TV - Search and Filter](https://github.com/user-attachments/assets/3d610cc7-4c55-48fd-b64a-85c86fe6ff4d)
 
 *Powerful filtering capabilities allow users to search by team name, filter by sport (NFL, NBA, NHL, NCAAF), network (CBS, FOX, NBC, etc.), or specific date*
 
