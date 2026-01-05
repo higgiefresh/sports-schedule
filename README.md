@@ -351,13 +351,19 @@ SOFTWARE.
 ## 📸 Screenshots
 
 ### Main Interface
-*Clean, modern UI with all upcoming games*
+![Sports On TV - Main Interface](https://github.com/user-attachments/assets/e639706a-cbe4-45b8-9e50-fc95af5ff2e0)
+
+*Clean, modern UI with all upcoming games sorted chronologically*
 
 ### Search & Filter
-*Powerful filtering by team, sport, network, and date*
+![Sports On TV - Search and Filter](https://github.com/user-attachments/assets/9b85209c-d9e6-4b1a-85fc-0745082198fb)
+
+*Powerful filtering capabilities allow users to search by team name, filter by sport (NFL, NBA, NHL, NCAAF), network (CBS, FOX, NBC, etc.), or specific date*
 
 ### Mobile View
-*Fully responsive design works on any device*
+![Sports On TV - Mobile Responsive Design](https://github.com/user-attachments/assets/0edf5a4d-540d-4dd8-8937-9d552027858e)
+
+*Fully responsive design ensures perfect viewing on any device - all features work seamlessly on mobile, tablet, and desktop*
 
 ---
 
@@ -369,6 +375,6 @@ SOFTWARE.
 
 ---
 
-**Built with 🧠 and ☕ by Ben Higgins**
+**Built without Ads and ☕ by Ben Higgins**
 
 *Last Updated: January 2026*
