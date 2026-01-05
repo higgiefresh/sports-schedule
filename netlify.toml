@@ -1,0 +1,53 @@
+# Netlify Configuration File
+# Add this file to the root of your GitHub repository
+
+# Security Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Prevent clickjacking attacks
+    X-Frame-Options = "DENY"
+    
+    # Prevent MIME type sniffing
+    X-Content-Type-Options = "nosniff"
+    
+    # Enable XSS protection in older browsers
+    X-XSS-Protection = "1; mode=block"
+    
+    # Control referrer information
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Restrict browser permissions (site doesn't need these)
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), usb=(), payment=(), magnetometer=(), gyroscope=()"
+    
+    # Content Security Policy (CSP)
+    # Allows: Your own scripts, inline styles (for now), images from anywhere, Google Sheets connection
+    Content-Security-Policy = '''
+      default-src 'self';
+      script-src 'self' 'unsafe-inline';
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https:;
+      connect-src 'self' https://docs.google.com;
+      font-src 'self';
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+    '''
+    
+    # Strict Transport Security (HSTS)
+    # Force HTTPS for 1 year
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+# Redirect Configuration (optional)
+# Uncomment if you want to force HTTPS
+# [[redirects]]
+#   from = "http://higgins-sports-schedule.netlify.app/*"
+#   to = "https://higgins-sports-schedule.netlify.app/:splat"
+#   status = 301
+#   force = true
+
+# Build Settings (if you have a build process)
+# [build]
+#   publish = "."
+#   command = "echo 'No build needed - static site'"
