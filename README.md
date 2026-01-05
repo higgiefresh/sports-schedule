@@ -20,6 +20,7 @@
 - [Automation](#automation)
 - [Usage](#usage)
 - [Performance](#performance)
+- [Screenshots](#screenshots)
 - [Future Enhancements](#future-enhancements)
 - [License](#license)
 
@@ -255,6 +256,25 @@ This project is a great example of:
 
 ---
 
+## 📸 Screenshots
+
+### Main Interface
+![Sports On TV - Main Interface](https://github.com/user-attachments/assets/3d610cc7-4c55-48fd-b64a-85c86fe6ff4d)
+
+*Clean, modern UI with all upcoming games sorted chronologically*
+
+### Search & Filter
+![Sports On TV - Search and Filter](https://github.com/user-attachments/assets/b430c4bf-cc4c-4607-b1b6-d0552d796a53)
+
+*Powerful filtering capabilities allow users to search by team name, filter by sport (NFL, NBA, NHL, NCAAF), network (CBS, FOX, NBC, etc.), or specific date*
+
+### Mobile View
+![Sports On TV - Mobile Responsive Design](https://github.com/user-attachments/assets/7266e248-7575-4944-9057-93e2639858a5)
+
+*Fully responsive design ensures perfect viewing on any device - all features work seamlessly on mobile, tablet, and desktop*
+
+---
+
 ## 🚀 Future Enhancements
 
 ### Potential Features
@@ -348,25 +368,6 @@ SOFTWARE.
 
 ---
 
-## 📸 Screenshots
-
-### Main Interface
-![Sports On TV - Main Interface](https://github.com/user-attachments/assets/e639706a-cbe4-45b8-9e50-fc95af5ff2e0)
-
-*Clean, modern UI with all upcoming games sorted chronologically*
-
-### Search & Filter
-![Sports On TV - Search and Filter](https://github.com/user-attachments/assets/9b85209c-d9e6-4b1a-85fc-0745082198fb)
-
-*Powerful filtering capabilities allow users to search by team name, filter by sport (NFL, NBA, NHL, NCAAF), network (CBS, FOX, NBC, etc.), or specific date*
-
-### Mobile View
-![Sports On TV - Mobile Responsive Design](https://github.com/user-attachments/assets/0edf5a4d-540d-4dd8-8937-9d552027858e)
-
-*Fully responsive design ensures perfect viewing on any device - all features work seamlessly on mobile, tablet, and desktop*
-
----
-
 ## 🔗 Links
 
 - **Live Site**: [https://higgins-sports-schedule.netlify.app/](https://higgins-sports-schedule.netlify.app/)
@@ -375,6 +376,6 @@ SOFTWARE.
 
 ---
 
-**Built without Ads and ☕ by Ben Higgins**
+**Built without ADs by Ben Higgins**
 
 *Last Updated: January 2026*
