@@ -3,7 +3,7 @@
 > A fully automated sports schedule aggregator with Grade A security, displaying upcoming NFL, NBA, NHL, and NCAAF games from major broadcast networks.
 
 [![Security Headers](https://img.shields.io/badge/Security%20Headers-A-brightgreen)](https://securityheaders.com/)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/your-badge-id/deploy-status)](https://app.netlify.com/sites/higgins-sports-schedule/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/333b1a77-f554-45a9-b620-395e12ceb86e/deploy-status)](https://app.netlify.com/sites/higgins-sports-schedule/deploys)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 **Live Site:** [https://higgins-sports-schedule.netlify.app/](https://higgins-sports-schedule.netlify.app/)
