@@ -721,10 +721,10 @@
         // EST offset from UTC
         const EST_OFFSET_HOURS = -5;
 
-        // YOUR CONFIGURED CREDENTIALS
+        // GOOGLE SHEET CONFIGURATION (Public Read-Only)
         const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
         const SHEET_NAME = 'schedule_template';
-        const API_KEY = 'AIzaSyCBBft_Uau-bxJqHvB7GG3Dj9pH_7OcLJg';
+        // No API key needed - using public Google Sheets endpoint!
 
         function updateTimezone() {
             currentTimezone = document.getElementById('timezoneSelect').value;
@@ -870,12 +870,22 @@
 
         async function loadScheduleData() {
             try {
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+                // Use public Google Sheets CSV export (no authentication needed!)
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
                 const response = await fetch(url);
-                const data = await response.json();
+                const csvText = await response.text();
 
-                if (data.values) {
-                    parseGamesFromSheet(data.values);
+                // Parse CSV data
+                const rows = csvText.split('\n').map(row => {
+                    // Simple CSV parser (handles quoted fields)
+                    const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
+                    const matches = row.match(regex);
+                    return matches ? matches.map(field => field.replace(/^"|"$/g, '')) : [];
+                });
+
+                if (rows && rows.length > 1) {
+                    // Skip header row, pass data rows
+                    parseGamesFromSheet(rows.slice(1).filter(row => row.length > 0));
                     populateFilterDropdowns();
                     displaySchedule();
                 } else {
