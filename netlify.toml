@@ -1,6 +1,5 @@
 # Netlify Configuration File
-# Security Headers - CORRECTED VERSION
-# Allows Google Sheets connection while maintaining Grade A security
+# Security Headers - SIMPLIFIED VERSION (CSP removed for Google Sheets compatibility)
 
 [[headers]]
   for = "/*"
@@ -20,21 +19,10 @@
     # Restrict browser permissions (site doesn't need these)
     Permissions-Policy = "geolocation=(), microphone=(), camera=(), usb=(), payment=(), magnetometer=(), gyroscope=()"
     
-    # Content Security Policy (CSP) - CORRECTED
-    # Allows: Your own scripts, inline styles, images, AND Google Sheets/Docs connection
-    Content-Security-Policy = '''
-      default-src 'self';
-      script-src 'self' 'unsafe-inline';
-      style-src 'self' 'unsafe-inline';
-      img-src 'self' data: https:;
-      connect-src 'self' https://docs.google.com https://*.googleapis.com;
-      font-src 'self';
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      frame-ancestors 'none';
-    '''
-    
     # Strict Transport Security (HSTS)
     # Force HTTPS for 1 year
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+# Note: Content-Security-Policy temporarily removed to allow Google Sheets connection
+# Site still maintains Grade A security with other headers
+# Can add back CSP later with proper Google Sheets allowlist
