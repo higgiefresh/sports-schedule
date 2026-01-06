@@ -875,17 +875,53 @@
                 const response = await fetch(url);
                 const csvText = await response.text();
 
+                // Robust CSV parser that properly handles quoted fields
+                function parseCSVRow(row) {
+                    const result = [];
+                    let current = '';
+                    let inQuotes = false;
+                    
+                    for (let i = 0; i < row.length; i++) {
+                        const char = row[i];
+                        const nextChar = row[i + 1];
+                        
+                        if (char === '"') {
+                            if (inQuotes && nextChar === '"') {
+                                // Escaped quote
+                                current += '"';
+                                i++; // Skip next quote
+                            } else {
+                                // Toggle quote mode
+                                inQuotes = !inQuotes;
+                            }
+                        } else if (char === ',' && !inQuotes) {
+                            // Field separator (outside quotes)
+                            result.push(current.trim());
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    
+                    // Add last field
+                    result.push(current.trim());
+                    return result;
+                }
+
                 // Parse CSV data
-                const rows = csvText.split('\n').map(row => {
-                    // Simple CSV parser (handles quoted fields)
-                    const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
-                    const matches = row.match(regex);
-                    return matches ? matches.map(field => field.replace(/^"|"$/g, '')) : [];
-                });
+                const lines = csvText.split(/\r?\n/);
+                const rows = lines
+                    .filter(line => line.trim().length > 0)
+                    .map(line => parseCSVRow(line));
+
+                console.log('Parsed rows:', rows.length);
+                console.log('First few rows:', rows.slice(0, 5));
 
                 if (rows && rows.length > 1) {
                     // Skip header row, pass data rows
-                    parseGamesFromSheet(rows.slice(1).filter(row => row.length > 0));
+                    const dataRows = rows.slice(1).filter(row => row.length >= 5);
+                    console.log('Data rows after filtering:', dataRows.length);
+                    parseGamesFromSheet(dataRows);
                     populateFilterDropdowns();
                     displaySchedule();
                 } else {
@@ -905,7 +941,8 @@
         function parseGamesFromSheet(values) {
             allGames = [];
             
-            for (let i = 1; i < values.length; i++) {
+            // Note: values array no longer contains header row (already removed in loadScheduleData)
+            for (let i = 0; i < values.length; i++) {  // Start at 0, not 1!
                 const row = values[i];
                 if (row.length >= 5) {
                     let dateStr = row[0].trim();
