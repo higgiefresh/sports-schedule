@@ -709,9 +709,12 @@
             padding: 25px;
             border-radius: 15px;
             white-space: pre-wrap;
+            word-wrap: break-word;
             line-height: 1.8;
             color: #2d3436;
             font-size: 1em;
+            max-height: 600px;
+            overflow-y: auto;
         }
 
         body.dark-mode .detail-additional-info {
@@ -783,16 +786,20 @@
                     <select class="filter-dropdown" id="networkDropdown" onchange="applyFilters()">
                         <option value="">All Networks</option>
                         <option value="ESPN">ESPN</option>
+                        <option value="ESPN2">ESPN2</option>
+                        <option value="ESPN+">ESPN+</option>
                         <option value="CBS">CBS</option>
                         <option value="NBC">NBC</option>
                         <option value="ABC">ABC</option>
                         <option value="FOX">FOX</option>
+                        <option value="TNT">TNT</option>
+                        <option value="TBS">TBS</option>
                         <option value="Peacock">Peacock</option>
                         <option value="Paramount+">Paramount+</option>
                         <option value="Prime Video">Prime Video</option>
-                        <option value="ESPN+">ESPN+</option>
-                        <option value="TNT">TNT</option>
-                        <option value="NHLN">NHLN</option>
+                        <option value="NFL Network">NFL Network</option>
+                        <option value="NHL Network">NHL Network</option>
+                        <option value="The Spot">The Spot</option>
                     </select>
                 </div>
 
@@ -1115,7 +1122,7 @@
                         }
                     }
                     
-                    allGames.push({
+                    const gameData = {
                         date: dateStr,
                         time: row[1].trim(),
                         matchup: row[2].trim(),
@@ -1123,7 +1130,14 @@
                         sport: row[4].trim(),
                         bowlName: row[5] ? row[5].trim() : '',        // For NCAAF bowl names
                         additionalInfo: row[5] ? row[5].trim() : ''    // For UFC fight cards, etc.
-                    });
+                    };
+                    
+                    // Log UFC events for debugging
+                    if (gameData.sport === 'UFC') {
+                        console.log('UFC event parsed:', gameData.matchup, 'additionalInfo length:', gameData.additionalInfo.length);
+                    }
+                    
+                    allGames.push(gameData);
                 }
             }
             
@@ -1389,12 +1403,15 @@
             
             // Add click handlers to open detail view
             const gameElements = document.querySelectorAll('.game');
+            console.log(`Attaching click handlers to ${gameElements.length} game cards`);
+            
             gameElements.forEach((gameEl, index) => {
                 // Find the corresponding game data
                 let gameIndex = 0;
                 for (const date of sorted) {
                     for (const game of grouped[date]) {
                         if (gameIndex === index) {
+                            console.log(`Card ${index}: ${game.matchup}, additionalInfo:`, game.additionalInfo ? 'YES' : 'NO');
                             gameEl.addEventListener('click', () => showDetailView(game));
                             return;
                         }
@@ -1442,6 +1459,8 @@
 
         // Detail View Functions
         function showDetailView(game) {
+            console.log('Opening detail view for:', game);
+            
             // Populate detail view
             document.getElementById('detailTitle').textContent = game.matchup;
             document.getElementById('detailDate').textContent = game.date;
@@ -1452,11 +1471,15 @@
             const additionalInfo = game.additionalInfo || game.bowlName || '';
             const detailInfo = document.getElementById('detailInfo');
             
-            if (additionalInfo) {
+            console.log('Additional info:', additionalInfo);
+            
+            if (additionalInfo && additionalInfo.trim() !== '') {
                 detailInfo.textContent = additionalInfo;
                 detailInfo.style.display = 'block';
             } else {
-                detailInfo.style.display = 'none';
+                // Show a message if no additional info
+                detailInfo.textContent = 'No additional details available for this event.';
+                detailInfo.style.display = 'block';
             }
             
             // Show the detail view
