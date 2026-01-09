@@ -625,6 +625,125 @@
                 min-width: auto;
             }
         }
+
+        /* Detail View Styles */
+        .detail-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .detail-content {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        body.dark-mode .detail-content {
+            background: #252844;
+        }
+
+        .detail-back-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .detail-back-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .detail-header h2 {
+            font-size: 2em;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        body.dark-mode .detail-header h2 {
+            color: #e0e0e0;
+        }
+
+        .detail-meta {
+            font-size: 1.2em;
+            color: #636e72;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .detail-meta {
+            color: #a0a0a0;
+        }
+
+        .detail-meta span {
+            margin-right: 20px;
+        }
+
+        .detail-network-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .detail-additional-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            color: #2d3436;
+            font-size: 1em;
+        }
+
+        body.dark-mode .detail-additional-info {
+            background: #1a1d2e;
+            color: #e0e0e0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Make game cards clickable */
+        .game {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game:hover {
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body>
@@ -688,6 +807,30 @@
             <main class="schedule" id="schedule">
                 <div class="loading">Loading schedule...</div>
             </main>
+        </div>
+    </div>
+
+    <!-- Detail View Modal -->
+    <div id="detailView" class="detail-view" style="display: none;">
+        <div class="detail-content">
+            <button class="detail-back-btn" onclick="closeDetailView()">
+                ← Back to Schedule
+            </button>
+            
+            <div class="detail-header">
+                <h2 id="detailTitle"></h2>
+                <div class="detail-meta">
+                    <span id="detailDate"></span>  
+                    <span id="detailTime"></span>
+                </div>
+                <div class="detail-network-badge">
+                    <span id="detailNetwork"></span>
+                </div>
+            </div>
+            
+            <div class="detail-body">
+                <div id="detailInfo" class="detail-additional-info"></div>
+            </div>
         </div>
     </div>
 
@@ -978,7 +1121,8 @@
                         matchup: row[2].trim(),
                         network: row[3].trim(),
                         sport: row[4].trim(),
-                        bowlName: row[5] ? row[5].trim() : ''
+                        bowlName: row[5] ? row[5].trim() : '',        // For NCAAF bowl names
+                        additionalInfo: row[5] ? row[5].trim() : ''    // For UFC fight cards, etc.
                     });
                 }
             }
@@ -1242,6 +1386,22 @@
             }
 
             document.getElementById('schedule').innerHTML = html;
+            
+            // Add click handlers to open detail view
+            const gameElements = document.querySelectorAll('.game');
+            gameElements.forEach((gameEl, index) => {
+                // Find the corresponding game data
+                let gameIndex = 0;
+                for (const date of sorted) {
+                    for (const game of grouped[date]) {
+                        if (gameIndex === index) {
+                            gameEl.addEventListener('click', () => showDetailView(game));
+                            return;
+                        }
+                        gameIndex++;
+                    }
+                }
+            });
         }
 
         function toggleDarkMode() {
@@ -1279,6 +1439,50 @@
         }
         
         displayCurrentDate();
+
+        // Detail View Functions
+        function showDetailView(game) {
+            // Populate detail view
+            document.getElementById('detailTitle').textContent = game.matchup;
+            document.getElementById('detailDate').textContent = game.date;
+            document.getElementById('detailTime').textContent = game.time + ' EST';
+            document.getElementById('detailNetwork').textContent = game.network;
+            
+            // Show additional info (fight card, bowl info, etc.)
+            const additionalInfo = game.additionalInfo || game.bowlName || '';
+            const detailInfo = document.getElementById('detailInfo');
+            
+            if (additionalInfo) {
+                detailInfo.textContent = additionalInfo;
+                detailInfo.style.display = 'block';
+            } else {
+                detailInfo.style.display = 'none';
+            }
+            
+            // Show the detail view
+            document.getElementById('detailView').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeDetailView() {
+            document.getElementById('detailView').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Close detail view when clicking outside content
+        document.addEventListener('click', function(e) {
+            const detailView = document.getElementById('detailView');
+            if (e.target === detailView) {
+                closeDetailView();
+            }
+        });
+
+        // Close detail view with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDetailView();
+            }
+        });
     </script>
 </body>
 </html>
