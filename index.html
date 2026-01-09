@@ -1497,7 +1497,9 @@
             console.log('Additional info:', additionalInfo);
             
             if (additionalInfo && additionalInfo.trim() !== '') {
-                detailInfo.textContent = additionalInfo;
+                // Convert URLs to clickable links
+                const formattedInfo = formatAdditionalInfo(additionalInfo);
+                detailInfo.innerHTML = formattedInfo;
                 detailInfo.style.display = 'block';
             } else {
                 // Show a message if no additional info
@@ -1508,6 +1510,37 @@
             // Show the detail view
             document.getElementById('detailView').style.display = 'block';
             document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        /**
+         * Format additional info - convert URLs to clickable links
+         * Pattern: "🔗 Link Text\nhttps://url.com" → clickable link
+         */
+        function formatAdditionalInfo(text) {
+            // Escape HTML to prevent XSS
+            const escaped = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+            
+            // Convert newlines to <br> tags
+            let formatted = escaped.replace(/\n/g, '<br>');
+            
+            // Convert UFC event links: "🔗 UFC XXX Event Page<br>https://..."
+            formatted = formatted.replace(
+                /🔗\s+([^<]+)<br>(https?:\/\/[^\s<]+)/g,
+                '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #6366f1; text-decoration: underline;">🔗 $1</a>'
+            );
+            
+            // Also convert standalone URLs (just in case)
+            formatted = formatted.replace(
+                /(https?:\/\/[^\s<]+)/g,
+                '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #6366f1; text-decoration: underline;">$1</a>'
+            );
+            
+            return formatted;
         }
 
         function closeDetailView() {
