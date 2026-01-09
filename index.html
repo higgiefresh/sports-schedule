@@ -1026,51 +1026,76 @@
                 const csvText = await response.text();
 
                 // Robust CSV parser that properly handles quoted fields
-                function parseCSVRow(row) {
-                    const result = [];
-                    let current = '';
+                // IMPROVED CSV PARSER - Handles multi-line cells correctly!
+                function parseCSV(csvText) {
+                    const rows = [];
+                    let currentRow = [];
+                    let currentField = '';
                     let inQuotes = false;
                     
-                    for (let i = 0; i < row.length; i++) {
-                        const char = row[i];
-                        const nextChar = row[i + 1];
+                    for (let i = 0; i < csvText.length; i++) {
+                        const char = csvText[i];
+                        const nextChar = csvText[i + 1];
                         
                         if (char === '"') {
                             if (inQuotes && nextChar === '"') {
-                                // Escaped quote
-                                current += '"';
-                                i++; // Skip next quote
+                                // Escaped quote inside quoted field
+                                currentField += '"';
+                                i++; // Skip the next quote
                             } else {
                                 // Toggle quote mode
                                 inQuotes = !inQuotes;
                             }
                         } else if (char === ',' && !inQuotes) {
-                            // Field separator (outside quotes)
-                            result.push(current.trim());
-                            current = '';
+                            // Field separator (not inside quotes)
+                            currentRow.push(currentField);
+                            currentField = '';
+                        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                            // End of row (not inside quotes)
+                            if (char === '\r' && nextChar === '\n') {
+                                i++; // Skip \n in \r\n
+                            }
+                            currentRow.push(currentField);
+                            if (currentRow.some(field => field.trim().length > 0)) {
+                                rows.push(currentRow);
+                            }
+                            currentRow = [];
+                            currentField = '';
                         } else {
-                            current += char;
+                            // Regular character (including newlines inside quotes!)
+                            currentField += char;
                         }
                     }
                     
-                    // Add last field
-                    result.push(current.trim());
-                    return result;
+                    // Add last field and row if not empty
+                    if (currentField.length > 0 || currentRow.length > 0) {
+                        currentRow.push(currentField);
+                        if (currentRow.some(field => field.trim().length > 0)) {
+                            rows.push(currentRow);
+                        }
+                    }
+                    
+                    return rows;
                 }
 
-                // Parse CSV data
-                const lines = csvText.split(/\r?\n/);
-                const rows = lines
-                    .filter(line => line.trim().length > 0)
-                    .map(line => parseCSVRow(line));
-
+                // Parse CSV data using improved parser
+                const rows = parseCSV(csvText);
+                
                 console.log('Parsed rows:', rows.length);
-                console.log('First few rows:', rows.slice(0, 5));
+                console.log('First few rows:', rows.slice(0, 3));
 
                 if (rows && rows.length > 1) {
                     // Skip header row, pass data rows
                     const dataRows = rows.slice(1).filter(row => row.length >= 5);
                     console.log('Data rows after filtering:', dataRows.length);
+                    
+                    // Debug: Show first UFC event's Column F
+                    const ufcRow = dataRows.find(row => row[4] === 'UFC');
+                    if (ufcRow) {
+                        console.log('UFC Row Column F length:', ufcRow[5] ? ufcRow[5].length : 0);
+                        console.log('UFC Row Column F preview:', ufcRow[5] ? ufcRow[5].substring(0, 100) + '...' : 'empty');
+                    }
+                    
                     parseGamesFromSheet(dataRows);
                     populateFilterDropdowns();
                     displaySchedule();
