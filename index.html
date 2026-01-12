@@ -1514,18 +1514,18 @@
 
         /**
          * Format additional info - convert URLs to clickable links
-         * Pattern: "🔗 Link Text\nhttps://url.com" → clickable link
+         * Pattern: "🥊 Link Text\nhttps://url.com" → clickable link
          */
         
         function formatAdditionalInfo(text) {
     // Don't escape the whole thing, just handle the URL conversion
     let formatted = text;
     
-    // Find pattern: 🔗 Link Text\nhttps://url
-    const urlPattern = /🔗\s+([^\n]+)\n(https?:\/\/[^\s]+)/g;
+    // Find pattern: 🥊 Link Text\nhttps://url
+    const urlPattern = /🥊\s+([^\n]+)\n(https?:\/\/[^\s]+)/g;
     
     formatted = formatted.replace(urlPattern, function(match, linkText, url) {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #6366f1; text-decoration: underline;">🔗 ${linkText}</a>`;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #6366f1; text-decoration: underline;">🥊 ${linkText}</a>`;
     });
     
     // Convert remaining newlines to <br>
