@@ -1518,10 +1518,9 @@
          */
         
         function formatAdditionalInfo(text) {
-    // Don't escape the whole thing, just handle the URL conversion
     let formatted = text;
     
-    // Find pattern: 🥊 Link Text\nhttps://url
+    // Updated pattern for 🥊 instead of 🔗
     const urlPattern = /🥊\s+([^\n]+)\n(https?:\/\/[^\s]+)/g;
     
     formatted = formatted.replace(urlPattern, function(match, linkText, url) {
