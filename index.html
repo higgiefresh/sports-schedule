@@ -77,18 +77,22 @@
             letter-spacing: 0.5px;
         }
 
-        .timezone-selector {
+        .header-controls {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
             margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .timezone-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             background: #e6e8ec;
             padding: 18px 30px;
             border-radius: 20px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
             box-shadow: 
                 inset 2px 2px 5px #bec0c6,
                 inset -3px -3px 7px #ffffff;
@@ -100,18 +104,6 @@
             box-shadow: 
                 inset 2px 2px 5px #151b2f,
                 inset -3px -3px 7px #353d56;
-        }
-
-        .timezone-selector:hover {
-            box-shadow: 
-                inset 3px 3px 7px #bec0c6,
-                inset -4px -4px 10px #ffffff;
-        }
-
-        body.dark-mode .timezone-selector:hover {
-            box-shadow: 
-                inset 3px 3px 7px #151b2f,
-                inset -4px -4px 10px #353d56;
         }
 
         .timezone-selector label {
@@ -161,22 +153,21 @@
         }
 
         .dark-mode-toggle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #e6e8ec;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 30px;
             border: none;
+            border-radius: 20px;
+            background: #e6e8ec;
             color: #2d3436;
-            font-size: 1.3em;
+            font-size: 1em;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 
                 3px 3px 7px #bec0c6,
                 -3px -3px 7px #ffffff;
-            z-index: 100;
         }
 
         body.dark-mode .dark-mode-toggle {
@@ -188,16 +179,26 @@
         }
 
         .dark-mode-toggle:hover {
-            transform: scale(1.1);
+            transform: translateY(-2px);
+            box-shadow: 
+                5px 5px 10px #bec0c6,
+                -5px -5px 10px #ffffff;
+        }
+
+        body.dark-mode .dark-mode-toggle:hover {
+            box-shadow: 
+                5px 5px 10px #151b2f,
+                -5px -5px 10px #353d56;
+        }
+
+        .dark-mode-toggle .emoji {
+            font-size: 1.3em;
         }
 
         @media (max-width: 768px) {
-            .dark-mode-toggle {
-                bottom: 20px;
-                right: 20px;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1em;
+            .header-controls {
+                flex-direction: column;
+                gap: 15px;
             }
         }
 
@@ -766,20 +767,24 @@
     </style>
 </head>
 <body>
-    <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
-
     <div class="container">
         <header>
             <h1>🏆 Sports On TV 🏆</h1>
             <p class="current-date" id="currentDate">Loading...</p>
-            <div class="timezone-selector">
-                <label for="timezoneSelect">Timezone:</label>
-                <select id="timezoneSelect" onchange="updateTimezone()">
-                    <option value="EST">Eastern (EST)</option>
-                    <option value="CST">Central (CST)</option>
-                    <option value="MST">Mountain (MST)</option>
-                    <option value="PST">Pacific (PST)</option>
-                </select>
+            <div class="header-controls">
+                <div class="timezone-selector">
+                    <label for="timezoneSelect">Timezone:</label>
+                    <select id="timezoneSelect" onchange="updateTimezone()">
+                        <option value="EST">Eastern (EST)</option>
+                        <option value="CST">Central (CST)</option>
+                        <option value="MST">Mountain (MST)</option>
+                        <option value="PST">Pacific (PST)</option>
+                    </select>
+                </div>
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+                    <span class="emoji">🌙</span>
+                    <span class="toggle-text">Dark Mode Off</span>
+                </button>
             </div>
         </header>
 
@@ -1500,6 +1505,19 @@
             const isDark = document.body.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDark);
             
+            // Update button text and emoji
+            const toggleButton = document.querySelector('.dark-mode-toggle');
+            const emoji = toggleButton.querySelector('.emoji');
+            const text = toggleButton.querySelector('.toggle-text');
+            
+            if (isDark) {
+                emoji.textContent = '☀️';
+                text.textContent = 'Dark Mode On';
+            } else {
+                emoji.textContent = '🌙';
+                text.textContent = 'Dark Mode Off';
+            }
+            
             // Track dark mode preference in Google Analytics
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'toggle_dark_mode', {
@@ -1511,6 +1529,12 @@
         // Load preferences on page load
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
+            // Update button on load
+            const toggleButton = document.querySelector('.dark-mode-toggle');
+            if (toggleButton) {
+                toggleButton.querySelector('.emoji').textContent = '☀️';
+                toggleButton.querySelector('.toggle-text').textContent = 'Dark Mode On';
+            }
         }
 
         const savedTimezone = localStorage.getItem('selectedTimezone');
