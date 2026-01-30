@@ -1172,9 +1172,17 @@
                             .indexOf(monthName);
                         
                         if (monthIndex !== -1) {
-                            // Determine year based on month
-                            let year = 2025;
-                            if (monthIndex === 0) year = 2026; // January
+                            // Determine year - we're in 2026 season now
+                            const currentDate = new Date();
+                            const currentYear = currentDate.getFullYear();
+                            const currentMonth = currentDate.getMonth();
+                            
+                            // If the game month is before current month, it's next year
+                            // Otherwise it's this year
+                            let year = currentYear;
+                            if (monthIndex < currentMonth) {
+                                year = currentYear + 1;
+                            }
                             
                             const testDate = new Date(year, monthIndex, dayNum);
                             const actualDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][testDate.getDay()];
@@ -1221,11 +1229,20 @@
                     const aDay = parseInt(aMonthDay[1]);
                     const bDay = parseInt(bMonthDay[1]);
                     
-                    let aYear = 2025;
-                    if (aMonth === 0) aYear = 2026; // January
+                    // Determine year dynamically based on current date
+                    const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear();
+                    const currentMonth = currentDate.getMonth();
                     
-                    let bYear = 2025;
-                    if (bMonth === 0) bYear = 2026; // January
+                    let aYear = currentYear;
+                    if (aMonth < currentMonth) {
+                        aYear = currentYear + 1;
+                    }
+                    
+                    let bYear = currentYear;
+                    if (bMonth < currentMonth) {
+                        bYear = currentYear + 1;
+                    }
                     
                     // Parse times
                     const aTimeMatch = a.time.match(/(\d+):(\d+)\s(AM|PM)/);
@@ -1436,11 +1453,20 @@
                     const aDay = parseInt(aMonthDay[1]);
                     const bDay = parseInt(bMonthDay[1]);
                     
-                    let aYear = 2025;
-                    if (aMonth === 0) aYear = 2026;
+                    // Determine year dynamically
+                    const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear();
+                    const currentMonth = currentDate.getMonth();
                     
-                    let bYear = 2025;
-                    if (bMonth === 0) bYear = 2026;
+                    let aYear = currentYear;
+                    if (aMonth < currentMonth) {
+                        aYear = currentYear + 1;
+                    }
+                    
+                    let bYear = currentYear;
+                    if (bMonth < currentMonth) {
+                        bYear = currentYear + 1;
+                    }
                     
                     if (aYear !== bYear) return aYear - bYear;
                     if (aMonth !== bMonth) return aMonth - bMonth;
