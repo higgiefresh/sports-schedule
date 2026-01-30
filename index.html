@@ -1109,21 +1109,10 @@
 
                 // Parse CSV data using improved parser
                 const rows = parseCSV(csvText);
-                
-                console.log('Parsed rows:', rows.length);
-                console.log('First few rows:', rows.slice(0, 3));
 
                 if (rows && rows.length > 1) {
                     // Skip header row, pass data rows
                     const dataRows = rows.slice(1).filter(row => row.length >= 5);
-                    console.log('Data rows after filtering:', dataRows.length);
-                    
-                    // Debug: Show first UFC event's Column F
-                    const ufcRow = dataRows.find(row => row[4] === 'UFC');
-                    if (ufcRow) {
-                        console.log('UFC Row Column F length:', ufcRow[5] ? ufcRow[5].length : 0);
-                        console.log('UFC Row Column F preview:', ufcRow[5] ? ufcRow[5].substring(0, 100) + '...' : 'empty');
-                    }
                     
                     parseGamesFromSheet(dataRows);
                     populateFilterDropdowns();
@@ -1154,9 +1143,6 @@
         function parseGamesFromSheet(values) {
             allGames = [];
             
-            console.log('=== PARSING STARTED ===');
-            console.log('Total rows to parse:', values.length);
-            
             // Note: values array no longer contains header row (already removed in loadScheduleData)
             for (let i = 0; i < values.length; i++) {  // Start at 0, not 1!
                 const row = values[i];
@@ -1175,13 +1161,12 @@
                             .indexOf(monthName);
                         
                         if (monthIndex !== -1) {
-                            // Determine year - we're in 2026 season now
+                            // Determine year dynamically based on current date
                             const currentDate = new Date();
                             const currentYear = currentDate.getFullYear();
                             const currentMonth = currentDate.getMonth();
                             
                             // If the game month is before current month, it's next year
-                            // Otherwise it's this year
                             let year = currentYear;
                             if (monthIndex < currentMonth) {
                                 year = currentYear + 1;
@@ -1202,22 +1187,13 @@
                         matchup: row[2].trim(),
                         network: row[3].trim(),
                         sport: row[4].trim(),
-                        bowlName: row[5] ? row[5].trim() : '',        // For NCAAF bowl names
-                        additionalInfo: row[5] ? row[5].trim() : ''    // For UFC fight cards, etc.
+                        bowlName: row[5] ? row[5].trim() : '',
+                        additionalInfo: row[5] ? row[5].trim() : ''
                     };
-                    
-                    // Log UFC events for debugging
-                    if (gameData.sport === 'UFC') {
-                        console.log('UFC event parsed:', gameData.matchup, 'additionalInfo length:', gameData.additionalInfo.length);
-                    }
                     
                     allGames.push(gameData);
                 }
             }
-            
-            console.log('Games after parsing:', allGames.length);
-            console.log('First game:', allGames[0]?.date);
-            console.log('Last game:', allGames[allGames.length - 1]?.date);
             
             // Sort games chronologically
             const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -1279,9 +1255,7 @@
                 }
             });
             
-            console.log('After sorting - first game:', allGames[0]?.date, 'last game:', allGames[allGames.length - 1]?.date);
-            
-            // Filter to keep only today and future dates (using EST as baseline)
+            // Filter to keep only today and future dates
             const nowUTC = new Date();
             const nowEST = new Date(nowUTC.getTime() + (EST_OFFSET_HOURS * 60 * 60 * 1000));
             const todayEST = new Date(Date.UTC(
@@ -1289,14 +1263,6 @@
                 nowEST.getUTCMonth(), 
                 nowEST.getUTCDate()
             ));
-            
-            console.log('=== DATE FILTERING ===');
-            console.log('Current UTC:', nowUTC.toISOString());
-            console.log('Current EST:', nowEST.toISOString());
-            console.log('Today EST (for comparison):', todayEST.toISOString());
-            console.log('Current month index:', nowEST.getUTCMonth());
-            
-            const beforeFilter = allGames.length;
             
             allGames = allGames.filter(game => {
                 try {
@@ -1316,24 +1282,12 @@
                     }
                     
                     const gameDate = new Date(Date.UTC(gameYear, gameMonth, gameDay));
-                    const passes = gameDate >= todayEST;
-                    
-                    // Log first few games
-                    if (beforeFilter <= 10) {
-                        console.log(`Game: ${game.date} -> Year: ${gameYear}, Month: ${gameMonth}, Day: ${gameDay}`);
-                        console.log(`  GameDate: ${gameDate.toISOString()}, Passes: ${passes}`);
-                    }
-                    
-                    return passes;
+                    return gameDate >= todayEST;
                 } catch (e) {
                     console.error('Filter error:', e);
                     return true;
                 }
             });
-            
-            console.log(`Games after date filter: ${allGames.length} (was ${beforeFilter})`);
-            console.log('Unique dates after filter:', [...new Set(allGames.map(g => g.date))]);
-            console.log('=== PARSING COMPLETE ===');
         }
 
         function populateFilterDropdowns() {
@@ -1424,10 +1378,6 @@
         }
 
         function displaySchedule() {
-            console.log('=== DISPLAY SCHEDULE CALLED ===');
-            console.log('Total games available:', allGames.length);
-            console.log('Current filters:', filters);
-            
             let filtered = allGames;
 
             // Apply search
@@ -1436,30 +1386,23 @@
                     g.matchup.toLowerCase().includes(filters.search) ||
                     g.sport.toLowerCase().includes(filters.search)
                 );
-                console.log('After search filter:', filtered.length);
             }
 
             // Apply network filter
             if (filters.network) {
                 filtered = filtered.filter(g => g.network === filters.network);
-                console.log('After network filter:', filtered.length);
             }
 
             // Apply sport filter
             if (filters.sport) {
                 const sports = filters.sport.split(',');
                 filtered = filtered.filter(g => sports.includes(g.sport));
-                console.log('After sport filter:', filtered.length);
             }
 
             // Apply day filter
             if (filters.day) {
                 filtered = filtered.filter(g => g.date === filters.day);
-                console.log('After day filter:', filtered.length);
             }
-            
-            console.log('Games to display:', filtered.length);
-            console.log('Unique dates:', [...new Set(filtered.map(g => g.date))]);
 
             // Group by date
             const grouped = {};
@@ -1555,7 +1498,6 @@
             
             // Add click handlers to open detail view
             const gameElements = document.querySelectorAll('.game');
-            console.log(`Attaching click handlers to ${gameElements.length} game cards`);
             
             gameElements.forEach((gameEl, index) => {
                 // Find the corresponding game data
@@ -1563,7 +1505,6 @@
                 for (const date of sorted) {
                     for (const game of grouped[date]) {
                         if (gameIndex === index) {
-                            console.log(`Card ${index}: ${game.matchup}, additionalInfo:`, game.additionalInfo ? 'YES' : 'NO');
                             gameEl.addEventListener('click', () => showDetailView(game));
                             return;
                         }
@@ -1638,8 +1579,6 @@
 
         // Detail View Functions
         function showDetailView(game) {
-            console.log('Opening detail view for:', game);
-            
             // Track game detail views in Google Analytics
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'view_game_details', {
@@ -1659,8 +1598,6 @@
             // Show additional info (fight card, bowl info, etc.)
             const additionalInfo = game.additionalInfo || game.bowlName || '';
             const detailInfo = document.getElementById('detailInfo');
-            
-            console.log('Additional info:', additionalInfo);
             
             if (additionalInfo && additionalInfo.trim() !== '') {
                 // Convert URLs to clickable links
