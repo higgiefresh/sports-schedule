@@ -1154,6 +1154,9 @@
         function parseGamesFromSheet(values) {
             allGames = [];
             
+            console.log('=== PARSING STARTED ===');
+            console.log('Total rows to parse:', values.length);
+            
             // Note: values array no longer contains header row (already removed in loadScheduleData)
             for (let i = 0; i < values.length; i++) {  // Start at 0, not 1!
                 const row = values[i];
@@ -1211,6 +1214,10 @@
                     allGames.push(gameData);
                 }
             }
+            
+            console.log('Games after parsing:', allGames.length);
+            console.log('First game:', allGames[0]?.date);
+            console.log('Last game:', allGames[allGames.length - 1]?.date);
             
             // Sort games chronologically
             const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -1272,6 +1279,8 @@
                 }
             });
             
+            console.log('After sorting - first game:', allGames[0]?.date, 'last game:', allGames[allGames.length - 1]?.date);
+            
             // Filter to keep only today and future dates (using EST as baseline)
             const nowUTC = new Date();
             const nowEST = new Date(nowUTC.getTime() + (EST_OFFSET_HOURS * 60 * 60 * 1000));
@@ -1281,6 +1290,14 @@
                 nowEST.getUTCDate()
             ));
             
+            console.log('=== DATE FILTERING ===');
+            console.log('Current UTC:', nowUTC.toISOString());
+            console.log('Current EST:', nowEST.toISOString());
+            console.log('Today EST (for comparison):', todayEST.toISOString());
+            console.log('Current month index:', nowEST.getUTCMonth());
+            
+            const beforeFilter = allGames.length;
+            
             allGames = allGames.filter(game => {
                 try {
                     const gameParts = game.date.split(', ');
@@ -1288,16 +1305,35 @@
                     const gameMonth = monthOrder.indexOf(gameMonthDay[0]);
                     const gameDay = parseInt(gameMonthDay[1]);
                     
-                    let gameYear = 2025;
-                    if (gameMonth === 0) gameYear = 2026; // January
+                    // Use dynamic year detection
+                    const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear();
+                    const currentMonth = currentDate.getMonth();
+                    
+                    let gameYear = currentYear;
+                    if (gameMonth < currentMonth) {
+                        gameYear = currentYear + 1;
+                    }
                     
                     const gameDate = new Date(Date.UTC(gameYear, gameMonth, gameDay));
-                    return gameDate >= todayEST;
+                    const passes = gameDate >= todayEST;
+                    
+                    // Log first few games
+                    if (beforeFilter <= 10) {
+                        console.log(`Game: ${game.date} -> Year: ${gameYear}, Month: ${gameMonth}, Day: ${gameDay}`);
+                        console.log(`  GameDate: ${gameDate.toISOString()}, Passes: ${passes}`);
+                    }
+                    
+                    return passes;
                 } catch (e) {
                     console.error('Filter error:', e);
                     return true;
                 }
             });
+            
+            console.log(`Games after date filter: ${allGames.length} (was ${beforeFilter})`);
+            console.log('Unique dates after filter:', [...new Set(allGames.map(g => g.date))]);
+            console.log('=== PARSING COMPLETE ===');
         }
 
         function populateFilterDropdowns() {
@@ -1388,6 +1424,10 @@
         }
 
         function displaySchedule() {
+            console.log('=== DISPLAY SCHEDULE CALLED ===');
+            console.log('Total games available:', allGames.length);
+            console.log('Current filters:', filters);
+            
             let filtered = allGames;
 
             // Apply search
@@ -1396,23 +1436,30 @@
                     g.matchup.toLowerCase().includes(filters.search) ||
                     g.sport.toLowerCase().includes(filters.search)
                 );
+                console.log('After search filter:', filtered.length);
             }
 
             // Apply network filter
             if (filters.network) {
                 filtered = filtered.filter(g => g.network === filters.network);
+                console.log('After network filter:', filtered.length);
             }
 
             // Apply sport filter
             if (filters.sport) {
                 const sports = filters.sport.split(',');
                 filtered = filtered.filter(g => sports.includes(g.sport));
+                console.log('After sport filter:', filtered.length);
             }
 
             // Apply day filter
             if (filters.day) {
                 filtered = filtered.filter(g => g.date === filters.day);
+                console.log('After day filter:', filtered.length);
             }
+            
+            console.log('Games to display:', filtered.length);
+            console.log('Unique dates:', [...new Set(filtered.map(g => g.date))]);
 
             // Group by date
             const grouped = {};
