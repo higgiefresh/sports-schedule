@@ -14,8 +14,8 @@
 <!-- End Google Analytics -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Your complete TV schedule for NFL, NBA, NHL, UFC, and College Football games. Find what sports are on TV today with times and networks.">
-    <meta name="keywords" content="sports schedule, NFL, NBA, NHL, UFC, NCAAF, TV schedule, sports on TV, game times">
+    <meta name="description" content="Your complete TV schedule for NFL, NBA, NHL, UFC, NASCAR, and College Football games. Find what sports are on TV today with times and networks.">
+    <meta name="keywords" content="sports schedule, NFL, NBA, NHL, UFC, NASCAR, NCAAF, TV schedule, sports on TV, game times, racing">
     <meta name="theme-color" content="#8b5cf6">
     <title>Sports On TV - Your Complete Sports Schedule</title>
     
@@ -635,6 +635,77 @@
             border-color: #ff6b6b;
         }
 
+        /* NASCAR Network Channel Styles */
+        .channel-usanetwork { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); }
+        .channel-fs1 { background: linear-gradient(135deg, #FFB81C 0%, #FFC72C 100%); }
+        .channel-fs2 { background: linear-gradient(135deg, #FFB81C 0%, #FFC72C 100%); }
+
+        /* Error Boundary Styles */
+        .error-boundary {
+            background: #fee;
+            border: 2px solid #fcc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        body.dark-mode .error-boundary {
+            background: #3a1a1a;
+            border-color: #6a2a2a;
+        }
+
+        .error-boundary h3 {
+            color: #c41e3a;
+            margin-bottom: 10px;
+        }
+
+        body.dark-mode .error-boundary h3 {
+            color: #ff6b6b;
+        }
+
+        .error-boundary p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        body.dark-mode .error-boundary p {
+            color: #aaa;
+        }
+
+        .error-boundary button {
+            padding: 12px 24px;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .error-boundary button:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .error-details {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85em;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        body.dark-mode .error-details {
+            background: #2a2a3a;
+            color: #ccc;
+        }
+
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -857,6 +928,9 @@
                         <option value="NFL Network">NFL Network</option>
                         <option value="NHL Network">NHL Network</option>
                         <option value="The Spot">The Spot</option>
+                        <option value="FS1">FS1</option>
+                        <option value="FS2">FS2</option>
+                        <option value="USA Network">USA Network</option>
                     </select>
                 </div>
 
@@ -922,8 +996,96 @@
             'NFL': '🏈',
             'NBA': '🏀',
             'NHL': '🏒',
-            'UFC': '🥊'
+            'UFC': '🥊',
+            'NASCAR': '🏁'
         };
+
+        // ========================================
+        // ERROR BOUNDARY SYSTEM
+        // ========================================
+
+        let criticalErrorOccurred = false;
+
+        window.addEventListener('error', function(event) {
+            console.error('Global error caught:', event.error);
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'exception', {
+                    'description': event.error?.message || 'Unknown error',
+                    'fatal': false,
+                    'error_type': 'javascript_error'
+                });
+            }
+            
+            if (event.error?.message?.includes('fetch') || 
+                event.error?.message?.includes('network')) {
+                handleCriticalError(event.error, 'Network Error');
+            }
+            
+            return true;
+        });
+
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'exception', {
+                    'description': event.reason?.message || 'Promise rejection',
+                    'fatal': false,
+                    'error_type': 'promise_rejection'
+                });
+            }
+            
+            if (event.reason?.message?.includes('fetch')) {
+                handleCriticalError(event.reason, 'Network Error');
+            }
+            
+            event.preventDefault();
+        });
+
+        function handleCriticalError(error, errorType = 'Error') {
+            if (criticalErrorOccurred) return;
+            criticalErrorOccurred = true;
+            
+            const scheduleDiv = document.getElementById('schedule');
+            scheduleDiv.innerHTML = `
+                <div class="error-boundary" role="alert">
+                    <h3>⚠️ ${errorType}</h3>
+                    <p>We're having trouble loading the sports schedule. This usually resolves itself quickly.</p>
+                    <button onclick="recoverFromError()">
+                        🔄 Try Again
+                    </button>
+                </div>
+            `;
+        }
+
+        function recoverFromError() {
+            criticalErrorOccurred = false;
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'error_recovery_attempt');
+            }
+            
+            document.getElementById('schedule').innerHTML = '<div class="loading">Reloading schedule...</div>';
+            setTimeout(() => loadScheduleData(0), 500);
+        }
+
+        let isOnline = navigator.onLine;
+
+        window.addEventListener('online', function() {
+            isOnline = true;
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'connection_restored');
+            }
+            loadScheduleData(0);
+        });
+
+        window.addEventListener('offline', function() {
+            isOnline = false;
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'connection_lost');
+            }
+        });
 
         // Timezone offset mapping (hours from EST)
         const timezoneOffsets = {
@@ -1070,7 +1232,8 @@
                 'NFL': 225,
                 'NBA': 150,
                 'NHL': 150,
-                'UFC': 180
+                'UFC': 180,
+                'NASCAR': 240
             };
 
             const duration = gameDurations[sport] || 180;
@@ -1403,7 +1566,9 @@
                 'tnt': 'channel-tnt', 'cwnetwork': 'channel-cwnetwork',
                 'nflnet': 'channel-nflnet', 'nflnetwork': 'channel-nflnet',
                 'espnplus': 'channel-espnplus', 'nhln': 'channel-nhln',
-                'thespot': 'channel-thespot', 'wxpx': 'channel-wxpx'
+                'thespot': 'channel-thespot', 'wxpx': 'channel-wxpx',
+                'usanetwork': 'channel-usanetwork', 'usa': 'channel-usanetwork',
+                'fs1': 'channel-fs1', 'fs2': 'channel-fs2'
             };
             return classMap[normalized] || 'channel-espn';
         }
