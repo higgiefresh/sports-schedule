@@ -15,12 +15,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Your complete TV schedule for NFL, NBA, NHL, UFC, and College Football games. Find what sports are on TV today with times and networks.">
+    <meta name="keywords" content="sports schedule, NFL, NBA, NHL, UFC, NCAAF, TV schedule, sports on TV, game times">
+    <meta name="theme-color" content="#8b5cf6">
     <title>Sports On TV - Your Complete Sports Schedule</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlNwb3J0cyBPbiBUViIsCiAgInNob3J0X25hbWUiOiAiU3BvcnRzIFRWIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNlNmU4ZWMiLAogICJ0aGVtZV9jb2xvciI6ICIjOGI1Y2Y2IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTAwIDEwMCc+PHJlY3QgZmlsbD0nJThiNWNmNicgd2lkdGg9JzEwMCcgaGVpZ2h0PScxMDAnLz48dGV4dCB4PSc1MCcgeT0nNzAnIGZvbnQtc2l6ZT0nNzAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnPvCfj4Y8L3RleHQ+PC9zdmc+IiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
     
     <!-- Preconnect for faster loading -->
     <link rel="preconnect" href="https://docs.google.com">
     <link rel="dns-prefetch" href="https://docs.google.com">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238b5cf6' width='100' height='100'/><text x='50' y='70' font-size='70' text-anchor='middle' dominant-baseline='middle'>ðŸ†</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238b5cf6' width='100' height='100'/><text x='50' y='70' font-size='70' text-anchor='middle' dominant-baseline='middle'>🏆</text></svg>">
     <style>
         * {
             margin: 0;
@@ -452,6 +457,7 @@
             box-shadow: 
                 3px 3px 8px #bec0c6,
                 -3px -3px 8px #ffffff;
+            cursor: pointer;
         }
 
         body.dark-mode .game {
@@ -613,6 +619,22 @@
             color: #999;
         }
 
+        .error-message {
+            text-align: center;
+            padding: 40px 30px;
+            font-size: 1em;
+            color: #c41e3a;
+            background: #fee;
+            border-radius: 15px;
+            border: 2px solid #c41e3a;
+        }
+
+        body.dark-mode .error-message {
+            background: #3a1f1f;
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -755,56 +777,70 @@
             }
         }
 
-        /* Make game cards clickable */
-        .game {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .game:hover {
-            transform: translateY(-3px);
+        /* Accessibility improvements */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>ðŸ† Sports On TV ðŸ†</h1>
-            <p class="current-date" id="currentDate">Loading...</p>
+            <h1>🏆 Sports On TV 🏆</h1>
+            <p class="current-date" id="currentDate" role="status" aria-live="polite">Loading...</p>
             <div class="header-controls">
                 <div class="timezone-selector">
                     <label for="timezoneSelect">Timezone:</label>
-                    <select id="timezoneSelect" onchange="updateTimezone()">
+                    <select id="timezoneSelect" onchange="updateTimezone()" aria-label="Select timezone">
                         <option value="EST">Eastern (EST)</option>
                         <option value="CST">Central (CST)</option>
                         <option value="MST">Mountain (MST)</option>
                         <option value="PST">Pacific (PST)</option>
                     </select>
                 </div>
-                <button class="dark-mode-toggle" onclick="toggleDarkMode()">
-                    <span class="emoji">ðŸŒ™</span>
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
+                    <span class="emoji" aria-hidden="true">🌙</span>
                     <span class="toggle-text">Dark Mode Off</span>
                 </button>
             </div>
         </header>
 
         <div class="main-content">
-            <aside class="filters-section">
+            <aside class="filters-section" role="complementary" aria-label="Filters">
                 <div class="filter-group">
                     <div class="filter-label">Search</div>
-                    <input type="text" class="search-box" id="searchBox" placeholder="Find teams..." onkeyup="applyFilters()">
+                    <input type="text" 
+                           class="search-box" 
+                           id="searchBox" 
+                           placeholder="Find teams..." 
+                           onkeyup="applyFilters()"
+                           aria-label="Search for teams">
                 </div>
 
                 <div class="filter-group">
                     <div class="filter-label">Day</div>
-                    <select class="filter-dropdown" id="dayDropdown" onchange="applyFilters()">
+                    <select class="filter-dropdown" 
+                            id="dayDropdown" 
+                            onchange="applyFilters()"
+                            aria-label="Filter by day">
                         <option value="">All Days</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <div class="filter-label">Network</div>
-                    <select class="filter-dropdown" id="networkDropdown" onchange="applyFilters()">
+                    <select class="filter-dropdown" 
+                            id="networkDropdown" 
+                            onchange="applyFilters()"
+                            aria-label="Filter by network">
                         <option value="">All Networks</option>
                         <option value="ESPN">ESPN</option>
                         <option value="ESPN2">ESPN2</option>
@@ -830,23 +866,30 @@
 
                 <div class="filter-group">
                     <div class="filter-label">Sport</div>
-                    <div class="sport-buttons" id="sportFilters"></div>
+                    <div class="sport-buttons" id="sportFilters" role="group" aria-label="Filter by sport"></div>
                 </div>
 
-                <button class="clear-filters" onclick="clearAllFilters()">Clear Filters</button>
+                <button class="clear-filters" onclick="clearAllFilters()" aria-label="Clear all filters">Clear Filters</button>
             </aside>
 
-            <main class="schedule" id="schedule">
+            <main class="schedule" id="schedule" role="main" aria-live="polite" aria-atomic="false">
                 <div class="loading">Loading schedule...</div>
             </main>
         </div>
     </div>
 
     <!-- Detail View Modal -->
-    <div id="detailView" class="detail-view" style="display: none;">
+    <div id="detailView" 
+         class="detail-view" 
+         style="display: none;" 
+         role="dialog" 
+         aria-modal="true" 
+         aria-labelledby="detailTitle">
         <div class="detail-content">
-            <button class="detail-back-btn" onclick="closeDetailView()">
-                â† Back to Schedule
+            <button class="detail-back-btn" 
+                    onclick="closeDetailView()"
+                    aria-label="Back to schedule">
+                ← Back to Schedule
             </button>
             
             <div class="detail-header">
@@ -878,11 +921,13 @@
 
         // Sport emoji mapping
         const sportEmojis = {
-            'NCAAF': 'ðŸ“¢',
-            'NFL': 'ðŸˆ',
-            'NBA': 'ðŸ€',
-            'NHL': 'ðŸ’',
-            'UFC': 'ðŸ¥Š'
+            'Olympics': '🏅',
+            'NCAAF': '🏈',
+            'NFL': '🏈',
+            'NBA': '🏀',
+            'NHL': '🏒',
+            'UFC': '🥊',
+            'NASCAR': '🏁'
         };
 
         // Timezone offset mapping (hours from EST)
@@ -899,7 +944,8 @@
         // GOOGLE SHEET CONFIGURATION (Public Read-Only)
         const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
         const SHEET_NAME = 'schedule_template';
-        // No API key needed - using public Google Sheets endpoint!
+        const MAX_RETRIES = 3;
+        const RETRY_DELAY = 2000; // 2 seconds
 
         function updateTimezone() {
             currentTimezone = document.getElementById('timezoneSelect').value;
@@ -940,13 +986,13 @@
                 
                 return `${displayHour}:${minutes} ${newPeriod} ${currentTimezone}`;
             } catch (e) {
+                console.error('Time conversion error:', e);
                 return timeStr;
             }
         }
 
         /**
          * Parse game date and time from EST format into a Date object
-         * The Date object represents the game time in EST regardless of user's local timezone
          */
         function parseGameDate(dateStr, timeStr) {
             try {
@@ -955,13 +1001,11 @@
                 
                 let month, day, year;
                 
-                // Get current time in EST for year determination
                 const nowUTC = new Date();
                 const nowEST = new Date(nowUTC.getTime() + (EST_OFFSET_HOURS * 60 * 60 * 1000));
                 const currentMonth = nowEST.getUTCMonth();
                 const currentYear = nowEST.getUTCFullYear();
                 
-                // Parse time
                 const timeParts = timeStr.match(/(\d+):(\d+)\s+(AM|PM)/);
                 if (!timeParts) {
                     console.error('Invalid time format:', timeStr);
@@ -972,11 +1016,9 @@
                 const minutes = parseInt(timeParts[2]);
                 const ampm = timeParts[3];
                 
-                // Convert to 24-hour format
                 if (ampm === 'PM' && hours !== 12) hours += 12;
                 if (ampm === 'AM' && hours === 12) hours = 0;
                 
-                // Parse date - format: "Wednesday, December 31"
                 if (dateStr.includes(',')) {
                     const parts = dateStr.split(', ');
                     if (parts.length >= 2) {
@@ -984,24 +1026,22 @@
                         month = monthsOfYear.indexOf(monthDay[0]);
                         day = parseInt(monthDay[1]);
                         
-                        // Determine year based on current month in EST
-                        if (currentMonth === 11) {  // We're in December
-                            if (month === 11) {     // Game is in December
+                        if (currentMonth === 11) {
+                            if (month === 11) {
                                 year = currentYear;
-                            } else if (month === 0) {  // Game is in January
+                            } else if (month === 0) {
                                 year = currentYear + 1;
                             } else {
                                 year = currentYear;
                             }
-                        } else if (currentMonth === 0) {  // We're in January
-                            if (month === 11) {  // Game is in December (last year)
+                        } else if (currentMonth === 0) {
+                            if (month === 11) {
                                 year = currentYear - 1;
                             } else {
                                 year = currentYear;
                             }
                         } else {
-                            // For other months
-                            if (month === 11) {  // December games
+                            if (month === 11) {
                                 year = currentYear;
                             } else if (month >= currentMonth) {
                                 year = currentYear;
@@ -1011,16 +1051,12 @@
                         }
                     }
                 } else {
-                    // Handle abbreviated format like "SUN 28"
                     day = parseInt(dateStr.split(' ')[1]);
                     month = currentMonth;
                     year = currentYear;
                 }
                 
-                // Create UTC timestamp for EST time
-                // EST is UTC-5, so we add 5 hours to get the equivalent UTC time
                 const utcTime = Date.UTC(year, month, day, hours + 5, minutes);
-                
                 return new Date(utcTime);
             } catch (e) {
                 console.error('parseGameDate error:', e, 'dateStr:', dateStr, 'timeStr:', timeStr);
@@ -1029,37 +1065,36 @@
         }
 
         /**
-         * Check if game is currently live based on sport duration
-         * Now properly handles EST game times vs current UTC time
+         * Check if game is currently live
          */
         function isGameLive(gameDate, sport) {
             const now = new Date();
             
-            // Game durations in minutes (including halftime/intermission)
             const gameDurations = {
-                'NCAAF': 240,      // ~4 hours
-                'NFL': 225,        // ~3.75 hours
-                'NBA': 150,        // ~2.5 hours
-                'NHL': 150         // ~2.5 hours
+                'NCAAF': 240,
+                'NFL': 225,
+                'NBA': 150,
+                'NHL': 150,
+                'UFC': 180
             };
 
-            const duration = gameDurations[sport] || 180; // default 3 hours
+            const duration = gameDurations[sport] || 180;
             const gameEndTime = new Date(gameDate.getTime() + duration * 60000);
             
-            const isLive = now >= gameDate && now <= gameEndTime;
-            
-            return isLive;
+            return now >= gameDate && now <= gameEndTime;
         }
 
-        async function loadScheduleData() {
+        async function loadScheduleData(retryCount = 0) {
             try {
-                // Use public Google Sheets CSV export (no authentication needed!)
                 const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
                 const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const csvText = await response.text();
 
-                // Robust CSV parser that properly handles quoted fields
-                // IMPROVED CSV PARSER - Handles multi-line cells correctly!
                 function parseCSV(csvText) {
                     const rows = [];
                     let currentRow = [];
@@ -1072,21 +1107,17 @@
                         
                         if (char === '"') {
                             if (inQuotes && nextChar === '"') {
-                                // Escaped quote inside quoted field
                                 currentField += '"';
-                                i++; // Skip the next quote
+                                i++;
                             } else {
-                                // Toggle quote mode
                                 inQuotes = !inQuotes;
                             }
                         } else if (char === ',' && !inQuotes) {
-                            // Field separator (not inside quotes)
                             currentRow.push(currentField);
                             currentField = '';
                         } else if ((char === '\n' || char === '\r') && !inQuotes) {
-                            // End of row (not inside quotes)
                             if (char === '\r' && nextChar === '\n') {
-                                i++; // Skip \n in \r\n
+                                i++;
                             }
                             currentRow.push(currentField);
                             if (currentRow.some(field => field.trim().length > 0)) {
@@ -1095,12 +1126,10 @@
                             currentRow = [];
                             currentField = '';
                         } else {
-                            // Regular character (including newlines inside quotes!)
                             currentField += char;
                         }
                     }
                     
-                    // Add last field and row if not empty
                     if (currentField.length > 0 || currentRow.length > 0) {
                         currentRow.push(currentField);
                         if (currentRow.some(field => field.trim().length > 0)) {
@@ -1111,49 +1140,59 @@
                     return rows;
                 }
 
-                // Parse CSV data using improved parser
                 const rows = parseCSV(csvText);
 
                 if (rows && rows.length > 1) {
-                    // Skip header row, pass data rows
                     const dataRows = rows.slice(1).filter(row => row.length >= 5);
                     
                     parseGamesFromSheet(dataRows);
                     populateFilterDropdowns();
                     displaySchedule();
                 } else {
-                    throw new Error('No data returned');
+                    throw new Error('No data returned from spreadsheet');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error loading schedule (attempt ' + (retryCount + 1) + '):', error);
                 
-                // Track errors in Google Analytics
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'load_error', {
-                        'error_message': error.message,
-                        'error_type': error.name
-                    });
+                if (retryCount < MAX_RETRIES) {
+                    document.getElementById('schedule').innerHTML = `
+                        <div class="loading">
+                            Retrying... (Attempt ${retryCount + 1} of ${MAX_RETRIES})
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        loadScheduleData(retryCount + 1);
+                    }, RETRY_DELAY * (retryCount + 1));
+                } else {
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'load_error', {
+                            'error_message': error.message,
+                            'error_type': error.name
+                        });
+                    }
+                    
+                    document.getElementById('schedule').innerHTML = `
+                        <div class="error-message" role="alert">
+                            <strong>Error loading schedule</strong><br>
+                            ${error.message}<br><br>
+                            <button onclick="loadScheduleData(0)" style="padding: 10px 20px; background: #8b5cf6; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                Try Again
+                            </button>
+                        </div>
+                    `;
                 }
-                
-                document.getElementById('schedule').innerHTML = `
-                    <div class="loading" style="color: #c41e3a;">
-                        <strong>Error loading schedule</strong><br>
-                        ${error.message}
-                    </div>
-                `;
             }
         }
 
         function parseGamesFromSheet(values) {
             allGames = [];
             
-            // Note: values array no longer contains header row (already removed in loadScheduleData)
-            for (let i = 0; i < values.length; i++) {  // Start at 0, not 1!
+            for (let i = 0; i < values.length; i++) {
                 const row = values[i];
                 if (row.length >= 5) {
                     let dateStr = row[0].trim();
                     
-                    // Fix date if the day name doesn't match the actual day
                     const dateMatch = dateStr.match(/^(\w+),\s+(\w+)\s+(\d+)$/);
                     if (dateMatch) {
                         const dayName = dateMatch[1];
@@ -1165,12 +1204,10 @@
                             .indexOf(monthName);
                         
                         if (monthIndex !== -1) {
-                            // Determine year dynamically based on current date
                             const currentDate = new Date();
                             const currentYear = currentDate.getFullYear();
                             const currentMonth = currentDate.getMonth();
                             
-                            // If the game month is before current month, it's next year
                             let year = currentYear;
                             if (monthIndex < currentMonth) {
                                 year = currentYear + 1;
@@ -1199,7 +1236,6 @@
                 }
             }
             
-            // Sort games chronologically
             const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
             
@@ -1216,7 +1252,6 @@
                     const aDay = parseInt(aMonthDay[1]);
                     const bDay = parseInt(bMonthDay[1]);
                     
-                    // Determine year dynamically based on current date
                     const currentDate = new Date();
                     const currentYear = currentDate.getFullYear();
                     const currentMonth = currentDate.getMonth();
@@ -1231,7 +1266,6 @@
                         bYear = currentYear + 1;
                     }
                     
-                    // Parse times
                     const aTimeMatch = a.time.match(/(\d+):(\d+)\s(AM|PM)/);
                     const bTimeMatch = b.time.match(/(\d+):(\d+)\s(AM|PM)/);
                     
@@ -1247,7 +1281,6 @@
                     if (bAmpm === 'PM' && bHours !== 12) bHours += 12;
                     if (bAmpm === 'AM' && bHours === 12) bHours = 0;
                     
-                    // Compare: year -> month -> day -> hours -> minutes
                     if (aYear !== bYear) return aYear - bYear;
                     if (aMonth !== bMonth) return aMonth - bMonth;
                     if (aDay !== bDay) return aDay - bDay;
@@ -1259,7 +1292,6 @@
                 }
             });
             
-            // Filter to keep only today and future dates
             const nowUTC = new Date();
             const nowEST = new Date(nowUTC.getTime() + (EST_OFFSET_HOURS * 60 * 60 * 1000));
             const todayEST = new Date(Date.UTC(
@@ -1275,7 +1307,6 @@
                     const gameMonth = monthOrder.indexOf(gameMonthDay[0]);
                     const gameDay = parseInt(gameMonthDay[1]);
                     
-                    // Use dynamic year detection
                     const currentDate = new Date();
                     const currentYear = currentDate.getFullYear();
                     const currentMonth = currentDate.getMonth();
@@ -1298,14 +1329,12 @@
             const sports = [...new Set(allGames.map(g => g.sport))].sort();
             const days = [...new Set(allGames.map(g => g.date))];
 
-            // Populate sport buttons with emojis
             const sportDiv = document.getElementById('sportFilters');
             sportDiv.innerHTML = sports.map(sport => {
-                const emoji = sportEmojis[sport] || 'ðŸŽ®';
-                return `<button class="filter-btn" onclick="toggleSportFilter('${sport}')">${emoji} ${sport}</button>`;
+                const emoji = sportEmojis[sport] || '🎮';
+                return `<button class="filter-btn" onclick="toggleSportFilter('${sport}')" aria-label="Filter ${sport}">${emoji} ${sport}</button>`;
             }).join('');
 
-            // Populate day dropdown
             const dayDropdown = document.getElementById('dayDropdown');
             dayDropdown.innerHTML = '<option value="">All Days</option>' + 
                 days.map(day => `<option value="${day}">${day}</option>`).join('');
@@ -1314,17 +1343,18 @@
         function toggleSportFilter(sport) {
             const btn = event.target.closest('.filter-btn');
             
-            // Remove active class from all sport buttons
             document.querySelectorAll('#sportFilters .filter-btn').forEach(b => {
                 b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
             });
             
-            // Add active class to clicked button (unless it's already active, then deselect)
             if (btn.classList.contains('active')) {
                 btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
                 filters.sport = '';
             } else {
                 btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
                 const sportName = btn.textContent.trim().split(' ').slice(1).join(' ');
                 filters.sport = sportName;
             }
@@ -1337,7 +1367,6 @@
             filters.network = document.getElementById('networkDropdown').value;
             filters.day = document.getElementById('dayDropdown').value;
             
-            // Track filter usage in Google Analytics
             if (typeof gtag !== 'undefined') {
                 const activeFilters = [];
                 if (filters.search) activeFilters.push('search');
@@ -1361,7 +1390,10 @@
             document.getElementById('searchBox').value = '';
             document.getElementById('networkDropdown').value = '';
             document.getElementById('dayDropdown').value = '';
-            document.querySelectorAll('.filter-btn.active').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.filter-btn.active').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            });
             filters = { search: '', network: '', sport: '', day: '' };
             displaySchedule();
         }
@@ -1384,7 +1416,6 @@
         function displaySchedule() {
             let filtered = allGames;
 
-            // Apply search
             if (filters.search) {
                 filtered = filtered.filter(g => 
                     g.matchup.toLowerCase().includes(filters.search) ||
@@ -1392,30 +1423,25 @@
                 );
             }
 
-            // Apply network filter
             if (filters.network) {
                 filtered = filtered.filter(g => g.network === filters.network);
             }
 
-            // Apply sport filter
             if (filters.sport) {
                 const sports = filters.sport.split(',');
                 filtered = filtered.filter(g => sports.includes(g.sport));
             }
 
-            // Apply day filter
             if (filters.day) {
                 filtered = filtered.filter(g => g.date === filters.day);
             }
 
-            // Group by date
             const grouped = {};
             filtered.forEach(game => {
                 if (!grouped[game.date]) grouped[game.date] = [];
                 grouped[game.date].push(game);
             });
 
-            // Sort games within each day by start time
             Object.keys(grouped).forEach(date => {
                 grouped[date].sort((a, b) => {
                     const timeToMinutes = (timeStr) => {
@@ -1430,7 +1456,6 @@
                 });
             });
 
-            // Get dates in chronological order
             const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
             
@@ -1447,7 +1472,6 @@
                     const aDay = parseInt(aMonthDay[1]);
                     const bDay = parseInt(bMonthDay[1]);
                     
-                    // Determine year dynamically
                     const currentDate = new Date();
                     const currentYear = currentDate.getFullYear();
                     const currentMonth = currentDate.getMonth();
@@ -1473,18 +1497,18 @@
             let html = '';
 
             if (sorted.length === 0) {
-                html = '<div class="no-results">No upcoming games. Check back soon!</div>';
+                html = '<div class="no-results" role="status">No upcoming games match your filters. Try adjusting your search!</div>';
             } else {
                 sorted.forEach(date => {
                     html += `<div class="date-section"><div class="day-header">${date}</div><div class="games-container">`;
                     grouped[date].forEach(game => {
-                        const emoji = sportEmojis[game.sport] || 'ðŸŽ®';
+                        const emoji = sportEmojis[game.sport] || '🎮';
                         const convertedTime = convertTime(game.time);
                         const gameDate = parseGameDate(game.date, game.time);
                         const isLive = isGameLive(gameDate, game.sport);
-                        const liveBadge = isLive ? '<span class="live-badge">ðŸ”´ LIVE</span>' : '';
+                        const liveBadge = isLive ? '<span class="live-badge" role="status">🔴 LIVE</span>' : '';
                         html += `
-                            <div class="game">
+                            <div class="game" role="article" aria-label="${game.matchup}">
                                 <div class="game-info">
                                     <div class="game-league">${emoji} ${game.sport.toUpperCase()}</div>
                                     <div class="game-matchup">${game.matchup}${liveBadge}</div>
@@ -1500,16 +1524,21 @@
 
             document.getElementById('schedule').innerHTML = html;
             
-            // Add click handlers to open detail view
             const gameElements = document.querySelectorAll('.game');
             
             gameElements.forEach((gameEl, index) => {
-                // Find the corresponding game data
                 let gameIndex = 0;
                 for (const date of sorted) {
                     for (const game of grouped[date]) {
                         if (gameIndex === index) {
                             gameEl.addEventListener('click', () => showDetailView(game));
+                            gameEl.addEventListener('keypress', (e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    showDetailView(game);
+                                }
+                            });
+                            gameEl.setAttribute('tabindex', '0');
                             return;
                         }
                         gameIndex++;
@@ -1523,20 +1552,20 @@
             const isDark = document.body.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDark);
             
-            // Update button text and emoji
             const toggleButton = document.querySelector('.dark-mode-toggle');
             const emoji = toggleButton.querySelector('.emoji');
             const text = toggleButton.querySelector('.toggle-text');
             
             if (isDark) {
-                emoji.textContent = 'â˜€ï¸';
+                emoji.textContent = '☀️';
                 text.textContent = 'Dark Mode On';
+                toggleButton.setAttribute('aria-label', 'Switch to light mode');
             } else {
-                emoji.textContent = 'ðŸŒ™';
+                emoji.textContent = '🌙';
                 text.textContent = 'Dark Mode Off';
+                toggleButton.setAttribute('aria-label', 'Switch to dark mode');
             }
             
-            // Track dark mode preference in Google Analytics
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'toggle_dark_mode', {
                     'enabled': isDark
@@ -1544,14 +1573,13 @@
             }
         }
 
-        // Load preferences on page load
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
-            // Update button on load
             const toggleButton = document.querySelector('.dark-mode-toggle');
             if (toggleButton) {
-                toggleButton.querySelector('.emoji').textContent = 'â˜€ï¸';
+                toggleButton.querySelector('.emoji').textContent = '☀️';
                 toggleButton.querySelector('.toggle-text').textContent = 'Dark Mode On';
+                toggleButton.setAttribute('aria-label', 'Switch to light mode');
             }
         }
 
@@ -1561,10 +1589,9 @@
             document.getElementById('timezoneSelect').value = savedTimezone;
         }
 
-        window.addEventListener('load', loadScheduleData);
-        setInterval(loadScheduleData, 300000);
+        window.addEventListener('load', () => loadScheduleData(0));
+        setInterval(() => loadScheduleData(0), 300000); // Refresh every 5 minutes
         
-        // Display current date on load
         function displayCurrentDate() {
             const today = new Date();
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -1581,9 +1608,7 @@
         
         displayCurrentDate();
 
-        // Detail View Functions
         function showDetailView(game) {
-            // Track game detail views in Google Analytics
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'view_game_details', {
                     'sport': game.sport,
@@ -1593,63 +1618,50 @@
                 });
             }
             
-            // Populate detail view
             document.getElementById('detailTitle').textContent = game.matchup;
             document.getElementById('detailDate').textContent = game.date;
             document.getElementById('detailTime').textContent = game.time + ' EST';
             document.getElementById('detailNetwork').textContent = game.network;
             
-            // Show additional info (fight card, bowl info, etc.)
             const additionalInfo = game.additionalInfo || game.bowlName || '';
             const detailInfo = document.getElementById('detailInfo');
             
             if (additionalInfo && additionalInfo.trim() !== '') {
-                // Convert URLs to clickable links
                 const formattedInfo = formatAdditionalInfo(additionalInfo);
                 detailInfo.innerHTML = formattedInfo;
                 detailInfo.style.display = 'block';
             } else {
-                // Show a message if no additional info
                 detailInfo.textContent = 'No additional details available for this event.';
                 detailInfo.style.display = 'block';
             }
             
-            // Show the detail view
             document.getElementById('detailView').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            document.body.style.overflow = 'hidden';
         }
 
-        /**
-         * Format additional info - convert URLs to clickable links
-         * Pattern: "ðŸ¥Š Link Text\nhttps://url.com" â†’ clickable link
-         */
-        
         function formatAdditionalInfo(text) {
-    let formatted = text;
-    
-    // Updated pattern for ðŸ¥Š instead of ðŸ”—
-    const urlPattern = /ðŸ¥Š\s+([^\n]+)\n(https?:\/\/[^\s]+)/g;
-    
-    formatted = formatted.replace(urlPattern, function(match, linkText, url) {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #6366f1; text-decoration: underline;">ðŸ¥Š ${linkText}</a>`;
-    });
-    
-    // Convert remaining newlines to <br>
-    formatted = formatted.replace(/\n/g, '<br>');
-    
-    return formatted;
-}
+            let formatted = text;
+            
+            const urlPattern = /🥊\s+([^\n]+)\n(https?:\/\/[^\s]+)/g;
+            
+            formatted = formatted.replace(urlPattern, function(match, linkText, url) {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #6366f1; text-decoration: underline;">🥊 ${linkText}</a>`;
+            });
+            
+            formatted = formatted.replace(/\n/g, '<br>');
+            
+            return formatted;
+        }
+
         function closeDetailView() {
-            // Track when users close details
             if (typeof gtag !== 'undefined') {
                 gtag('event', 'close_game_details');
             }
             
             document.getElementById('detailView').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Restore scrolling
+            document.body.style.overflow = 'auto';
         }
 
-        // Close detail view when clicking outside content
         document.addEventListener('click', function(e) {
             const detailView = document.getElementById('detailView');
             if (e.target === detailView) {
@@ -1657,12 +1669,19 @@
             }
         });
 
-        // Close detail view with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeDetailView();
             }
         });
+
+        // Service worker registration for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Uncomment when you want PWA functionality
+                // navigator.serviceWorker.register('/sw.js');
+            });
+        }
     </script>
 </body>
 </html>
