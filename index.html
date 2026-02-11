@@ -20,7 +20,7 @@
     <!-- Preconnect for faster loading -->
     <link rel="preconnect" href="https://docs.google.com">
     <link rel="dns-prefetch" href="https://docs.google.com">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238b5cf6' width='100' height='100'/><text x='50' y='70' font-size='70' text-anchor='middle' dominant-baseline='middle'>ðŸ†</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238b5cf6' width='100' height='100'/><text x='50' y='70' font-size='70' text-anchor='middle' dominant-baseline='middle' fill='white'>TV</text></svg>">
     <style>
         * {
             margin: 0;
@@ -560,6 +560,9 @@
         .channel-thespot { background: linear-gradient(135deg, #ff6b42 0%, #ff8566 100%); }
         .channel-wxpx { background: linear-gradient(135deg, #ff6b42 0%, #ff8566 100%); }
         .channel-nhln { background: linear-gradient(135deg, #003087 0%, #002766 100%); }
+        .channel-fs1 { background: linear-gradient(135deg, #0033a0 0%, #002080 100%); }
+        .channel-fs2 { background: linear-gradient(135deg, #0033a0 0%, #002080 100%); }
+        .channel-usanetwork { background: linear-gradient(135deg, #003087 0%, #002766 100%); }
 
         .no-results {
             text-align: center;
@@ -769,7 +772,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>ðŸ† Sports On TV ðŸ†</h1>
+            <h1>Sports On TV</h1>
             <p class="current-date" id="currentDate">Loading...</p>
             <div class="header-controls">
                 <div class="timezone-selector">
@@ -813,7 +816,6 @@
                         <option value="NBC">NBC</option>
                         <option value="ABC">ABC</option>
                         <option value="FOX">FOX</option>
-                        <option value="CW">CW</option>
                         <option value="TNT">TNT</option>
                         <option value="TBS">TBS</option>
                         <option value="Peacock">Peacock</option>
@@ -822,6 +824,10 @@
                         <option value="NFL Network">NFL Network</option>
                         <option value="NHL Network">NHL Network</option>
                         <option value="The Spot">The Spot</option>
+                        <option value="CW">CW</option>
+                        <option value="FS1">FS1</option>
+                        <option value="FS2">FS2</option>
+                        <option value="USA Network">USA Network</option>
                     </select>
                 </div>
 
@@ -1370,10 +1376,12 @@
                 'cbs': 'channel-cbs', 'nbc': 'channel-nbc', 'peacock': 'channel-peacock',
                 'paramount': 'channel-paramount', 'paramountplus': 'channel-paramount',
                 'primevideo': 'channel-primevideo', 'prime': 'channel-primevideo',
-                'tnt': 'channel-tnt', 'cwnetwork': 'channel-cwnetwork',
+                'tnt': 'channel-tnt', 'cwnetwork': 'channel-cwnetwork', 'cw': 'channel-cwnetwork',
                 'nflnet': 'channel-nflnet', 'nflnetwork': 'channel-nflnet',
                 'espnplus': 'channel-espnplus', 'nhln': 'channel-nhln',
-                'thespot': 'channel-thespot', 'wxpx': 'channel-wxpx'
+                'thespot': 'channel-thespot', 'wxpx': 'channel-wxpx',
+                'fs1': 'channel-fs1', 'fs2': 'channel-fs2', 
+                'usanetwork': 'channel-usanetwork', 'usa': 'channel-usanetwork'
             };
             return classMap[normalized] || 'channel-espn';
         }
