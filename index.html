@@ -782,7 +782,7 @@
                     </select>
                 </div>
                 <button class="dark-mode-toggle" onclick="toggleDarkMode()">
-                    <span class="emoji">ðŸŒ™</span>
+                    <span class="emoji">\uD83C\uDF19</span>
                     <span class="toggle-text">Dark Mode Off</span>
                 </button>
             </div>
@@ -1528,10 +1528,10 @@
             const text = toggleButton.querySelector('.toggle-text');
             
             if (isDark) {
-                emoji.textContent = 'â˜€ï¸';
+                emoji.textContent = '\u2600\uFE0F';
                 text.textContent = 'Dark Mode On';
             } else {
-                emoji.textContent = 'ðŸŒ™';
+                emoji.textContent = '\uD83C\uDF19';
                 text.textContent = 'Dark Mode Off';
             }
             
@@ -1549,7 +1549,7 @@
             // Update button on load
             const toggleButton = document.querySelector('.dark-mode-toggle');
             if (toggleButton) {
-                toggleButton.querySelector('.emoji').textContent = 'â˜€ï¸';
+                toggleButton.querySelector('.emoji').textContent = '\u2600\uFE0F';
                 toggleButton.querySelector('.toggle-text').textContent = 'Dark Mode On';
             }
         }
