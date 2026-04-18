@@ -874,12 +874,14 @@
 
         // Sport emoji mapping
         const sportEmojis = {
-            'NCAAF': '\uD83D\uDCE2',
-            'NFL': '\uD83C\uDFC8',
-            'NBA': '\uD83C\uDFC0',
-            'NHL': '\uD83C\uDFD2',
-            'UFC': '\uD83E\uDD4A',
-            'MLB': '\u26BE',
+            'NCAAF': '\uD83D\uDCE2',  // 📢 Megaphone
+            'NFL': '\uD83C\uDFC8',    // 🏈 Football
+            'NBA': '\uD83C\uDFC0',    // 🏀 Basketball
+            'NHL': '\uD83C\uDFD2',    // 🏒 Hockey
+            'MLB': '\u26BE',           // ⚾ Baseball
+            'UFC': '\uD83E\uDD4A',    // 🥊 Boxing Glove
+            'NASCAR': '\uD83C\uDFCE',  // 🏎️ Race Car
+            'ARCA': '\uD83C\uDFCE'     // 🏎️ Race Car
         };
 
         // Timezone offset mapping (hours from EST)
@@ -1298,7 +1300,7 @@
             // Populate sport buttons with emojis
             const sportDiv = document.getElementById('sportFilters');
             sportDiv.innerHTML = sports.map(sport => {
-                const emoji = sportEmojis[sport] || 'ðŸŽ®';
+                const emoji = sportEmojis[sport] || '\uD83C\uDFAE';
                 return `<button class="filter-btn" onclick="toggleSportFilter('${sport}')">${emoji} ${sport}</button>`;
             }).join('');
 
@@ -1475,7 +1477,7 @@
                 sorted.forEach(date => {
                     html += `<div class="date-section"><div class="day-header">${date}</div><div class="games-container">`;
                     grouped[date].forEach(game => {
-                        const emoji = sportEmojis[game.sport] || 'ðŸŽ®';
+                        const emoji = sportEmojis[game.sport] || '\uD83C\uDFAE';
                         const convertedTime = convertTime(game.time);
                         const gameDate = parseGameDate(game.date, game.time);
                         const isLive = isGameLive(gameDate, game.sport);
