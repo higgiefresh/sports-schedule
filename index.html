@@ -782,7 +782,7 @@
                     </select>
                 </div>
                 <button class="dark-mode-toggle" onclick="toggleDarkMode()">
-                    <span class="emoji">\uD83C\uDF19</span>
+                    <span class="emoji">🌙</span>
                     <span class="toggle-text">Dark Mode Off</span>
                 </button>
             </div>
@@ -874,14 +874,14 @@
 
         // Sport emoji mapping
         const sportEmojis = {
-            'NCAAF': '\\uD83D\\uDCE2',  // \xf0\x9f\x93\xa2 Megaphone
-            'NFL': '\\uD83C\\uDFC8',    // \xf0\x9f\x8f\x88 Football
-            'NBA': '\\uD83C\\uDFC0',    // \xf0\x9f\x8f\x80 Basketball
-            'NHL': '\\uD83C\\uDFD2',    // \xf0\x9f\x8f\x92 Hockey
-            'MLB': '\\u26BE',           // \xe2\x9a\xbe Baseball
-            'UFC': '\\uD83E\\uDD4A',    // \xf0\x9f\xa5\x8a Boxing Glove
-            'NASCAR': '\\uD83C\\uDFCE',  // \xf0\x9f\x8f\x8e Race Car
-            'ARCA': '\\uD83C\\uDFCE'     // \xf0\x9f\x8f\x8e Race Car
+            'NCAAF': '\uD83D\uDCE2',  // 📢 Megaphone
+            'NFL': '\uD83C\uDFC8',    // 🏈 Football
+            'NBA': '\uD83C\uDFC0',    // 🏀 Basketball
+            'NHL': '\uD83C\uDFD2',    // 🏒 Hockey
+            'MLB': '\u26BE',           // ⚾ Baseball
+            'UFC': '\uD83E\uDD4A',    // 🥊 Boxing Glove
+            'NASCAR': '\uD83C\uDFCE',  // 🏎️ Race Car
+            'ARCA': '\uD83C\uDFCE'     // 🏎️ Race Car
         };
 
         // Timezone offset mapping (hours from EST)
@@ -1528,7 +1528,7 @@
             const text = toggleButton.querySelector('.toggle-text');
             
             if (isDark) {
-                emoji.textContent = 'â˜€ï¸';
+                emoji.textContent = '☀️';
                 text.textContent = 'Dark Mode On';
             } else {
                 emoji.textContent = '\uD83C\uDF19';
@@ -1549,7 +1549,7 @@
             // Update button on load
             const toggleButton = document.querySelector('.dark-mode-toggle');
             if (toggleButton) {
-                toggleButton.querySelector('.emoji').textContent = 'â˜€ï¸';
+                toggleButton.querySelector('.emoji').textContent = '☀️';
                 toggleButton.querySelector('.toggle-text').textContent = 'Dark Mode On';
             }
         }
