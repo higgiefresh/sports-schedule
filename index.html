@@ -20,7 +20,7 @@
     <!-- Preconnect for faster loading -->
     <link rel="preconnect" href="https://docs.google.com">
     <link rel="dns-prefetch" href="https://docs.google.com">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238b5cf6' width='100' height='100'/><text x='50' y='70' font-size='70' text-anchor='middle' dominant-baseline='middle'>ðŸ†</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238b5cf6' width='100' height='100'/><text x='50' y='70' font-size='70' text-anchor='middle' dominant-baseline='middle'>🏆</text></svg>">
     <style>
         * {
             margin: 0;
@@ -770,7 +770,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>ðŸ† Sports On TV ðŸ†</h1>
+            <h1>🏆 Sports On TV 🏆</h1>
             <p class="current-date" id="currentDate">Loading...</p>
             <div class="header-controls">
                 <div class="timezone-selector">
@@ -783,7 +783,7 @@
                     </select>
                 </div>
                 <button class="dark-mode-toggle" onclick="toggleDarkMode()">
-                    <span class="emoji">ðŸŒ™</span>
+                    <span class="emoji">🌙</span>
                     <span class="toggle-text">Dark Mode Off</span>
                 </button>
             </div>
@@ -844,7 +844,7 @@
     <div id="detailView" class="detail-view" style="display: none;">
         <div class="detail-content">
             <button class="detail-back-btn" onclick="closeDetailView()">
-                â† Back to Schedule
+                ← Back to Schedule
             </button>
             
             <div class="detail-header">
@@ -876,11 +876,11 @@
 
         // Sport emoji mapping
         const sportEmojis = {
-            'NCAAF': 'ðŸ“¢',
-            'NFL': 'ðŸˆ',
-            'NBA': 'ðŸ€',
-            'NHL': 'ðŸ’',
-            'UFC': 'ðŸ¥Š',
+            'NCAAF': '📢',
+            'NFL': '🏈',
+            'NBA': '🏀',
+            'NHL': '🏒',
+            'UFC': '🥊',
             "'26 World Cup": '⚽'
         };
 
@@ -1300,7 +1300,7 @@
             // Populate sport buttons with emojis
             const sportDiv = document.getElementById('sportFilters');
             sportDiv.innerHTML = sports.map(sport => {
-                const emoji = sportEmojis[sport] || 'ðŸŽ®';
+                const emoji = sportEmojis[sport] || '🎮';
                 return `<button class="filter-btn" onclick="toggleSportFilter('${sport}')">${emoji} ${sport}</button>`;
             }).join('');
 
@@ -1477,11 +1477,11 @@
                 sorted.forEach(date => {
                     html += `<div class="date-section"><div class="day-header">${date}</div><div class="games-container">`;
                     grouped[date].forEach(game => {
-                        const emoji = sportEmojis[game.sport] || 'ðŸŽ®';
+                        const emoji = sportEmojis[game.sport] || '🎮';
                         const convertedTime = convertTime(game.time);
                         const gameDate = parseGameDate(game.date, game.time);
                         const isLive = isGameLive(gameDate, game.sport);
-                        const liveBadge = isLive ? '<span class="live-badge">ðŸ”´ LIVE</span>' : '';
+                        const liveBadge = isLive ? '<span class="live-badge">🔴 LIVE</span>' : '';
                         html += `
                             <div class="game">
                                 <div class="game-info">
@@ -1528,10 +1528,10 @@
             const text = toggleButton.querySelector('.toggle-text');
             
             if (isDark) {
-                emoji.textContent = 'â˜€ï¸';
+                emoji.textContent = '☀️';
                 text.textContent = 'Dark Mode On';
             } else {
-                emoji.textContent = 'ðŸŒ™';
+                emoji.textContent = '🌙';
                 text.textContent = 'Dark Mode Off';
             }
             
@@ -1549,7 +1549,7 @@
             // Update button on load
             const toggleButton = document.querySelector('.dark-mode-toggle');
             if (toggleButton) {
-                toggleButton.querySelector('.emoji').textContent = 'â˜€ï¸';
+                toggleButton.querySelector('.emoji').textContent = '☀️';
                 toggleButton.querySelector('.toggle-text').textContent = 'Dark Mode On';
             }
         }
@@ -1620,17 +1620,17 @@
 
         /**
          * Format additional info - convert URLs to clickable links
-         * Pattern: "ðŸ¥Š Link Text\nhttps://url.com" â†’ clickable link
+         * Pattern: "🥊 Link Text\nhttps://url.com" â†’ clickable link
          */
         
         function formatAdditionalInfo(text) {
     let formatted = text;
     
-    // Updated pattern for ðŸ¥Š instead of ðŸ”—
-    const urlPattern = /ðŸ¥Š\s+([^\n]+)\n(https?:\/\/[^\s]+)/g;
+    // Updated pattern for 🥊 instead of 🔗
+    const urlPattern = /🥊\s+([^\n]+)\n(https?:\/\/[^\s]+)/g;
     
     formatted = formatted.replace(urlPattern, function(match, linkText, url) {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #6366f1; text-decoration: underline;">ðŸ¥Š ${linkText}</a>`;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #6366f1; text-decoration: underline;">🥊 ${linkText}</a>`;
     });
     
     // Convert remaining newlines to <br>
