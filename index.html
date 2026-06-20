@@ -558,6 +558,8 @@
         .channel-nflnet { background: linear-gradient(135deg, #1f4788 0%, #1e3a5f 100%); }
         .channel-espnplus { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); }
         .channel-fs1 { background: linear-gradient(135deg, #c8102e 0%, #a00d24 100%); }
+        .channel-fs2 { background: linear-gradient(135deg, #8b0000 0%, #5c0000 100%); }
+        .channel-usanetwork { background: linear-gradient(135deg, #0a4595 0%, #073073 100%); }
         .channel-thespot { background: linear-gradient(135deg, #ff6b42 0%, #ff8566 100%); }
         .channel-raystv { background: linear-gradient(135deg, #092c5c 0%, #8fbce6 100%); }
         .channel-wxpx { background: linear-gradient(135deg, #ff6b42 0%, #ff8566 100%); }
@@ -812,6 +814,7 @@
                         <option value="ESPN2">ESPN2</option>
                         <option value="ESPN+">ESPN+</option>
                         <option value="FS1">FS1</option>
+                        <option value="FS2">FS2</option>
                         <option value="CBS">CBS</option>
                         <option value="NBC">NBC</option>
                         <option value="ABC">ABC</option>
@@ -825,6 +828,7 @@
                         <option value="NHL Network">NHL Network</option>
                         <option value="The Spot">The Spot</option>
                         <option value="Rays.TV">Rays.TV</option>
+                        <option value="USA Network">USA Network</option>
                     </select>
                 </div>
 
@@ -884,7 +888,8 @@
             'NHL': '🏒',
             'UFC': '🥊',
             'MLB': '⚾',
-            '26 World Cup': '⚽'
+            '26 World Cup': '⚽',
+            'Motorsports': '🏁'
         };
 
         // Timezone offset mapping (hours from EST)
@@ -1377,7 +1382,7 @@
                 'primevideo': 'channel-primevideo', 'prime': 'channel-primevideo',
                 'tnt': 'channel-tnt', 'cwnetwork': 'channel-cwnetwork',
                 'nflnet': 'channel-nflnet', 'nflnetwork': 'channel-nflnet',
-                'espnplus': 'channel-espnplus', 'fs1': 'channel-fs1', 'nhln': 'channel-nhln',
+                'espnplus': 'channel-espnplus', 'fs1': 'channel-fs1', 'fs2': 'channel-fs2', 'usanetwork': 'channel-usanetwork', 'nhln': 'channel-nhln',
                 'thespot': 'channel-thespot', 'raystv': 'channel-raystv', 'wxpx': 'channel-wxpx'
             };
             return classMap[normalized] || 'channel-espn';
