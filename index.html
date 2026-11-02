@@ -385,8 +385,8 @@ let currentTimezone = 'EST';
 let filters = { search: '', network: '', sport: '', day: '' };
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const timezoneOffsets = { EST: 0, CST: -1, MST: -2, PST: -3 };
-const EST_OFFSET_HOURS = -5;
+const TZ_ZONES = { EST: 'America/New_York', CST: 'America/Chicago', MST: 'America/Denver', PST: 'America/Los_Angeles' };
+const ET = 'America/New_York';
 
 // GOOGLE SHEET CONFIGURATION (Public Read-Only)
 const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
@@ -419,69 +419,77 @@ function toggleDarkMode() {
   applyTheme(saved || (prefersDark ? 'dark' : 'light'));
 })();
 
-/* ---------- Time ---------- */
+/* ---------- Time ----------
+   The sheet's column G holds each game's start as an ISO timestamp with the
+   Eastern offset, so DST, year and day boundaries are never guessed. Older
+   rows without it fall back to parsing the date/time text (as Eastern). */
 function updateTimezone() {
   currentTimezone = document.getElementById('timezoneSelect').value;
   try { localStorage.setItem('selectedTimezone', currentTimezone); } catch (e) {}
   track('change_timezone', { timezone: currentTimezone });
+  populateFilterDropdowns();   // day labels depend on the timezone
   displaySchedule();
 }
 
-function convertTime(timeStr) {
-  if (!timeStr) return { t: '', tz: '' };
-  try {
-    const [time, period] = timeStr.split(' ');
-    const [hours, minutes] = time.split(':');
-    let hour = parseInt(hours);
-    if (period === 'PM' && hour !== 12) hour += 12;
-    if (period === 'AM' && hour === 12) hour = 0;
-    hour += timezoneOffsets[currentTimezone];
-    if (hour < 0) hour += 24;
-    if (hour >= 24) hour -= 24;
-    const p = hour >= 12 ? 'PM' : 'AM';
-    const h = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-    return { t: `${h}:${minutes} ${p}`, tz: currentTimezone };
-  } catch (e) {
-    return { t: timeStr, tz: '' };
-  }
+const dtfCache = {};
+function dtf(zone, key, opts, locale) {
+  const k = zone + key;
+  return dtfCache[k] || (dtfCache[k] = new Intl.DateTimeFormat(locale || 'en-US', Object.assign({ timeZone: zone }, opts)));
+}
+
+// Day key, label, clock time and zone abbreviation for a Date in a zone.
+function localParts(date, zone) {
+  zone = zone || TZ_ZONES[currentTimezone];
+  const tzPart = dtf(zone, 'tz', { timeZoneName: 'short' }).formatToParts(date).find(p => p.type === 'timeZoneName');
+  return {
+    key: dtf(zone, 'key', { year: 'numeric', month: '2-digit', day: '2-digit' }, 'en-CA').format(date),
+    label: dtf(zone, 'label', { weekday: 'long', month: 'long', day: 'numeric' }).format(date),
+    time: dtf(zone, 'time', { hour: 'numeric', minute: '2-digit' }).format(date).replace(/[  ]/g, ' '),
+    tz: tzPart ? tzPart.value : currentTimezone
+  };
+}
+
+function zoneOffsetMs(date, zone) {
+  const p = {};
+  dtf(zone, 'off', { hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' })
+    .formatToParts(date).forEach(x => { p[x.type] = +x.value; });
+  return Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute, p.second) - Math.floor(date.getTime() / 1000) * 1000;
+}
+// Wall-clock time in a zone -> Date (DST-aware)
+function zonedToDate(y, mo, d, h, mi, zone) {
+  const wall = Date.UTC(y, mo, d, h, mi);
+  let t = wall - zoneOffsetMs(new Date(wall), zone);
+  t = wall - zoneOffsetMs(new Date(t), zone);
+  return new Date(t);
 }
 
 function timeToMinutes(timeStr) {
-  const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/);
-  if (!m) return 0;
+  const m = String(timeStr).match(/(\d+):(\d+)\s*(AM|PM)/);
+  if (!m) return null;
   let h = parseInt(m[1]);
   if (m[3] === 'PM' && h !== 12) h += 12;
   if (m[3] === 'AM' && h === 12) h = 0;
   return h * 60 + parseInt(m[2]);
 }
 
-// Game dates come as "Wednesday, December 31" (no year); infer it from today.
-function dateParts(dateStr) {
+// Legacy fallback: "Wednesday, December 31" + "7:30 PM" (Eastern, no year)
+function legacyStart(dateStr, timeStr) {
   const parts = dateStr.split(', ');
   const md = (parts[1] || '').split(' ');
   const month = MONTHS.indexOf(md[0]);
   const day = parseInt(md[1]);
+  const mins = timeToMinutes(timeStr);
+  if (month < 0 || isNaN(day) || mins === null) return null;
   const now = new Date();
   const year = month < now.getMonth() ? now.getFullYear() + 1 : now.getFullYear();
-  return { weekday: parts[0], monthName: md[0], month, day, year };
+  return zonedToDate(year, month, day, Math.floor(mins / 60), mins % 60, ET);
 }
 
-function parseGameDate(dateStr, timeStr) {
-  try {
-    const d = dateParts(dateStr);
-    const mins = timeToMinutes(timeStr);
-    // EST is UTC-5: add 5 hours to get UTC
-    return new Date(Date.UTC(d.year, d.month, d.day, Math.floor(mins / 60) + 5, mins % 60));
-  } catch (e) {
-    return new Date();
-  }
-}
-
-function isGameLive(gameDate, sport) {
+function isGameLive(start, sport) {
   const durations = { NCAAF: 240, NFL: 225, NBA: 150, NHL: 150 };
-  const end = gameDate.getTime() + (durations[sport] || 180) * 60000;
+  const end = start.getTime() + (durations[sport] || 180) * 60000;
   const now = Date.now();
-  return now >= gameDate.getTime() && now <= end;
+  return now >= start.getTime() && now <= end;
 }
 
 /* ---------- Data ---------- */
@@ -530,46 +538,35 @@ async function loadScheduleData() {
 }
 
 function parseGamesFromSheet(values) {
-  allGames = values.map(row => {
-    let dateStr = row[0].trim();
-    const m = dateStr.match(/^(\w+),\s+(\w+)\s+(\d+)$/);
-    if (m) {
-      const d = dateParts(dateStr);
-      if (d.month !== -1) {
-        const actual = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date(d.year, d.month, d.day).getDay()];
-        if (actual !== m[1]) dateStr = `${actual}, ${m[2]} ${m[3]}`;
-      }
-    }
+  const games = [];
+  values.forEach(row => {
+    const iso = (row[6] || '').trim();
+    let start = iso ? new Date(iso) : null;
+    if (!start || isNaN(start.getTime())) start = legacyStart(row[0].trim(), row[1].trim());
+    if (!start) return;                       // unreadable row: skip rather than show a wrong time
     const extra = row[5] ? row[5].trim() : '';
-    return {
-      date: dateStr,
-      time: row[1].trim(),
+    games.push({
+      start: start,
       matchup: row[2].trim(),
       network: row[3].trim(),
       sport: row[4].trim(),
       bowlName: extra,
       additionalInfo: extra
-    };
+    });
   });
+  games.sort((a, b) => a.start - b.start);
 
-  const sortKey = g => {
-    const d = dateParts(g.date);
-    return Date.UTC(d.year, d.month, d.day) + timeToMinutes(g.time) * 60000;
-  };
-  allGames.sort((a, b) => sortKey(a) - sortKey(b));
-
-  const nowEST = new Date(Date.now() + EST_OFFSET_HOURS * 3600000);
-  const todayEST = Date.UTC(nowEST.getUTCFullYear(), nowEST.getUTCMonth(), nowEST.getUTCDate());
-  allGames = allGames.filter(g => {
-    try { const d = dateParts(g.date); return Date.UTC(d.year, d.month, d.day) >= todayEST; }
-    catch (e) { return true; }
-  });
+  // Keep today (Eastern, matching the sheet) and later
+  const todayET = localParts(new Date(), ET).key;
+  allGames = games.filter(g => localParts(g.start, ET).key >= todayET);
 }
 
 /* ---------- Filters ---------- */
 function populateFilterDropdowns() {
   const sports = [...new Set(allGames.map(g => g.sport))].sort();
-  const days = [...new Set(allGames.map(g => g.date))];
+  allGames.forEach(g => { g.local = localParts(g.start); });
+  const days = [...new Set(allGames.map(g => g.local.label))];
+  if (filters.day && !days.includes(filters.day)) filters.day = '';
 
   const box = document.getElementById('sportFilters');
   box.innerHTML = sports.map(s =>
@@ -641,23 +638,23 @@ function getChannelClass(network) {
 const sportClass = s => 's-' + s.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 function displaySchedule() {
+  allGames.forEach(g => { g.local = localParts(g.start); });
   let list = allGames;
   if (filters.search) {
     list = list.filter(g => g.matchup.toLowerCase().includes(filters.search) || g.sport.toLowerCase().includes(filters.search));
   }
   if (filters.network) list = list.filter(g => g.network === filters.network);
   if (filters.sport) list = list.filter(g => g.sport === filters.sport);
-  if (filters.day) list = list.filter(g => g.date === filters.day);
+  if (filters.day) list = list.filter(g => g.local.label === filters.day);
 
   // allGames is already chronological, so grouping preserves order
   const groups = new Map();
   list.forEach(g => {
-    if (!groups.has(g.date)) groups.set(g.date, []);
-    groups.get(g.date).push(g);
+    if (!groups.has(g.local.key)) groups.set(g.local.key, []);
+    groups.get(g.local.key).push(g);
   });
 
-  const nowEST = new Date(Date.now() + EST_OFFSET_HOURS * 3600000);
-  const todayKey = Date.UTC(nowEST.getUTCFullYear(), nowEST.getUTCMonth(), nowEST.getUTCDate());
+  const todayKey = localParts(new Date()).key;
 
   visibleGames = [];
   let html = '';
@@ -665,19 +662,19 @@ function displaySchedule() {
   if (!groups.size) {
     html = '<div class="empty"><strong>Nothing matches.</strong>Try clearing a filter, or check back soon.</div>';
   } else {
-    groups.forEach((games, date) => {
-      const d = dateParts(date);
-      const isToday = Date.UTC(d.year, d.month, d.day) === todayKey;
+    groups.forEach((games, key) => {
+      const [weekday, monthDay] = games[0].local.label.split(', ');
+      const isToday = key === todayKey;
       html += `<section class="day"><div class="day-head">
-        <span class="day-name">${esc(d.weekday)}</span>
-        <span class="day-date">${esc(d.monthName)} ${d.day}</span>
+        <span class="day-name">${esc(weekday)}</span>
+        <span class="day-date">${esc(monthDay)}</span>
         ${isToday ? '<span class="today-tag">Today</span>' : ''}
         <span class="day-count">${games.length} ${games.length === 1 ? 'game' : 'games'}</span>
       </div>`;
       games.forEach(game => {
         const idx = visibleGames.push(game) - 1;
-        const t = convertTime(game.time);
-        const live = isGameLive(parseGameDate(game.date, game.time), game.sport);
+        const t = { t: game.local.time, tz: game.local.tz };
+        const live = isGameLive(game.start, game.sport);
         html += `<button class="game ${sportClass(game.sport)}" data-idx="${idx}">
           <div class="time"><b>${esc(t.t)}</b><small>${esc(t.tz)}</small></div>
           <div>
@@ -700,14 +697,14 @@ document.getElementById('schedule').addEventListener('click', e => {
 
 /* ---------- Detail ---------- */
 function showDetailView(game) {
-  track('view_game_details', { sport: game.sport, matchup: game.matchup, network: game.network, date: game.date });
+  track('view_game_details', { sport: game.sport, matchup: game.matchup, network: game.network, date: game.local.label });
 
   const ds = document.getElementById('detailSport');
   ds.textContent = game.sport;
   ds.parentElement.parentElement.className = 'detail-card ' + sportClass(game.sport);
   document.getElementById('detailTitle').textContent = game.matchup;
-  document.getElementById('detailDate').textContent = game.date;
-  document.getElementById('detailTime').textContent = game.time + ' EST';
+  document.getElementById('detailDate').textContent = game.local.label;
+  document.getElementById('detailTime').textContent = game.local.time + ' ' + game.local.tz;
   const net = document.getElementById('detailNetwork');
   net.textContent = game.network;
   net.className = 'net ' + getChannelClass(game.network);
@@ -748,7 +745,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetailV
 /* ---------- Init ---------- */
 try {
   const tz = localStorage.getItem('selectedTimezone');
-  if (tz && timezoneOffsets[tz] !== undefined) {
+  if (tz && TZ_ZONES[tz] !== undefined) {
     currentTimezone = tz;
     document.getElementById('timezoneSelect').value = tz;
   }
