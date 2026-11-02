@@ -12,16 +12,16 @@
 <!-- End Google Analytics -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Your complete TV schedule for NFL, NBA, NHL, UFC, and College Football games. Find what sports are on TV today with times and networks.">
-<title>Sports On TV - Your Complete Sports Schedule</title>
+<meta name="description" content="Find where to watch any game in the U.S.: NFL, NBA, NHL, MLB, college sports, Premier League and MLS soccer, F1, UFC, golf and more. Every channel and streaming option, free TV included.">
+<title>What's It On? - Where to Watch Every Game</title>
 
 <link rel="preconnect" href="https://docs.google.com">
 <link rel="dns-prefetch" href="https://docs.google.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23e5392b'/><path d='M10 9h12v3h-4.5v11h-3V12H10z' fill='white'/></svg>">
-
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23e5392b'/%3E%3Ctext%20x='16'%20y='23'%20font-size='22'%20font-weight='800'%20font-family='Arial%2Csans-serif'%20text-anchor='middle'%20fill='white'%3E%3F%3C/text%3E%3C/svg%3E">
+<!--SEO-->
 <style>
 :root {
   --bg: #e8e1d0;
@@ -190,19 +190,7 @@ select.ctl { padding-right: 6px; }
 }
 .game:hover { background: var(--hover); }
 /* Sport colors: bar on the row, label text, chip dot */
-.s-nfl { --s: #2f6fdb; }
-.s-nba { --s: #e8731a; }
-.s-nhl { --s: #0e9aa7; }
-.s-ncaaf { --s: #2e9e55; }
-.s-ufc { --s: #d6342c; }
-.s-motorsports { --s: #b8890b; }
-:root[data-theme="dark"] .s-nfl { --s: #6ea0ff; }
-:root[data-theme="dark"] .s-nba { --s: #ff9a4d; }
-:root[data-theme="dark"] .s-nhl { --s: #3ccbd8; }
-:root[data-theme="dark"] .s-ncaaf { --s: #52c97c; }
-:root[data-theme="dark"] .s-ufc { --s: #ff6b60; }
-:root[data-theme="dark"] .s-motorsports { --s: #e8b830; }
-.game { box-shadow: inset 3px 0 0 var(--s, var(--line-strong)); padding-left: 16px; }
+:root[data-theme="dark"] :root[data-theme="dark"] :root[data-theme="dark"] :root[data-theme="dark"] :root[data-theme="dark"] :root[data-theme="dark"] .game { box-shadow: inset 3px 0 0 var(--s, var(--line-strong)); padding-left: 16px; }
 .game .sport, .detail .sport { color: var(--s, var(--ink-3)); }
 .chip::before {
   content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
@@ -243,25 +231,6 @@ select.ctl { padding-right: 6px; }
 .empty strong { display: block; color: var(--ink); font-size: 1.2rem; margin-bottom: 4px; }
 .error { color: var(--accent); }
 
-/* Network colors */
-.n-espn, .n-espnplus, .n-espnu { --c: #d00; }
-.n-netflix { --c: #e50914; }
-.n-abc { --c: #2a6ff0; }
-.n-fox { --c: #1b5fc1; }
-.n-cbs { --c: #1a6cd9; }
-.n-nbc { --c: #f59e0b; }
-.n-peacock { --c: #8b5cf6; }
-.n-paramount { --c: #2b7fff; }
-.n-primevideo { --c: #00a8e1; }
-.n-tnt { --c: #777; }
-.n-cwnetwork { --c: #1aa84a; }
-.n-nflnet { --c: #1f4788; }
-.n-fs1, .n-fs2 { --c: #0a6cc4; }
-.n-usanetwork { --c: #2563eb; }
-.n-thespot, .n-wxpx { --c: #ff6b42; }
-.n-raystv { --c: #092c5c; }
-.n-nhln { --c: #003087; }
-
 /* ---------- Detail ---------- */
 .detail {
   position: fixed; inset: 0; z-index: 100; display: none;
@@ -295,6 +264,149 @@ select.ctl { padding-right: 6px; }
 @keyframes fade { from { opacity: 0; } }
 @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
 
+/* ---------- Updated stamp, followed teams, calendar, footer ---------- */
+.updated { color: var(--ink-3); font-size: 0.82rem; margin-top: 10px; min-height: 1.2em; }
+.updated.stale { color: var(--accent); font-weight: 600; }
+.time.allday b { font-size: 0.9rem; }
+.detail-teams { margin: -6px 0 16px; display: grid; gap: 6px; }
+.team-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.team-name { font-weight: 600; margin-right: auto; }
+.team-btn, .act {
+  height: 30px; padding: 0 12px; background: transparent; border: 1px solid var(--line-strong);
+  border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: var(--ink);
+  text-decoration: none; display: inline-flex; align-items: center; cursor: pointer;
+}
+.team-btn:hover, .act:hover { border-color: var(--ink-2); }
+.team-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.detail-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.act { height: 34px; }
+.foot { border-top: 1px solid var(--line); padding: 28px 0 56px; color: var(--ink-3); font-size: 0.82rem; }
+.foot nav { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 14px; }
+.foot nav:empty { display: none; }
+.foot a { color: var(--ink-2); text-underline-offset: 3px; }
+.foot a:hover { color: var(--accent); }
+.foot .nav-label { font-weight: 700; color: var(--ink-2); }
+.fineprint { max-width: 70ch; line-height: 1.55; }
+
+:root[data-theme="dark"] :root[data-theme="dark"] :root[data-theme="dark"] :root[data-theme="dark"] :root[data-theme="dark"] 
+/* ================= What's It On? : picker, networks, legend ================= */
+.intro { padding: 36px 0 18px; }
+
+.picker {
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px;
+  padding: 20px 22px; margin-bottom: 22px;
+}
+.picker.fresh { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.picker-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.picker-head h2 { font-size: 1.25rem; font-weight: 800; font-stretch: 85%; letter-spacing: -0.01em; text-transform: uppercase; line-height: 1.15; }
+.picker-sub { color: var(--ink-2); font-size: 0.9rem; margin-top: 4px; max-width: 60ch; }
+.picker-toggle { flex: none; }
+.pick-label { margin: 18px 0 8px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-grid .chip { height: 34px; padding: 0 14px; font-size: 0.86rem; }
+.chip-grid.leagues .chip { height: 30px; font-size: 0.8rem; }
+.chip-grid .chip::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--s, var(--ink-3)); margin-right: 8px; display: inline-block; vertical-align: 1px; }
+.chip-grid.leagues .chip::before { display: none; }
+.chip.active::before { box-shadow: 0 0 0 1.5px var(--bg); }
+
+.team-search { position: relative; max-width: 520px; }
+.team-search .field { width: 100%; height: 42px; font-size: 1rem; }
+.suggest {
+  position: absolute; z-index: 30; left: 0; right: 0; top: 46px; background: var(--surface);
+  border: 1px solid var(--line-strong); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  overflow: hidden; display: none;
+}
+.suggest.open { display: block; }
+.suggest button {
+  display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 14px; background: none; border: none; border-bottom: 1px solid var(--line);
+  text-align: left; font-size: 0.95rem;
+}
+.suggest button:last-child { border-bottom: none; }
+.suggest button:hover, .suggest button:focus-visible { background: var(--hover); }
+.suggest small { color: var(--ink-3); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+.pick-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.pick-chip {
+  display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 6px 0 12px;
+  background: var(--ink); color: var(--bg); border-radius: 999px; font-size: 0.82rem; font-weight: 600; border: none;
+}
+.pick-chip i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 22%, transparent); font-size: 0.7rem; }
+.pick-chip:hover i { background: var(--accent); color: var(--accent-ink); }
+.picks-line { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; }
+.picks-line .none { color: var(--ink-3); font-size: 0.9rem; }
+.picks-line .clear { height: 30px; }
+
+.filters .filter-row .sel { min-width: 0; }
+.free-btn { height: 38px; padding: 0 14px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; font-size: 0.86rem; font-weight: 600; }
+.free-btn:hover { border-color: var(--ink-2); }
+.free-btn[aria-pressed="true"] { background: #2fa64a; border-color: #2fa64a; color: #fff; }
+
+.results-bar { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 6px 18px; margin: 18px 0 -10px; color: var(--ink-2); font-size: 0.88rem; }
+.results-bar b { color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.76rem; color: var(--ink-3); }
+.legend span::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+.legend .l-local::before { background: none; border: 1.5px dashed var(--ink-3); }
+
+/* networks: colour = how you can watch */
+.game { grid-template-columns: 96px minmax(0, 1fr) minmax(0, auto); align-items: start; }
+.game .time, .game > div:nth-child(2) { padding-top: 1px; }
+.nets { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; max-width: 340px; }
+.net { --c: var(--ink-3); background: transparent; }
+.net::before { background: var(--c); }
+.net.free { --c: #2fa64a; }
+.net.cable { --c: #3b82f6; }
+.net.stream { --c: #8b5cf6; }
+.net.local { border-style: dashed; color: var(--ink-2); font-weight: 600; }
+.net.local::before { background: none; border: 1.5px solid var(--c); }
+.net.local.free { --c: #2fa64a; } .net.local.cable { --c: #3b82f6; } .net.local.stream { --c: #8b5cf6; }
+.net.usual { border-style: dotted; font-style: italic; }
+.net.none { color: var(--ink-3); font-weight: 600; border-style: dashed; }
+.net.none::before, .net.more::before { display: none; }
+.net.more { padding-left: 10px; }
+.l-free { --c: #2fa64a; } .l-cable { --c: #3b82f6; } .l-stream { --c: #8b5cf6; }
+
+.more-wrap { text-align: center; margin: 26px 0 0; }
+.more-btn { height: 40px; padding: 0 22px; background: transparent; border: 1px solid var(--line-strong); border-radius: 6px; font-weight: 700; }
+.more-btn:hover { border-color: var(--ink-2); }
+
+.watch { margin: 4px 0 18px; display: grid; gap: 10px; }
+.watch-row { display: flex; align-items: flex-start; gap: 12px; }
+.watch-row > b { flex: none; width: 112px; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); padding-top: 7px; }
+.watch-row .nets { justify-content: flex-start; max-width: none; }
+.watch-note { font-size: 0.8rem; color: var(--ink-3); margin-top: 2px; }
+
+/* sport colours */
+.s-nfl { --s: #2f6fdb; } .s-collegefootball { --s: #2e9e55; } .s-nba { --s: #e8731a; } .s-wnba { --s: #f0527f; }
+.s-menscollegebasketball { --s: #7c5cdb; } .s-womenscollegebasketball { --s: #c93d8a; }
+.s-nhl { --s: #0e9aa7; } .s-collegehockey { --s: #4a90b8; } .s-mlb { --s: #c0463a; }
+.s-collegebaseball { --s: #b0653a; } .s-collegesoftball { --s: #d98a3a; } .s-collegevolleyball { --s: #8a6fd1; }
+.s-lacrosse { --s: #5f7fbf; } .s-soccer { --s: #8aab1f; } .s-ufc { --s: #d6342c; } .s-mma { --s: #b5504a; }
+.s-f1 { --s: #667a91; } .s-indycar { --s: #3a8fd9; } .s-nascar { --s: #b8890b; } .s-golf { --s: #3f8f5a; } .s-tennis { --s: #a0785a; }
+:root[data-theme="dark"] .s-nfl { --s: #6ea0ff; } :root[data-theme="dark"] .s-collegefootball { --s: #52c97c; }
+:root[data-theme="dark"] .s-nba { --s: #ff9a4d; } :root[data-theme="dark"] .s-wnba { --s: #ff86a6; }
+:root[data-theme="dark"] .s-menscollegebasketball { --s: #a38bff; } :root[data-theme="dark"] .s-womenscollegebasketball { --s: #ff7ac0; }
+:root[data-theme="dark"] .s-nhl { --s: #3ccbd8; } :root[data-theme="dark"] .s-collegehockey { --s: #7cb9de; }
+:root[data-theme="dark"] .s-mlb { --s: #ff7b6b; } :root[data-theme="dark"] .s-collegebaseball { --s: #d99a70; }
+:root[data-theme="dark"] .s-collegesoftball { --s: #f0b266; } :root[data-theme="dark"] .s-collegevolleyball { --s: #b7a1f0; }
+:root[data-theme="dark"] .s-lacrosse { --s: #8fb0f0; } :root[data-theme="dark"] .s-soccer { --s: #c0e04a; }
+:root[data-theme="dark"] .s-ufc { --s: #ff6b60; } :root[data-theme="dark"] .s-mma { --s: #e08a84; }
+:root[data-theme="dark"] .s-f1 { --s: #9db2c9; } :root[data-theme="dark"] .s-indycar { --s: #6cb6f2; }
+:root[data-theme="dark"] .s-nascar { --s: #e8b830; } :root[data-theme="dark"] .s-golf { --s: #72c98f; }
+:root[data-theme="dark"] .s-tennis { --s: #d9a77f; }
+
+@media (max-width: 640px) {
+  .picker { padding: 16px; }
+  .game { grid-template-columns: 78px minmax(0, 1fr); }
+  .game .nets { grid-column: 2; justify-content: flex-start; max-width: none; margin-top: 2px; }
+  .watch-row { flex-direction: column; gap: 4px; }
+  .watch-row > b { width: auto; padding-top: 0; }
+  .free-btn { flex: 1 1 100%; }
+}
+
+.brand { text-decoration: none; color: inherit; }
+.brand-mark { font-weight: 800; color: var(--accent-ink); font-size: 1rem; line-height: 1; }
+.fav { color: var(--accent); margin-left: 8px; font-size: 0.85em; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 640px) {
   .wrap { padding: 0 16px; }
@@ -318,12 +430,13 @@ select.ctl { padding-right: 6px; }
 
 <div class="topbar">
   <div class="wrap">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 14 14"><path d="M1 1h12v3H8.5v9h-3V4H1z"/></svg></span>
-      <span>Sports <em>On</em> TV</span>
-    </div>
+    <a class="brand" href="/" aria-label="What's It On? home">
+      <span class="brand-mark" aria-hidden="true">?</span>
+      <span>What's <em>It On</em>?</span>
+    </a>
     <div class="top-actions">
       <select class="ctl" id="timezoneSelect" aria-label="Timezone" onchange="updateTimezone()">
+        <option value="LOCAL">My timezone</option>
         <option value="EST">Eastern</option>
         <option value="CST">Central</option>
         <option value="MST">Mountain</option>
@@ -337,30 +450,63 @@ select.ctl { padding-right: 6px; }
 <div class="wrap">
   <section class="intro">
     <div class="kicker" id="currentDate">&nbsp;</div>
-    <h1>What's on<br>tonight</h1>
-    <p>Game times and channels for the NFL, NBA, NHL, UFC, college football and more.</p>
+    <h1 id="pageTitle">What's it<br>on?</h1>
+    <p id="pageIntro">Pick your teams or sports and see every way to watch: free TV, cable and streaming.</p>
+    <p class="updated" id="updated"></p>
+  </section>
+
+  <section class="picker fresh" id="picker" aria-labelledby="pickerTitle">
+    <div class="picker-head">
+      <div>
+        <h2 id="pickerTitle">Pick your teams or sports</h2>
+        <p class="picker-sub" id="pickerSub">Choose what you follow and we'll show every place to watch it. Or skip this and browse everything below.</p>
+      </div>
+      <button class="ctl picker-toggle" id="pickerToggle" onclick="togglePicker()" style="display:none">Edit picks</button>
+    </div>
+    <div id="pickerBody">
+      <div class="pick-label">Sports</div>
+      <div class="chip-grid" id="sportChips" role="group" aria-label="Sports"></div>
+      <div id="leagueBlock" style="display:none">
+        <div class="pick-label" id="leagueLabel">Leagues</div>
+        <div class="chip-grid leagues" id="leagueChips" role="group" aria-label="Leagues"></div>
+      </div>
+      <div class="pick-label">Teams</div>
+      <div class="team-search">
+        <input type="search" class="field" id="teamSearch" placeholder="Search a team, league or sport…" aria-label="Search teams, leagues or sports" autocomplete="off">
+        <div class="suggest" id="suggest" role="listbox"></div>
+      </div>
+      <div class="pick-chips" id="pickChips"></div>
+    </div>
+    <div class="picks-line" id="picksLine" style="display:none"></div>
   </section>
 </div>
 
 <div class="filters">
   <div class="wrap">
     <div class="filter-row">
-      <input type="search" class="field search" id="searchBox" placeholder="Search teams or fighters" aria-label="Search" oninput="applyFilters()">
       <select class="field sel" id="dayDropdown" aria-label="Day" onchange="applyFilters()">
         <option value="">All days</option>
       </select>
       <select class="field sel" id="networkDropdown" aria-label="Network" onchange="applyFilters()">
         <option value="">All networks</option>
       </select>
-      <button class="clear" onclick="clearAllFilters()">Clear</button>
+      <button class="free-btn" id="freeBtn" aria-pressed="false" onclick="toggleFree()">Free TV only</button>
+      <button class="clear" onclick="clearAllFilters()">Clear filters</button>
+      <button class="clear" id="shareBtn" onclick="copyLink()">Copy link</button>
     </div>
-    <div class="chips" id="sportFilters" role="group" aria-label="Sport"></div>
   </div>
 </div>
 
-<main class="wrap schedule" id="schedule">
-  <div class="loading">Loading schedule…</div>
-</main>
+<div class="wrap"><div class="results-bar" id="resultsBar"></div></div>
+
+<main class="wrap schedule" id="schedule"><!--PRERENDER:START--><div class="loading">Loading schedule…</div><!--PRERENDER:END--></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <nav id="footNav" aria-label="Browse by sport"><!--NAV:START--><!--NAV:END--></nav>
+    <p class="fineprint">Networks come from league and broadcaster listings and can change; local and regional channels depend on where you live, and what you can watch depends on your TV provider and subscriptions. Times are shown in your timezone. Betting lines, where shown, are informational, come from public sportsbooks and can change. 21+. If gambling is a problem, call 1-800-GAMBLER.</p>
+  </div>
+</footer>
 
 <div id="detailView" class="detail" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
   <div class="detail-card">
@@ -372,7 +518,12 @@ select.ctl { padding-right: 6px; }
     <div class="detail-meta">
       <span id="detailDate"></span>
       <span id="detailTime"></span>
-      <span class="net" id="detailNetwork"></span>
+    </div>
+    <div class="watch" id="detailWatch"></div>
+    <div id="detailTeams" class="detail-teams"></div>
+    <div class="detail-actions">
+      <button class="act" onclick="addToCalendar()">Add to calendar</button>
+      <a class="act" id="gcalLink" target="_blank" rel="noopener noreferrer">Google Calendar ↗</a>
     </div>
     <div id="detailInfo" class="detail-info"></div>
   </div>
@@ -381,19 +532,36 @@ select.ctl { padding-right: 6px; }
 <script>
 let allGames = [];
 let visibleGames = [];
-let currentTimezone = 'EST';
-let filters = { search: '', network: '', sport: '', day: '' };
+let currentTimezone = 'LOCAL';           // default: the viewer's own timezone
+let picks = { sports: [], leagues: [], teams: [] };
+let filters = { q: '', network: '', day: '', free: false };
+let pickerOpen = true;
+let rowsShown = 150;
+let updatedAt = null;
+let currentDetail = null;
+let teamIndex = new Map();               // team name -> Set of sports
+let leaguesBySport = new Map();          // sport -> [leagues] (only sports with several)
+const DEFAULT_SPORT = document.body.dataset.sport || '';   // set on per-sport / per-league landing pages
+const DEFAULT_LEAGUE = document.body.dataset.league || '';
+const PAGE_ROWS = 150;
+const LONG_TAIL = new Set(["Men's College Basketball", "Women's College Basketball", 'College Hockey', 'College Volleyball', 'College Baseball', 'College Softball', 'Lacrosse']);
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const TZ_ZONES = { EST: 'America/New_York', CST: 'America/Chicago', MST: 'America/Denver', PST: 'America/Los_Angeles' };
 const ET = 'America/New_York';
+const LOCAL_ZONE = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ET; } catch (e) { return ET; } })();
+const TZ_ZONES = { LOCAL: LOCAL_ZONE, EST: 'America/New_York', CST: 'America/Chicago', MST: 'America/Denver', PST: 'America/Los_Angeles' };
 
 // GOOGLE SHEET CONFIGURATION (Public Read-Only)
 const SHEET_ID = '1gs8pwsOGR7yepLg1bTTthYmZ_NNprgP6-1Znu4ieRXM';
 const SHEET_NAME = 'schedule_template';
 
+const SPORT_ORDER = ['NFL', 'College Football', 'NBA', "Men's College Basketball", "Women's College Basketball", 'WNBA', 'NHL', 'College Hockey', 'MLB', 'Soccer', 'F1', 'NASCAR', 'IndyCar', 'UFC', 'MMA', 'Golf', 'Tennis', 'College Baseball', 'College Softball', 'College Volleyball', 'Lacrosse'];
+const sportRank = s => { const i = SPORT_ORDER.indexOf(s); return i < 0 ? 999 : i; };
+
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fold = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const track = (name, params) => { if (typeof gtag !== 'undefined') gtag('event', name, params); };
+const sportClass = s => 's-' + s.toLowerCase().replace(/[^a-z0-9]/g, '');
+const slugify = s => fold(s).replace(/['\u2019]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');   // keep in sync with build.js
 
 /* ---------- Theme ---------- */
 const ICON_MOON = '<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
@@ -421,14 +589,15 @@ function toggleDarkMode() {
 
 /* ---------- Time ----------
    The sheet's column G holds each game's start as an ISO timestamp with the
-   Eastern offset, so DST, year and day boundaries are never guessed. Older
-   rows without it fall back to parsing the date/time text (as Eastern). */
+   Eastern offset (date-only for all-day / time-TBA rows), so DST, year and day
+   boundaries are never guessed. */
 function updateTimezone() {
   currentTimezone = document.getElementById('timezoneSelect').value;
   try { localStorage.setItem('selectedTimezone', currentTimezone); } catch (e) {}
   track('change_timezone', { timezone: currentTimezone });
-  populateFilterDropdowns();   // day labels depend on the timezone
+  populateControls();   // day labels depend on the timezone
   displaySchedule();
+  showUpdated();
 }
 
 const dtfCache = {};
@@ -437,14 +606,13 @@ function dtf(zone, key, opts, locale) {
   return dtfCache[k] || (dtfCache[k] = new Intl.DateTimeFormat(locale || 'en-US', Object.assign({ timeZone: zone }, opts)));
 }
 
-// Day key, label, clock time and zone abbreviation for a Date in a zone.
 function localParts(date, zone) {
   zone = zone || TZ_ZONES[currentTimezone];
   const tzPart = dtf(zone, 'tz', { timeZoneName: 'short' }).formatToParts(date).find(p => p.type === 'timeZoneName');
   return {
     key: dtf(zone, 'key', { year: 'numeric', month: '2-digit', day: '2-digit' }, 'en-CA').format(date),
     label: dtf(zone, 'label', { weekday: 'long', month: 'long', day: 'numeric' }).format(date),
-    time: dtf(zone, 'time', { hour: 'numeric', minute: '2-digit' }).format(date).replace(/[  ]/g, ' '),
+    time: dtf(zone, 'time', { hour: 'numeric', minute: '2-digit' }).format(date).replace(/[\u202f\u00a0]/g, ' '),
     tz: tzPart ? tzPart.value : currentTimezone
   };
 }
@@ -455,7 +623,6 @@ function zoneOffsetMs(date, zone) {
     .formatToParts(date).forEach(x => { p[x.type] = +x.value; });
   return Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute, p.second) - Math.floor(date.getTime() / 1000) * 1000;
 }
-// Wall-clock time in a zone -> Date (DST-aware)
 function zonedToDate(y, mo, d, h, mi, zone) {
   const wall = Date.UTC(y, mo, d, h, mi);
   let t = wall - zoneOffsetMs(new Date(wall), zone);
@@ -463,33 +630,66 @@ function zonedToDate(y, mo, d, h, mi, zone) {
   return new Date(t);
 }
 
-function timeToMinutes(timeStr) {
-  const m = String(timeStr).match(/(\d+):(\d+)\s*(AM|PM)/);
-  if (!m) return null;
-  let h = parseInt(m[1]);
-  if (m[3] === 'PM' && h !== 12) h += 12;
-  if (m[3] === 'AM' && h === 12) h = 0;
-  return h * 60 + parseInt(m[2]);
+// All-day / TBA rows keep their calendar date in every timezone.
+function localFor(g, zone) {
+  if (g.allDay) {
+    const noon = new Date(g.isoDate + 'T12:00:00Z');
+    return { key: g.isoDate, label: dtf('UTC', 'adlabel', { weekday: 'long', month: 'long', day: 'numeric' }).format(noon), time: g.timeLabel, tz: '' };
+  }
+  return localParts(g.start, zone);
 }
 
-// Legacy fallback: "Wednesday, December 31" + "7:30 PM" (Eastern, no year)
-function legacyStart(dateStr, timeStr) {
-  const parts = dateStr.split(', ');
-  const md = (parts[1] || '').split(' ');
-  const month = MONTHS.indexOf(md[0]);
-  const day = parseInt(md[1]);
-  const mins = timeToMinutes(timeStr);
-  if (month < 0 || isNaN(day) || mins === null) return null;
-  const now = new Date();
-  const year = month < now.getMonth() ? now.getFullYear() + 1 : now.getFullYear();
-  return zonedToDate(year, month, day, Math.floor(mins / 60), mins % 60, ET);
-}
-
-function isGameLive(start, sport) {
-  const durations = { NCAAF: 240, NFL: 225, NBA: 150, NHL: 150 };
-  const end = start.getTime() + (durations[sport] || 180) * 60000;
+const DURATIONS = { 'College Football': 240, NFL: 225, NBA: 150, NHL: 150, MLB: 195, UFC: 300, F1: 120, NASCAR: 180, Soccer: 120 };
+const gameEnd = g => g.start.getTime() + (DURATIONS[g.sport] || 150) * 60000;
+function isGameLive(g) {
+  if (g.allDay) return false;
   const now = Date.now();
-  return now >= start.getTime() && now <= end;
+  return now >= g.start.getTime() && now <= gameEnd(g);
+}
+// No scores in the data, so estimate: well past its usual length = over. Tournament-day rows stay all day.
+const isFinished = g => !g.allDay && g.sport !== 'Tennis' && Date.now() > gameEnd(g) + 30 * 60000;
+
+function showUpdated() {
+  const el = document.getElementById('updated');
+  if (!updatedAt) { el.textContent = ''; el.className = 'updated'; return; }
+  const p = localParts(updatedAt);
+  const day = p.key === localParts(new Date()).key ? 'today' : p.label;
+  const stale = Date.now() - updatedAt.getTime() > 26 * 3600000;
+  el.className = 'updated' + (stale ? ' stale' : '');
+  el.textContent = stale
+    ? `Schedule may be out of date. Last updated ${day} at ${p.time} ${p.tz}.`
+    : `Updated ${day} at ${p.time} ${p.tz}`;
+}
+
+/* ---------- Networks ----------
+   Each game lists every way to watch it (column J): free over-the-air TV,
+   cable/satellite and streaming, national and local. */
+const OTA = new Set(['abc', 'cbs', 'nbc', 'fox', 'the cw', 'cw', 'telemundo', 'univision', 'unimas', 'pbs', 'ion', 'mynetworktv']);
+const STREAM_RE = /(peacock|prime video|apple tv|espn\+|espn unlimited|paramount\+|netflix|\bmax\b|fubo|youtube|dazn|victory\+|season pass|nfl\+|league pass|big ten\+|sec network\+|acc network extra|\bapp\b|\.com|\+$)/i;
+const TYPE_LABEL = { free: 'Free over-the-air TV', cable: 'Cable / satellite', stream: 'Streaming' };
+
+function netType(n) {
+  if (n.t === 'stream' || STREAM_RE.test(n.n)) return 'stream';
+  if (!n.l && OTA.has(fold(n.n))) return 'free';
+  return 'cable';
+}
+function parseNets(json, primary) {
+  let a = [];
+  try { a = json ? JSON.parse(json) : []; } catch (e) { a = []; }
+  if (!a.length && primary && primary !== 'TBD') a = [{ n: primary, t: 'tv' }];
+  return a.filter(x => x && x.n).map(x => { const n = { n: String(x.n), t: x.t || 'tv', l: !!x.l, u: !!x.u }; n.type = netType(n); return n; });
+}
+function netTag(n) {
+  const cls = ['net', n.type, n.l ? 'local' : '', n.u ? 'usual' : ''].filter(Boolean).join(' ');
+  const tip = n.l ? 'Local or regional: depends on where you live' : n.u ? "Usually shown here: confirm in your guide" : TYPE_LABEL[n.type];
+  return `<span class="${cls}" title="${esc(tip)}">${esc(n.n)}</span>`;
+}
+function netsHtml(nets) {
+  const national = nets.filter(n => !n.l), locals = nets.filter(n => n.l);
+  const parts = national.map(netTag).concat(locals.slice(0, 2).map(netTag));
+  if (locals.length > 2) parts.push(`<span class="net local more" title="More local or regional options in the details">+${locals.length - 2} local</span>`);
+  if (!parts.length) parts.push('<span class="net none">Network TBA</span>');
+  return `<div class="nets">${parts.join('')}</div>`;
 }
 
 /* ---------- Data ---------- */
@@ -523,172 +723,389 @@ async function loadScheduleData() {
     const response = await fetch(url);
     const rows = parseCSV(await response.text());
     if (rows.length > 1) {
-      parseGamesFromSheet(rows.slice(1).filter(r => r.length >= 5));
-      populateFilterDropdowns();
+      parseGamesFromSheet(rows.slice(1).filter(r => r.length >= 7));
+      populateControls();
       displaySchedule();
+      showUpdated();
     } else {
       throw new Error('No data returned');
     }
   } catch (error) {
     console.error('Error:', error);
     track('load_error', { error_message: error.message, error_type: error.name });
-    document.getElementById('schedule').innerHTML =
-      `<div class="loading error"><strong>Couldn't load the schedule.</strong><br>${esc(error.message)}</div>`;
+    if (!allGames.length) {
+      document.getElementById('schedule').innerHTML =
+        `<div class="loading error"><strong>Couldn't load the schedule.</strong><br>${esc(error.message)}</div>`;
+    }
   }
 }
 
+const teamsOf = g => g.kind === 'team' ? g.matchup.split(/\s+vs\.?\s+/i).map(t => t.trim()).filter(Boolean) : [];
+
 function parseGamesFromSheet(values) {
   const games = [];
+  updatedAt = null;
   values.forEach(row => {
     const iso = (row[6] || '').trim();
-    let start = iso ? new Date(iso) : null;
-    if (!start || isNaN(start.getTime())) start = legacyStart(row[0].trim(), row[1].trim());
-    if (!start) return;                       // unreadable row: skip rather than show a wrong time
-    const extra = row[5] ? row[5].trim() : '';
+    const allDay = /^\d{4}-\d\d-\d\d$/.test(iso);
+    let start = null;
+    if (allDay) { const [y, m, d] = iso.split('-').map(Number); start = zonedToDate(y, m - 1, d, 0, 0, ET); }
+    else if (iso) start = new Date(iso);
+    if (!start || isNaN(start.getTime())) return;       // unreadable row: skip rather than show a wrong time
+    if (!updatedAt && row[8]) { const u = new Date(row[8].trim()); if (!isNaN(u.getTime())) updatedAt = u; }
+    const sport = (row[4] || '').trim();
+    const matchup = (row[2] || '').trim();
     games.push({
-      start: start,
-      matchup: row[2].trim(),
-      network: row[3].trim(),
-      sport: row[4].trim(),
-      bowlName: extra,
-      additionalInfo: extra
+      start: start, allDay: allDay, isoDate: allDay ? iso : '', timeLabel: allDay ? ((row[1] || '').trim() || 'All day') : '',
+      matchup: matchup, sport: sport, league: (row[10] || '').trim() || sport,
+      kind: (row[11] || '').trim() || (/\s+vs\.?\s+/i.test(matchup) ? 'team' : 'event'),
+      nets: parseNets(row[9], (row[3] || '').trim()),
+      additionalInfo: row[5] ? row[5].trim() : ''
     });
   });
   games.sort((a, b) => a.start - b.start);
 
   // Keep today (Eastern, matching the sheet) and later
   const todayET = localParts(new Date(), ET).key;
-  allGames = games.filter(g => localParts(g.start, ET).key >= todayET);
+  allGames = games.filter(g => localFor(g, ET).key >= todayET);
+
+  teamIndex = new Map();
+  const lg = new Map();
+  allGames.forEach(g => {
+    teamsOf(g).forEach(t => { if (!teamIndex.has(t)) teamIndex.set(t, new Set()); teamIndex.get(t).add(g.sport); });
+    if (!lg.has(g.sport)) lg.set(g.sport, new Set());
+    lg.get(g.sport).add(g.league);
+  });
+  leaguesBySport = new Map();
+  lg.forEach((set, sport) => { if (set.size > 1) leaguesBySport.set(sport, [...set].sort((a, b) => a.localeCompare(b))); });
+}
+
+/* ---------- Picks (teams, sports, leagues) ---------- */
+const hasPicks = () => picks.sports.length > 0 || picks.teams.length > 0;
+const defaultPicks = () => ({ sports: DEFAULT_SPORT ? [DEFAULT_SPORT] : [], leagues: DEFAULT_LEAGUE ? [DEFAULT_LEAGUE] : [], teams: [] });
+
+function loadSavedPicks() {
+  try {
+    const p = JSON.parse(localStorage.getItem('picks') || 'null');
+    if (p) return { sports: p.sports || [], leagues: p.leagues || [], teams: p.teams || [] };
+    const old = JSON.parse(localStorage.getItem('myTeams') || '[]');        // earlier "My teams" feature
+    if (old.length) return { sports: [], leagues: [], teams: old };
+  } catch (e) {}
+  return { sports: [], leagues: [], teams: [] };
+}
+function savePicks() { try { localStorage.setItem('picks', JSON.stringify(picks)); } catch (e) {} }
+
+function sportsPresent() {
+  return [...new Set(allGames.map(g => g.sport))].sort((a, b) => sportRank(a) - sportRank(b) || a.localeCompare(b));
+}
+
+function matchesPicks(g) {
+  if (!hasPicks()) return true;
+  if (picks.sports.includes(g.sport)) {
+    const lp = picks.leagues.filter(l => (leaguesBySport.get(g.sport) || []).includes(l));
+    if (!lp.length || lp.includes(g.league)) return true;
+  }
+  return teamsOf(g).some(t => picks.teams.includes(t));
+}
+
+function picksChanged() {
+  savePicks();
+  rowsShown = PAGE_ROWS;
+  renderPicker();
+  writeUrlState();
+  displaySchedule();
+}
+function togglePickSport(s) {
+  const i = picks.sports.indexOf(s);
+  if (i < 0) picks.sports.push(s);
+  else { picks.sports.splice(i, 1); const own = leaguesBySport.get(s) || []; picks.leagues = picks.leagues.filter(l => !own.includes(l)); }
+  track('pick_sport', { sport: s, on: i < 0 });
+  picksChanged();
+}
+function togglePickLeague(l) {
+  const i = picks.leagues.indexOf(l);
+  if (i < 0) picks.leagues.push(l); else picks.leagues.splice(i, 1);
+  picksChanged();
+}
+function toggleTeam(team) {
+  const i = picks.teams.indexOf(team);
+  if (i < 0) picks.teams.push(team); else picks.teams.splice(i, 1);
+  track('pick_team', { team: team, on: i < 0 });
+  picksChanged();
+  if (currentDetail) renderDetailTeams(currentDetail);
+}
+function removePick(kind, val) {
+  if (kind === 'sport') return togglePickSport(val);
+  if (kind === 'league') return togglePickLeague(val);
+  return toggleTeam(val);
+}
+function clearPicks() {
+  picks = { sports: [], leagues: [], teams: [] };
+  pickerOpen = true;
+  picksChanged();
+}
+function togglePicker() { pickerOpen = !pickerOpen; renderPicker(); }
+
+function renderPicker() {
+  const sports = sportsPresent();
+  const picked = hasPicks();
+  document.getElementById('picker').classList.toggle('fresh', !picked);
+  document.getElementById('sportChips').innerHTML = sports.map(s =>
+    `<button class="chip ${sportClass(s)}${picks.sports.includes(s) ? ' active' : ''}" data-sport="${esc(s)}" aria-pressed="${picks.sports.includes(s)}">${esc(s)}</button>`).join('');
+
+  const leagueSports = picks.sports.filter(s => leaguesBySport.has(s));
+  document.getElementById('leagueBlock').style.display = leagueSports.length ? '' : 'none';
+  if (leagueSports.length) {
+    document.getElementById('leagueLabel').textContent = `${leagueSports.join(' & ')} leagues (optional: pick some to narrow it)`;
+    document.getElementById('leagueChips').innerHTML = leagueSports.flatMap(s => leaguesBySport.get(s)).map(l =>
+      `<button class="chip${picks.leagues.includes(l) ? ' active' : ''}" data-league="${esc(l)}" aria-pressed="${picks.leagues.includes(l)}">${esc(l)}</button>`).join('');
+  }
+
+  const chip = (kind, val) => `<button class="pick-chip" data-kind="${kind}" data-val="${esc(val)}" aria-label="Remove ${esc(val)}">${esc(val)} <i>✕</i></button>`;
+  document.getElementById('pickChips').innerHTML = picks.teams.map(t => chip('team', t)).join('');
+
+  const line = document.getElementById('picksLine');
+  line.innerHTML = '<span class="none">Your picks:</span>' +
+    picks.sports.map(s => chip('sport', s)).join('') + picks.leagues.map(l => chip('league', l)).join('') + picks.teams.map(t => chip('team', t)).join('') +
+    '<button class="clear" data-clear="1">Clear picks</button>';
+  line.style.display = (picked && !pickerOpen) ? '' : 'none';
+  document.getElementById('pickerBody').style.display = pickerOpen || !picked ? '' : 'none';
+
+  const toggle = document.getElementById('pickerToggle');
+  toggle.style.display = picked ? '' : 'none';
+  toggle.textContent = pickerOpen ? 'Done' : 'Edit picks';
+  document.getElementById('pickerTitle').textContent = picked ? 'Your picks' : 'Pick your teams or sports';
+  document.getElementById('pickerSub').textContent = picked
+    ? (pickerOpen ? 'Tap a sport to add or remove it, or search for a team below.' : 'Showing only what you follow. Everything else is hidden until you clear your picks.')
+    : "Choose what you follow and we'll show every place to watch it. Or skip this and browse everything below.";
+}
+
+document.getElementById('sportChips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) togglePickSport(b.dataset.sport); });
+document.getElementById('leagueChips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) togglePickLeague(b.dataset.league); });
+['pickChips', 'picksLine'].forEach(id => document.getElementById(id).addEventListener('click', e => {
+  if (e.target.closest('[data-clear]')) return clearPicks();
+  const b = e.target.closest('.pick-chip');
+  if (b) removePick(b.dataset.kind, b.dataset.val);
+}));
+
+/* ---------- Search box: filters the list as you type, and suggests picks ---------- */
+function suggestions(q) {
+  const f = fold(q).trim();
+  if (!f) return [];
+  const out = [];
+  sportsPresent().forEach(s => { if (fold(s).includes(f) && !picks.sports.includes(s)) out.push({ kind: 'sport', val: s, tag: 'Sport' }); });
+  leaguesBySport.forEach((ls, s) => ls.forEach(l => { if (fold(l).includes(f) && !picks.leagues.includes(l)) out.push({ kind: 'league', val: l, sport: s, tag: 'League · ' + s }); }));
+  [...teamIndex.keys()].filter(t => fold(t).includes(f) && !picks.teams.includes(t))
+    .sort((a, b) => (fold(a).startsWith(f) ? 0 : 1) - (fold(b).startsWith(f) ? 0 : 1) || a.length - b.length).slice(0, 6)
+    .forEach(t => out.push({ kind: 'team', val: t, tag: 'Team · ' + [...teamIndex.get(t)].slice(0, 2).join(', ') }));
+  return out.slice(0, 8);
+}
+let suggestList = [];
+function renderSuggest() {
+  const box = document.getElementById('suggest');
+  suggestList = suggestions(document.getElementById('teamSearch').value);
+  box.innerHTML = suggestList.map((s, i) => `<button data-i="${i}"><span>${esc(s.val)}</span><small>${esc(s.tag)}</small></button>`).join('');
+  box.classList.toggle('open', suggestList.length > 0);
+}
+function chooseSuggestion(s) {
+  if (s.kind === 'sport') { if (!picks.sports.includes(s.val)) picks.sports.push(s.val); }
+  else if (s.kind === 'league') { if (!picks.sports.includes(s.sport)) picks.sports.push(s.sport); if (!picks.leagues.includes(s.val)) picks.leagues.push(s.val); }
+  else if (!picks.teams.includes(s.val)) picks.teams.push(s.val);
+  track('pick_from_search', { kind: s.kind, value: s.val });
+  document.getElementById('teamSearch').value = '';
+  filters.q = '';
+  document.getElementById('suggest').classList.remove('open');
+  picksChanged();
+}
+(function wireSearch() {
+  const input = document.getElementById('teamSearch');
+  let timer = null;
+  input.addEventListener('input', () => {
+    renderSuggest();
+    clearTimeout(timer);
+    timer = setTimeout(() => { filters.q = input.value.trim(); rowsShown = PAGE_ROWS; writeUrlState(); displaySchedule(); }, 150);
+  });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && suggestList.length) { e.preventDefault(); chooseSuggestion(suggestList[0]); }
+    if (e.key === 'Escape') document.getElementById('suggest').classList.remove('open');
+  });
+  document.getElementById('suggest').addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (b) chooseSuggestion(suggestList[+b.dataset.i]);
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.team-search')) document.getElementById('suggest').classList.remove('open'); });
+})();
+
+/* ---------- Shareable URL state ---------- */
+function readUrlState() {
+  const p = new URLSearchParams(location.search);
+  if (p.has('sport') || p.has('team') || p.has('league')) {
+    picks = { sports: p.getAll('sport').filter(s => s !== 'all'), leagues: p.getAll('league'), teams: p.getAll('team') };
+  } else if (DEFAULT_SPORT) {
+    picks = defaultPicks();
+  } else {
+    picks = loadSavedPicks();
+  }
+  filters.q = (p.get('q') || '').trim();
+  filters.network = p.get('network') || '';
+  filters.day = p.get('day') || '';
+  filters.free = p.get('free') === '1';
+  document.getElementById('teamSearch').value = filters.q;
+  pickerOpen = !hasPicks();
+}
+
+function writeUrlState() {
+  const p = new URLSearchParams();
+  const d = defaultPicks();
+  const same = JSON.stringify(picks) === JSON.stringify(d);
+  if (!same) {
+    if (!hasPicks() && !picks.leagues.length) p.append('sport', 'all');
+    picks.sports.forEach(s => p.append('sport', s));
+    picks.leagues.forEach(l => p.append('league', l));
+    picks.teams.forEach(t => p.append('team', t));
+  }
+  if (filters.q) p.set('q', filters.q);
+  if (filters.network) p.set('network', filters.network);
+  if (filters.day) p.set('day', filters.day);
+  if (filters.free) p.set('free', '1');
+  const qs = p.toString();
+  try { history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) {}
+}
+
+function copyLink() {
+  const btn = document.getElementById('shareBtn');
+  const done = () => { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = 'Copy link'; }, 1800); };
+  track('copy_link');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(location.href).then(done, () => window.prompt('Copy this link:', location.href));
+  } else {
+    window.prompt('Copy this link:', location.href);
+  }
 }
 
 /* ---------- Filters ---------- */
-function populateFilterDropdowns() {
-  const sports = [...new Set(allGames.map(g => g.sport))].sort();
-  allGames.forEach(g => { g.local = localParts(g.start); });
-  const days = [...new Set(allGames.map(g => g.local.label))];
-  if (filters.day && !days.includes(filters.day)) filters.day = '';
+function populateControls() {
+  allGames.forEach(g => { g.local = localFor(g); });
+  const dayMap = new Map();
+  allGames.forEach(g => { if (!dayMap.has(g.local.key)) dayMap.set(g.local.key, g.local.label); });
+  const days = [...dayMap.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1));
+  const nets = [...new Set(allGames.flatMap(g => g.nets.filter(n => !n.l).map(n => n.n)))].sort((a, b) => a.localeCompare(b));
+  if (filters.day && !dayMap.has(filters.day)) filters.day = '';
+  if (filters.network && !nets.includes(filters.network)) filters.network = '';
 
-  const box = document.getElementById('sportFilters');
-  box.innerHTML = sports.map(s =>
-    `<button class="chip ${sportClass(s)}${filters.sport === s ? ' active' : ''}" data-sport="${esc(s)}" aria-pressed="${filters.sport === s}">${esc(s)}</button>`
-  ).join('');
-  box.onclick = e => {
-    const b = e.target.closest('.chip');
-    if (b) toggleSportFilter(b.dataset.sport);
-  };
-
-  const nd = document.getElementById('networkDropdown');
-  const nets = [...new Set(allGames.map(g => g.network))].sort((a, b) => a.localeCompare(b));
-  nd.innerHTML = '<option value="">All networks</option>' +
+  document.getElementById('networkDropdown').innerHTML = '<option value="">All networks</option>' +
     nets.map(n => `<option value="${esc(n)}"${filters.network === n ? ' selected' : ''}>${esc(n)}</option>`).join('');
+  document.getElementById('dayDropdown').innerHTML = '<option value="">All days</option>' +
+    days.map(([k, l]) => `<option value="${k}"${filters.day === k ? ' selected' : ''}>${esc(l)}</option>`).join('');
+  document.getElementById('freeBtn').setAttribute('aria-pressed', filters.free);
 
-  const dd = document.getElementById('dayDropdown');
-  dd.innerHTML = '<option value="">All days</option>' +
-    days.map(d => `<option value="${esc(d)}"${filters.day === d ? ' selected' : ''}>${esc(d)}</option>`).join('');
-}
-
-function toggleSportFilter(sport) {
-  filters.sport = filters.sport === sport ? '' : sport;
-  document.querySelectorAll('#sportFilters .chip').forEach(b => {
-    const on = b.dataset.sport === filters.sport;
-    b.classList.toggle('active', on);
-    b.setAttribute('aria-pressed', on);
-  });
-  applyFilters();
+  // drop picks for sports that have no games right now? keep them: they simply show nothing yet.
+  renderPicker();
 }
 
 function applyFilters() {
-  filters.search = document.getElementById('searchBox').value.toLowerCase();
   filters.network = document.getElementById('networkDropdown').value;
   filters.day = document.getElementById('dayDropdown').value;
-
-  const used = ['search', 'network', 'sport', 'day'].filter(k => filters[k]);
-  if (used.length) {
-    track('apply_filters', {
-      filters_used: used.join(','),
-      sport: filters.sport || 'all',
-      network: filters.network || 'all'
-    });
-  }
+  rowsShown = PAGE_ROWS;
+  const used = ['network', 'day', 'free', 'q'].filter(k => filters[k]);
+  if (used.length) track('apply_filters', { filters_used: used.join(','), network: filters.network || 'all' });
+  writeUrlState();
   displaySchedule();
 }
 
+function toggleFree() {
+  filters.free = !filters.free;
+  document.getElementById('freeBtn').setAttribute('aria-pressed', filters.free);
+  applyFilters();
+}
+
 function clearAllFilters() {
-  document.getElementById('searchBox').value = '';
-  document.getElementById('networkDropdown').value = '';
-  document.getElementById('dayDropdown').value = '';
-  document.querySelectorAll('.chip.active').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', false); });
-  filters = { search: '', network: '', sport: '', day: '' };
+  filters = { q: '', network: '', day: '', free: false };
+  document.getElementById('teamSearch').value = '';
+  document.getElementById('suggest').classList.remove('open');
+  rowsShown = PAGE_ROWS;
+  populateControls();
+  writeUrlState();
   displaySchedule();
 }
 
 /* ---------- Render ---------- */
-function getChannelClass(network) {
-  const key = network.toLowerCase().replace(/\+/g, 'plus').replace(/[^\w]/g, '');
-  const map = {
-    espn: 'espn', espn2: 'espn', espnu: 'espnu', netflix: 'netflix', espnplus: 'espnplus', abc: 'abc', fox: 'fox', cbs: 'cbs', nbc: 'nbc',
-    peacock: 'peacock', paramountplus: 'paramount', paramount: 'paramount',
-    primevideo: 'primevideo', prime: 'primevideo', tnt: 'tnt', tbs: 'tnt', cwnetwork: 'cwnetwork', thecw: 'cwnetwork',
-    nflnet: 'nflnet', nflnetwork: 'nflnet', fs1: 'fs1', fs2: 'fs2', usanetwork: 'usanetwork',
-    nhln: 'nhln', nhlnetwork: 'nhln', thespot: 'thespot', raystv: 'raystv', wxpx: 'wxpx'
-  };
-  return 'n-' + (map[key] || 'none');
-}
-
-const sportClass = s => 's-' + s.toLowerCase().replace(/[^a-z0-9]/g, '');
-
 function displaySchedule() {
-  allGames.forEach(g => { g.local = localParts(g.start); });
-  let list = allGames;
-  if (filters.search) {
-    list = list.filter(g => g.matchup.toLowerCase().includes(filters.search) || g.sport.toLowerCase().includes(filters.search));
+  allGames.forEach(g => { g.local = localFor(g); });
+  let list = allGames.filter(g => matchesPicks(g) && !isFinished(g));
+  if (filters.q) {
+    const f = fold(filters.q);
+    list = list.filter(g => fold(`${g.matchup} ${g.sport} ${g.league} ${g.nets.map(n => n.n).join(' ')}`).includes(f));
   }
-  if (filters.network) list = list.filter(g => g.network === filters.network);
-  if (filters.sport) list = list.filter(g => g.sport === filters.sport);
-  if (filters.day) list = list.filter(g => g.local.label === filters.day);
+  if (filters.network) list = list.filter(g => g.nets.some(n => n.n === filters.network));
+  if (filters.day) list = list.filter(g => g.local.key === filters.day);
+  if (filters.free) list = list.filter(g => g.nets.some(n => !n.l && n.type === 'free'));
 
-  // allGames is already chronological, so grouping preserves order
-  const groups = new Map();
+  // Group by the viewer's local day; all-day / TBA rows lead their day.
+  const byDay = new Map();
   list.forEach(g => {
-    if (!groups.has(g.local.key)) groups.set(g.local.key, []);
-    groups.get(g.local.key).push(g);
+    if (!byDay.has(g.local.key)) byDay.set(g.local.key, []);
+    byDay.get(g.local.key).push(g);
   });
+  const groups = [...byDay.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1));
+  // With nothing picked, big leagues lead each day and the long tail of college sports follows;
+  // within that: all-day rows (golf), timed games, then "time TBA".
+  const tier = g => (!hasPicks() && LONG_TAIL.has(g.sport) ? 1 : 0);
+  const slot = g => (g.timeLabel === 'TBA' ? 2 : g.allDay ? 0 : 1);
+  groups.forEach(([, games]) => games.sort((a, b) => (tier(a) - tier(b)) || (slot(a) - slot(b)) || (a.start - b.start)));
 
+  // Long lists render a day at a time until ~150 games are showing; "Show more" continues.
+  let shown = groups, hidden = 0;
+  if (!filters.day && list.length > rowsShown) {
+    shown = [];
+    let n = 0;
+    for (const grp of groups) { if (n >= rowsShown) break; shown.push(grp); n += grp[1].length; }
+    hidden = list.length - n;
+  }
   const todayKey = localParts(new Date()).key;
 
   visibleGames = [];
   let html = '';
-
-  if (!groups.size) {
-    html = '<div class="empty"><strong>Nothing matches.</strong>Try clearing a filter, or check back soon.</div>';
+  if (!groups.length) {
+    html = hasPicks() && !allGames.some(g => matchesPicks(g) && !isFinished(g))
+      ? '<div class="empty"><strong>Nothing scheduled for your picks right now.</strong>Their next games may be outside the next 30 days. Try another team or sport.</div>'
+      : '<div class="empty"><strong>Nothing matches.</strong>Try clearing a filter, or check back soon.</div>';
   } else {
-    groups.forEach((games, key) => {
+    shown.forEach(([key, games]) => {
       const [weekday, monthDay] = games[0].local.label.split(', ');
-      const isToday = key === todayKey;
       html += `<section class="day"><div class="day-head">
-        <span class="day-name">${esc(weekday)}</span>
+        <h2 class="day-name">${esc(weekday)}</h2>
         <span class="day-date">${esc(monthDay)}</span>
-        ${isToday ? '<span class="today-tag">Today</span>' : ''}
+        ${key === todayKey ? '<span class="today-tag">Today</span>' : ''}
         <span class="day-count">${games.length} ${games.length === 1 ? 'game' : 'games'}</span>
       </div>`;
       games.forEach(game => {
         const idx = visibleGames.push(game) - 1;
-        const t = { t: game.local.time, tz: game.local.tz };
-        const live = isGameLive(game.start, game.sport);
+        const live = isGameLive(game);
+        const label = game.league !== game.sport && game.kind === 'team' ? `${game.sport} · ${game.league}` : game.league !== game.sport ? `${game.sport} · ${game.league}` : game.sport;
+        const mine = teamsOf(game).some(t => picks.teams.includes(t));
         html += `<button class="game ${sportClass(game.sport)}" data-idx="${idx}">
-          <div class="time"><b>${esc(t.t)}</b><small>${esc(t.tz)}</small></div>
+          <div class="time${game.allDay ? ' allday' : ''}"><b>${esc(game.local.time)}</b><small>${esc(game.local.tz)}</small></div>
           <div>
-            <div class="sport">${esc(game.sport)}</div>
-            <div class="matchup">${esc(game.matchup)}${live ? '<span class="live">Live</span>' : ''}</div>
+            <div class="sport">${esc(label)}</div>
+            <div class="matchup">${esc(game.matchup)}${mine ? '<span class="fav" title="One of your teams">\u2605</span>' : ''}${live ? '<span class="live">Live</span>' : ''}</div>
           </div>
-          <span class="net ${getChannelClass(game.network)}">${esc(game.network)}</span>
+          ${netsHtml(game.nets)}
         </button>`;
       });
       html += '</section>';
     });
+    if (hidden > 0) {
+      html += `<div class="more-wrap"><button class="more-btn" onclick="showMore()">Show more games (${hidden.toLocaleString()} left)</button></div>`;
+    }
   }
   document.getElementById('schedule').innerHTML = html;
+
+  document.getElementById('resultsBar').innerHTML =
+    `<span><b>${list.length.toLocaleString()}</b> ${list.length === 1 ? 'game' : 'games'}${hasPicks() ? ' for your picks' : ''}${hidden > 0 ? ` · showing the first ${(list.length - hidden).toLocaleString()}` : ''}</span>` +
+    `<span class="legend"><span class="l-free">Free TV</span><span class="l-cable">Cable / satellite</span><span class="l-stream">Streaming</span><span class="l-local">Local / regional</span></span>`;
 }
+function showMore() { rowsShown += PAGE_ROWS; displaySchedule(); }
 
 document.getElementById('schedule').addEventListener('click', e => {
   const el = e.target.closest('.game');
@@ -696,21 +1113,39 @@ document.getElementById('schedule').addEventListener('click', e => {
 });
 
 /* ---------- Detail ---------- */
+function watchHtml(nets) {
+  const nat = nets.filter(n => !n.l);
+  const rows = [
+    ['Free TV', nat.filter(n => n.type === 'free')],
+    ['Cable / satellite', nat.filter(n => n.type === 'cable')],
+    ['Streaming', nat.filter(n => n.type === 'stream')],
+    ['Local / regional', nets.filter(n => n.l)]
+  ].filter(r => r[1].length);
+  if (!rows.length) return '<div class="watch-row"><b>Where</b><div class="nets"><span class="net none">Network not announced yet</span></div></div>';
+  let html = rows.map(([label, list]) => `<div class="watch-row"><b>${label}</b><div class="nets">${list.map(netTag).join('')}</div></div>`).join('');
+  const notes = [];
+  if (nets.some(n => n.u)) notes.push('Dotted italic = the league\'s usual home for these games; confirm in your guide.');
+  if (nets.some(n => n.l)) notes.push('Local and regional channels depend on where you live.');
+  notes.push('What you can actually watch depends on your TV provider and subscriptions.');
+  return html + `<div class="watch-note">${notes.join(' ')}</div>`;
+}
+
 function showDetailView(game) {
-  track('view_game_details', { sport: game.sport, matchup: game.matchup, network: game.network, date: game.local.label });
+  currentDetail = game;
+  track('view_game_details', { sport: game.sport, matchup: game.matchup, date: game.local.label });
 
   const ds = document.getElementById('detailSport');
-  ds.textContent = game.sport;
+  ds.textContent = game.league !== game.sport ? `${game.sport} · ${game.league}` : game.sport;
   ds.parentElement.parentElement.className = 'detail-card ' + sportClass(game.sport);
   document.getElementById('detailTitle').textContent = game.matchup;
   document.getElementById('detailDate').textContent = game.local.label;
-  document.getElementById('detailTime').textContent = game.local.time + ' ' + game.local.tz;
-  const net = document.getElementById('detailNetwork');
-  net.textContent = game.network;
-  net.className = 'net ' + getChannelClass(game.network);
+  document.getElementById('detailTime').textContent = (game.local.time + ' ' + game.local.tz).trim();
+  document.getElementById('detailWatch').innerHTML = watchHtml(game.nets);
+  renderDetailTeams(game);
+  document.getElementById('gcalLink').href = googleCalUrl(game);
 
   const info = document.getElementById('detailInfo');
-  const extra = game.additionalInfo || game.bowlName || '';
+  const extra = game.additionalInfo || '';
   if (extra.trim()) {
     info.className = 'detail-info';
     info.innerHTML = formatAdditionalInfo(extra);
@@ -720,6 +1155,100 @@ function showDetailView(game) {
   }
   document.getElementById('detailView').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+const HAS_FEEDS = !!document.querySelector('meta[name="calendar-feeds"]');
+function renderDetailTeams(game) {
+  const box = document.getElementById('detailTeams');
+  const teams = teamsOf(game);
+  box.style.display = teams.length ? '' : 'none';
+  box.innerHTML = teams.map(t => {
+    const on = picks.teams.includes(t);
+    const feed = HAS_FEEDS ? `<a class="team-btn" href="webcal://${location.host}/calendar/teams/${slugify(t)}.ics" title="Subscribe to every ${esc(t)} game in your calendar app">Subscribe</a>` : '';
+    return `<div class="team-row"><span class="team-name">${esc(t)}</span>` +
+      `<button class="team-btn" data-act="follow" data-team="${esc(t)}" aria-pressed="${on}">${on ? '\u2605 Following' : '\u2606 Follow'}</button>` +
+      `<button class="team-btn" data-act="all" data-team="${esc(t)}">All games</button>${feed}</div>`;
+  }).join('');
+}
+document.getElementById('detailTeams').addEventListener('click', e => {
+  const b = e.target.closest('button.team-btn');
+  if (!b) return;
+  if (b.dataset.act === 'follow') { toggleTeam(b.dataset.team); return; }
+  closeDetailView();
+  clearAllFilters();
+  document.getElementById('teamSearch').value = b.dataset.team;
+  filters.q = b.dataset.team;
+  pickerOpen = !hasPicks();
+  renderPicker(); writeUrlState(); displaySchedule();
+  window.scrollTo({ top: 0 });
+});
+
+/* ---------- Calendar ---------- */
+const DURATION_MIN = { NFL: 210, 'College Football': 210, NBA: 150, "Men's College Basketball": 130, "Women's College Basketball": 120, WNBA: 130, NHL: 150, MLB: 190, Soccer: 120, UFC: 300, NASCAR: 180, F1: 120, IndyCar: 180, Tennis: 360 };
+
+function calTimes(g) {
+  if (g.allDay) {
+    const next = new Date(g.isoDate + 'T00:00:00Z');
+    next.setUTCDate(next.getUTCDate() + 1);
+    return { allDay: true, start: g.isoDate.replace(/-/g, ''), end: next.toISOString().slice(0, 10).replace(/-/g, '') };
+  }
+  const end = new Date(g.start.getTime() + (DURATION_MIN[g.sport] || 150) * 60000);
+  const f = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  return { allDay: false, start: f(g.start), end: f(end) };
+}
+const calNets = g => g.nets.filter(n => !n.l).map(n => n.n);
+const calSummary = g => `${g.matchup}${calNets(g).length ? ' (' + calNets(g).slice(0, 3).join(', ') + ')' : ''}`;
+function calDescription(g) {
+  const extra = (g.additionalInfo || '').replace(/\n+🥊[^\n]*\nhttps?:\/\/\S+/g, '').trim();
+  const where = g.nets.length ? 'Where to watch: ' + g.nets.map(n => n.n + (n.l ? ' (local)' : '') + (n.u ? ' (usually)' : '')).join(', ') : 'Network not announced yet';
+  return (where + (extra ? '\n\n' + extra : '')).slice(0, 1500);
+}
+function googleCalUrl(g) {
+  const t = calTimes(g);
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    `&text=${encodeURIComponent(calSummary(g))}&dates=${t.start}/${t.end}&details=${encodeURIComponent(calDescription(g))}`;
+}
+const icsEscape = t => String(t).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+function foldLine(line) {          // RFC 5545: lines longer than 75 octets are folded
+  const enc = new TextEncoder();
+  let out = '', cur = '', bytes = 0;
+  for (const ch of line) {
+    const b = enc.encode(ch).length;
+    if (bytes + b > 74) { out += cur + '\r\n '; cur = ch; bytes = 1 + b; } else { cur += ch; bytes += b; }
+  }
+  return out + cur;
+}
+function hash36(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+
+function buildIcs(g) {
+  const t = calTimes(g);
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  const lines = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', "PRODID:-//What's It On//Schedule//EN", 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${hash36(g.sport + '|' + g.matchup + '|' + g.start.toISOString())}@whatsiton`,
+    `DTSTAMP:${stamp}`,
+    t.allDay ? `DTSTART;VALUE=DATE:${t.start}` : `DTSTART:${t.start}`,
+    t.allDay ? `DTEND;VALUE=DATE:${t.end}` : `DTEND:${t.end}`,
+    `SUMMARY:${icsEscape(calSummary(g))}`,
+    `DESCRIPTION:${icsEscape(calDescription(g))}`
+  ];
+  if (!t.allDay) lines.push('BEGIN:VALARM', 'TRIGGER:-PT30M', 'ACTION:DISPLAY', 'DESCRIPTION:Starting soon', 'END:VALARM');
+  lines.push('END:VEVENT', 'END:VCALENDAR');
+  return lines.map(foldLine).join('\r\n') + '\r\n';
+}
+
+function addToCalendar() {
+  const g = currentDetail;
+  if (!g) return;
+  track('add_to_calendar', { sport: g.sport, matchup: g.matchup });
+  const blob = new Blob([buildIcs(g)], { type: 'text/calendar;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = slugify(g.matchup).slice(0, 60) + '.ics';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
 
 // "🥊 Link Text\nhttps://url" -> clickable link. Input is escaped first.
@@ -745,19 +1274,20 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetailV
 /* ---------- Init ---------- */
 try {
   const tz = localStorage.getItem('selectedTimezone');
-  if (tz && TZ_ZONES[tz] !== undefined) {
-    currentTimezone = tz;
-    document.getElementById('timezoneSelect').value = tz;
-  }
+  if (tz && TZ_ZONES[tz] !== undefined) currentTimezone = tz;
 } catch (e) {}
+document.getElementById('timezoneSelect').value = currentTimezone;
+readUrlState();
+renderPicker();
 
 (function showToday() {
   const d = new Date();
   const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  document.getElementById('currentDate').textContent = `${days[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`;
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('currentDate').textContent = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
 })();
 
-window.addEventListener('load', loadScheduleData);
+loadScheduleData();   // don't wait for the load event (fonts/analytics can delay it)
 setInterval(loadScheduleData, 300000);
 </script>
 </body>
