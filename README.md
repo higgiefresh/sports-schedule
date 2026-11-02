@@ -1,12 +1,13 @@
-# 🏆 Sports On TV
+# ❓ What's It On?
 
-> A fully automated sports schedule aggregator with Grade A security, displaying upcoming NFL, NBA, NHL, and NCAAF games from major broadcast networks.
+> Pick your teams or sports and see every way to watch: free TV, cable and streaming. A fully automated schedule for 40+ U.S. leagues, running on free tools.
 
-[![Security Headers](https://img.shields.io/badge/Security%20Headers-A-brightgreen)](https://securityheaders.com/)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/333b1a77-f554-45a9-b620-395e12ceb86e/deploy-status)](https://app.netlify.com/sites/higgins-sports-schedule/deploys)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 **Live Site:** [https://higgins-sports-schedule.netlify.app/](https://higgins-sports-schedule.netlify.app/)
+
+> Formerly **Sports On TV**, a local broadcast-only schedule. It now covers any major U.S. sporting event and shows every network, paid or free.
 
 ---
 
@@ -16,11 +17,12 @@
 - [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
-- [Security](#security)
+- [Security & Privacy](#security--privacy)
 - [Automation](#automation)
 - [Usage](#usage)
-- [Performance](#performance)
-- [Screenshots](#screenshots)
+- [Run Your Own](#run-your-own)
+- [API Limits](#api-limits)
+- [Known Limitations](#known-limitations)
 - [Future Enhancements](#future-enhancements)
 - [License](#license)
 
@@ -28,15 +30,18 @@
 
 ## 🎯 About
 
-**Sports On TV** is a modern, automated sports schedule aggregator that helps sports fans find upcoming games across major broadcast networks. The project eliminates the need for manual schedule updates by automatically fetching game data from ESPN's public API and presenting it in a clean, filterable interface.
+**What's It On?** answers one question: *where can I watch this game?* Pick the teams, leagues and sports you follow and the page shows every upcoming game with **all** the ways to watch it, whether that is a free over-the-air channel, cable, or a streaming service.
+
+Game data is fetched automatically from ESPN's public scoreboard API (plus a few other free sources), cleaned up by a Google Apps Script, and stored in a Google Sheet that the static website reads directly.
 
 ### Key Highlights
 
-- **100% Automated**: Daily updates at 4:00 AM EST with zero manual intervention
-- **Grade A Security**: Professional security headers implementation
-- **Privacy-First**: No tracking, no cookies, no user data collection
-- **Multi-Sport**: NFL, NBA, NHL, and NCAA Football coverage
-- **Network Filtering**: Shows only free/widely-available broadcast games (CBS, FOX, NBC, ESPN, ABC, TNT, etc.)
+- **Every way to watch**: free TV, cable/satellite, streaming and local/regional channels, color-coded
+- **Pick what you follow**: sports, leagues and teams, saved on your device and shareable by link
+- **40+ leagues**: NFL, college football and basketball, NBA, WNBA, NHL, MLB, soccer (Premier League, MLS, Champions League and more), F1, IndyCar, NASCAR, UFC, golf, tennis and others
+- **Automated**: full refresh daily, lighter refreshes every 6 hours, no manual updates
+- **No accounts, no backend server**: static site + Google Sheet
+- **Free to run**: Apps Script, Sheets and Netlify free tiers
 
 ---
 
@@ -44,22 +49,27 @@
 
 ### Core Functionality
 
-- 🏈 **Multi-Sport Coverage**: NFL, NBA, NHL, NCAA Football
-- 📺 **Network Filtering**: Displays games on major broadcast networks (excludes subscription-only services)
-- 🔍 **Advanced Search**: Filter by team name, sport, network, or date
-- 📅 **30-Day Rolling Window**: Shows upcoming games for the next month
-- ⚡ **Real-Time Updates**: Schedule refreshes automatically every 5 minutes
-- 📱 **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
-- 🌙 **Modern UI**: Clean, dark-themed interface with intuitive navigation
+- 📺 **All networks, color-coded**: green = free over-the-air, blue = cable/satellite, purple = streaming, dashed = local/regional
+- ⭐ **Pick your teams, sports and leagues**: search a team, league or sport, or tap a sport chip; picks are saved in your browser
+- 🔗 **Shareable links**: your picks and filters live in the URL (`?sport=NHL&team=Tampa+Bay+Lightning`); **Copy link** to open them on another device
+- 🆓 **Free TV only** toggle, plus network and day filters
+- ♻️ **Reset all** clears every pick and filter in one click
+- 🕒 **Your timezone by default** (switchable), with exact start times including daylight saving
+- 📅 **Add to calendar**: `.ics` download and Google Calendar link for any game
+- 🟢 **Live badge** and automatic hiding of games that have ended
+- 🌗 **Dark and light themes** (light is a cream-and-raspberry "bakery" palette)
+- 📱 **Responsive** from phone to desktop
 
-### User Experience
+### Extra Game Details
 
-- **Search by Team**: Find games for your favorite teams instantly
-- **Filter by Sport**: View only NFL, NBA, NHL, or NCAAF games
-- **Filter by Network**: See games on specific networks (CBS, FOX, NBC, etc.)
-- **Filter by Day**: Jump to games on specific dates
-- **Live Game Indicators**: Visual highlighting of currently live games
-- **Timezone Support**: Automatic EST/EDT timezone handling
+- Betting lines (NFL, NBA, NHL, college football and basketball, UFC) from public sportsbooks, shown as information only
+- Weather for outdoor NFL, college football and NASCAR games within the 5-day forecast window
+- UFC fight cards with moneylines, tennis day-sheets, golf round-by-round rows, F1 qualifying and race sessions
+- "Time TBA" for games whose start time is not set yet, and "usually on" labels where a league's network isn't announced
+
+### Optional Build Step
+
+`build.js` pre-renders the page for search engines and generates per-sport and per-league landing pages (`/nfl/`, `/soccer/premier-league/`), a sitemap, and subscribable calendar feeds per sport and per team. See [Run Your Own](#run-your-own).
 
 ---
 
@@ -67,24 +77,22 @@
 
 ### Frontend
 
-- **HTML5**: Semantic markup
-- **CSS3**: Modern styling with CSS Grid and Flexbox
-- **Vanilla JavaScript**: No frameworks, pure ES6+
-- **Responsive Design**: Mobile-first approach
+- **HTML5 / CSS3 / vanilla JavaScript** (no frameworks), a single `index.html`
+- **Intl APIs** for timezone handling, **localStorage** for saved picks, theme and timezone
 
 ### Backend & Data
 
-- **Google Apps Script**: Serverless automation for data fetching
-- **Google Sheets API**: Data storage and retrieval
-- **ESPN API**: Public API for sports schedule data
-- **Netlify**: Static site hosting with global CDN
+- **Google Apps Script**: serverless data fetching and cleaning (`apps-script/Code.gs`)
+- **Google Sheets**: data store, publicly readable (view-only)
+- **ESPN public scoreboard API**: schedules and broadcasters (undocumented, unofficial)
+- **NASCAR public API** (`cf.nascar.com`), **The Odds API**, **OpenWeather**
+- **Netlify**: static hosting and CI/CD from this repo
 
-### DevOps & Security
+### DevOps
 
-- **Git/GitHub**: Version control and collaboration
-- **Netlify CI/CD**: Automatic deployments on git push
-- **Security Headers**: CSP, HSTS, X-Frame-Options, and more
-- **HTTPS**: SSL/TLS encryption via Let's Encrypt
+- **Git/GitHub**: version control
+- **Netlify**: automatic deploys on push; optional `node build.js` build (Node 18+, no dependencies)
+- **Security headers** configured in `netlify.toml`
 
 ---
 
@@ -93,120 +101,98 @@
 ### Data Flow
 
 ```
-ESPN Public API → Google Apps Script → Google Sheets → Website (JavaScript Fetch)
-                      ↓
-                Daily Trigger (4:00 AM EST)
+ESPN API ─┐
+NASCAR API├─► Google Apps Script ─► Google Sheet ─► Website (fetches CSV)
+Odds API ─┤        ▲                    │
+Weather ──┘        │                    └─► optional Netlify build ─► pre-rendered pages,
+manual_games tab ──┘                         landing pages, calendar feeds
 ```
 
 ### Components
 
-1. **Data Fetcher (Google Apps Script)**
-   - Runs daily at 4:00 AM EST
-   - Fetches data from ESPN API for all sports
-   - Processes and filters games
-   - Stores in Google Sheets
+1. **Data Fetcher (Google Apps Script)**: runs on a schedule, fetches ~40 leagues in parallel batches, normalizes networks, merges manual entries, adds odds and weather, then writes the sheet. It never overwrites the sheet with an empty or collapsed result, keeps the last known rows for any source that fails, and emails you about problems.
+2. **Data Store (Google Sheet)**: one row per game.
 
-2. **Data Store (Google Sheets)**
-   - Acts as a lightweight database
-   - Publicly readable (view-only)
-   - Structured data format: Date, Time, Matchup, Network, Sport
+   | Column | Content |
+   |---|---|
+   | A-C | Date, time, matchup |
+   | D | Primary network |
+   | E | Sport (what people pick) |
+   | F | Details (venue, rankings, weather, odds) |
+   | G | Start time (ISO with Eastern offset; date-only for all-day/TBA rows) |
+   | H | Odds (cached between light refreshes) |
+   | I | "Updated" timestamp (row 2) |
+   | J | Networks as JSON: every way to watch, tagged TV/streaming, local, "usually" |
+   | K-L | League, kind (`team` or `event`) |
 
-3. **Frontend (Static Site)**
-   - Fetches data from Google Sheets
-   - Client-side filtering and search
-   - Responsive UI with real-time updates
-   - No backend server required
+3. **`manual_games` tab**: hand-entered games (e.g. a regional team's local broadcasts) merged into the feed; several networks per cell (`ESPN | The Spot (local)`).
+4. **Frontend (static site)**: fetches the sheet, filters client-side, refreshes every 5 minutes.
 
 ### Why This Architecture?
 
-- **Simplicity**: No complex backend or database setup
-- **Cost**: Completely free (Google Apps Script, Sheets, Netlify)
-- **Scalability**: CDN distribution handles high traffic
-- **Security**: Static site = minimal attack surface
-- **Reliability**: Multiple layers (ESPN → Google → Netlify)
+- **Simple**: no database or server to run
+- **Free**: Apps Script, Sheets and Netlify free tiers
+- **Fast and scalable**: static files on a CDN
+- **Resilient**: every layer has fallbacks (retries, last-known rows, write guard)
 
 ---
 
-## 🔒 Security
+## 🔒 Security & Privacy
 
-This project achieves **Grade A** on [Security Headers](https://securityheaders.com/) through comprehensive security header implementation.
+### Security Headers (`netlify.toml`)
 
-### Security Features
+- ✅ **X-Frame-Options: DENY**: prevents clickjacking
+- ✅ **X-Content-Type-Options: nosniff**: stops MIME sniffing
+- ✅ **X-XSS-Protection**: legacy browser XSS filter
+- ✅ **Strict-Transport-Security (HSTS)**: forces HTTPS for a year
+- ✅ **Referrer-Policy: strict-origin-when-cross-origin**
+- ✅ **Permissions-Policy**: disables location, camera, microphone and other unused features
+- ⏳ **Content-Security-Policy**: temporarily removed to keep Google Sheets access working; adding a proper allowlist back is on the to-do list
 
-#### Headers Implemented
+Test it yourself: [SecurityHeaders.com scan](https://securityheaders.com/?q=https://higgins-sports-schedule.netlify.app/)
 
-- ✅ **Content-Security-Policy (CSP)**: Prevents XSS attacks
-- ✅ **X-Frame-Options**: Prevents clickjacking
-- ✅ **X-Content-Type-Options**: Stops MIME sniffing attacks
-- ✅ **Strict-Transport-Security (HSTS)**: Forces HTTPS connections
-- ✅ **Referrer-Policy**: Controls referrer information leakage
-- ✅ **Permissions-Policy**: Restricts browser feature access
+### Privacy
 
-#### Privacy Features
+- No accounts, logins or personal data collected by the site
+- Saved picks, theme and timezone live only in your browser (`localStorage`)
+- Google Analytics is included for anonymous usage statistics and sets its own cookies; remove the `gtag` snippet from `index.html` to run without it
+- All page text from the data source is HTML-escaped before display
 
-- 🔒 **No User Tracking**: Zero analytics or tracking scripts
-- 🔒 **No Cookies**: No session or tracking cookies
-- 🔒 **No Personal Data**: No user accounts or data collection
-- 🔒 **GDPR/CCPA Compliant**: Privacy-friendly by design
-- 🔒 **No Third-Party Scripts**: Only essential resources loaded
+### Secrets
 
-#### Best Practices
-
-- HTTPS everywhere (enforced via HSTS)
-- Subresource Integrity (SRI) for external resources
-- Minimal external dependencies
-- Read-only data access from Google Sheets
-- No inline scripts or eval() usage
-
-**Test the security yourself**: [SecurityHeaders.com Scan](https://securityheaders.com/?q=https://higgins-sports-schedule.netlify.app/)
+- **Never commit API keys.** The copy of `Code.gs` in this repo has the key fields blank; add your own inside the Apps Script editor only. Without keys the script simply skips odds and weather.
 
 ---
 
 ## 🤖 Automation
 
-### Daily Updates
+### Schedule
 
-The schedule automatically updates **every day at 4:00 AM EST** with:
-
-- Latest game schedules from ESPN API
-- Automatic filtering to 30-day window
-- Network information for each game
-- Bowl game names for NCAA Football
-- Team matchups and game times
+| Run | When | What it does |
+|---|---|---|
+| `updateSchedule` | Daily, about 4:00 AM Eastern | Full refresh, including odds |
+| `refreshSchedule` | Every 6 hours | Light refresh; reuses stored odds so no odds credits are spent |
+| Website | Every 5 minutes (per visitor) | Re-reads the sheet |
 
 ### How It Works
 
-1. **Trigger Execution**: Google Apps Script trigger fires at 4 AM
-2. **API Calls**: Script fetches data from ESPN's public API
-3. **Data Processing**: 
-   - Filters games to next 30 days
-   - Extracts team names, networks, times
-   - Removes subscription-only games
-   - Deduplicates overlapping data
-4. **Sheet Update**: Writes processed data to Google Sheets
-5. **Website Sync**: Frontend automatically pulls new data within 5 minutes
+1. **Probe** each league's calendar, then fetch only days that can have games (all in parallel batches)
+2. **Collect networks**: every broadcaster ESPN lists, tagged national/local and TV/streaming; some leagues fall back to their usual U.S. home (marked "usually")
+3. **Merge** manual entries with ESPN data (union of networks, no duplicate games)
+4. **Enrich** with odds and weather (cached, capped per run)
+5. **Write** to the sheet in place, only if the result looks healthy; otherwise keep the previous data and send an alert
 
 ### Sports Coverage
 
-- **NFL**: All regular season and playoff games on broadcast networks
-- **NBA**: Games on NBC, ESPN, ABC, Prime Video
-- **NHL**: National games (TNT, ESPN, ABC) + regional Tampa Bay Lightning coverage
-- **NCAA Football**: Bowl games and major matchups
+- **Football**: NFL, college football
+- **Basketball**: NBA, WNBA, men's and women's college
+- **Hockey**: NHL, college hockey
+- **Baseball/softball**: MLB, college baseball and softball
+- **Soccer**: Premier League, MLS, NWSL, Champions/Europa/Conference League, La Liga, Bundesliga, Serie A, Ligue 1, Liga MX, FA Cup, Carabao Cup, EFL Championship and more
+- **Motorsports**: Formula 1, IndyCar, NASCAR
+- **Combat/Other**: UFC, PFL, golf (PGA, LPGA, LIV, DP World), tennis (ATP, WTA), college volleyball, lacrosse
 
-### Network Filtering Logic
-
-**Included Networks:**
-- CBS, FOX, NBC, ABC (free over-the-air)
-- ESPN, ESPN2, ESPNews, ESPNU
-- TNT, TBS
-- Peacock, Prime Video (widely available streaming)
-- NFL Network, NHL Network
-
-**Excluded Networks:**
-- ESPN+ (subscription required)
-- MAX, Hulu (subscription required)
-- Apple TV+ (subscription required)
-- Other pay services
+Leagues are listed in the `LEAGUES` array at the top of `apps-script/Code.gs`; add or remove entries freely.
 
 ---
 
@@ -214,102 +200,91 @@ The schedule automatically updates **every day at 4:00 AM EST** with:
 
 ### For Users
 
-1. **Visit the Site**: [https://higgins-sports-schedule.netlify.app/](https://higgins-sports-schedule.netlify.app/)
-2. **Browse Games**: Scroll through upcoming games
-3. **Use Filters**:
-   - Search for specific teams
-   - Filter by sport (NFL, NBA, NHL, NCAAF)
-   - Filter by network (CBS, FOX, NBC, etc.)
-   - Filter by specific date
-4. **Clear Filters**: Reset to view all games
+1. **Visit**: [https://higgins-sports-schedule.netlify.app/](https://higgins-sports-schedule.netlify.app/)
+2. **Pick** your sports, leagues or teams in the box at the top (collapse it with the arrow)
+3. **Narrow** the list with day and network filters, or **Free TV only**
+4. **Tap a game** to see every place to watch, follow its teams, or add it to your calendar
+5. **Come back anytime**: your picks are saved on your device; **Copy link** to use them elsewhere
+6. **Reset all** to start over
 
 ### For Developers
 
-This project is a great example of:
-- Building with vanilla JavaScript (no framework overhead)
-- Implementing serverless automation with Google Apps Script
-- Working with public APIs (ESPN)
-- Creating secure static sites
-- Achieving Grade A security
-- Modern CSS techniques (Grid, Flexbox)
-- Client-side data processing and filtering
+A compact example of:
+- A framework-free single-page app with client-side filtering and URL state
+- Serverless data pipelines on Google Apps Script
+- Working with undocumented public APIs defensively (batching, retries, fallbacks)
+- A zero-dependency static build step for SEO and calendar feeds
 
 ---
 
-## ⚡ Performance
+## 🚀 Run Your Own
 
-### Metrics
+1. **Sheet**: create a Google Sheet with a tab named `schedule_template` (and optionally `manual_games`, see `apps-script/manual_games.csv`). Share it as view-only.
+2. **Script**: open *Extensions → Apps Script*, paste `apps-script/Code.gs`, set `SHEET_ID`, set the project time zone to America/New_York (see `apps-script/appsscript.json`), optionally add free Odds API / OpenWeather keys.
+3. **Run** `updateSchedule` once and approve permissions, then run `createTriggers`.
+4. **Site**: set `SHEET_ID` in `index.html`, push this repo, and connect it to Netlify.
+5. **Optional build**: to enable pre-rendering, landing pages and calendar feeds, uncomment the `[build]` block in `netlify.toml`, add a Netlify *build hook*, and paste its URL into `NETLIFY_BUILD_HOOK` in `Code.gs` so every sheet update rebuilds the site. If your domain differs, set the `SITE_URL` environment variable in Netlify.
 
-- **Load Time**: < 1 second (static site on CDN)
-- **Lighthouse Score**: 95+ (Performance, Accessibility, Best Practices)
-- **Bundle Size**: Minimal (no frameworks or large dependencies)
-- **API Calls**: 1 fetch per 5 minutes (efficient caching)
-
-### Optimizations
-
-- Static site generation (no server processing)
-- CDN distribution via Netlify
-- Client-side filtering (no backend queries)
-- Lazy loading of game data
-- Efficient DOM manipulation
-- Debounced search input
+More detail is in [`apps-script/README.md`](apps-script/README.md).
 
 ---
 
-## 📸 Screenshots
+## 📏 API Limits
 
-### Main Interface
-![Sports On TV - Main Interface](https://github.com/user-attachments/assets/b430c4bf-cc4c-4607-b1b6-d0552d796a53)
+Everything here runs on free tiers. Current usage is well inside each limit.
 
-*Clean, modern UI with all upcoming games sorted chronologically*
-
-### Search & Filter
-![Sports On TV - Search and Filter](https://github.com/user-attachments/assets/3d610cc7-4c55-48fd-b64a-85c86fe6ff4d)
-
-*Powerful filtering capabilities allow users to search by team name, filter by sport (NFL, NBA, NHL, NCAAF), network (CBS, FOX, NBC, etc.), or specific date*
-
-### Mobile View
-![Sports On TV - Mobile Responsive Design](https://github.com/user-attachments/assets/7266e248-7575-4944-9057-93e2639858a5)
-
-*Fully responsive design ensures perfect viewing on any device - all features work seamlessly on mobile, tablet, and desktop*
+| Service | Limit | This project |
+|---|---|---|
+| **ESPN scoreboard API** | None published (undocumented, can change or block anytime) | ~900 requests per run, batched, with one retry on 429/5xx |
+| **Apps Script** | 20,000 URL fetches/day, 6 min per run, 90 min of trigger time/day (consumer account) | ~4 runs/day: ~3,800 fetches, ~7 minutes |
+| **The Odds API** (free) | 500 credits/month (1 per market per region) | ~17 per daily run; a backup key is supported |
+| **OpenWeather** (free forecast) | 60 calls/minute, 1,000,000/month | Capped at 50 per run; forecasts are cached |
 
 ---
 
-## 🚀 Future Enhancements
+## ⚠️ Known Limitations
 
-### Potential Features
+- **Networks come from ESPN.** Leagues like the Premier League often have no channel listed until match day, so a "usually on" guess is shown (dotted, italic) until it's confirmed. Always check your TV provider's guide.
+- **Local and regional channels** depend on where you live; the site can't know your market and shows them as "local".
+- **Subscriptions and providers** determine what you can actually watch.
+- ESPN has no data for boxing, MotoGP, rugby or cricket; add those in the `manual_games` tab.
+- Picks live in your browser. They don't sync across devices except by sharing the link.
 
-- [ ] MLB (Major League Baseball) coverage
-- [ ] MLS (Major League Soccer) coverage
-- [ ] College Basketball support
-- [ ] Favorite teams (localStorage)
-- [ ] Calendar export (.ics file generation)
-- [ ] Push notifications for favorite teams
-- [ ] Historical game scores
-- [ ] Team logos and colors
-- [ ] Dark/light theme toggle
-- [ ] Multiple timezone support
+---
 
-### Technical Improvements
+## 🔮 Future Enhancements
 
-- [ ] Service Worker for offline support
-- [ ] Progressive Web App (PWA) functionality
-- [ ] GraphQL API layer
-- [ ] TypeScript migration
-- [ ] Automated testing suite
-- [ ] Performance monitoring
-- [ ] Error tracking
+### Done
+
+- [x] MLB, MLS and soccer coverage
+- [x] College basketball
+- [x] Favorite teams, sports and leagues (saved locally)
+- [x] Calendar export (`.ics`) and subscribable feeds
+- [x] Dark/light themes
+- [x] Timezone support (auto-detected)
+- [x] Odds, weather and an "Updated" stamp
+
+### Ideas
+
+- [ ] Accounts or sync so picks follow you across devices
+- [ ] Per-team landing pages for search
+- [ ] Content-Security-Policy with a Google Sheets allowlist
+- [ ] Service Worker / PWA for offline use
+- [ ] Notifications for followed teams
+- [ ] Team logos and live scores
+- [ ] Automated tests in CI
+- [ ] A real source for far-ahead soccer broadcast listings (no free source found yet)
 
 ---
 
 ## 📊 Project Stats
 
-- **Lines of Code**: ~800 (HTML, CSS, JS)
-- **Automation Scripts**: ~500 lines (Google Apps Script)
-- **API Calls**: 4 per day (ESPN API)
-- **Data Points**: ~100-150 games at any time
-- **Update Frequency**: Daily at 4:00 AM EST
-- **Uptime**: 99.9% (Netlify SLA)
+- **Frontend**: one file, ~1,350 lines (HTML, CSS, JS)
+- **Apps Script**: ~1,150 lines
+- **Build script**: ~350 lines, no dependencies
+- **Leagues tracked**: 40+
+- **Games at any time**: ~2,700 across 15 sports
+- **Updates**: daily full run plus refreshes every 6 hours
 
 ---
 
@@ -361,10 +336,11 @@ SOFTWARE.
 
 ## 🙏 Acknowledgments
 
-- **ESPN**: For providing a robust public API for sports data
-- **Netlify**: For excellent static site hosting and CI/CD
-- **Google**: For Apps Script and Sheets API
-- **Security Headers Project**: For security best practices guidance
+- **ESPN**: for the public scoreboard API this project is built on
+- **The Odds API** and **OpenWeather**: for generous free tiers
+- **Netlify**: for static hosting and CI/CD
+- **Google**: for Apps Script and Sheets
+- **Security Headers Project**: for security best practices guidance
 
 ---
 
@@ -378,4 +354,4 @@ SOFTWARE.
 
 **Built without ADs by Ben Higgins**
 
-*Last Updated: January 2026*
+*Last Updated: November 2026*
