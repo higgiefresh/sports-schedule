@@ -909,11 +909,10 @@ function renderPicker() {
   line.innerHTML = '<span class="none">Your picks:</span>' +
     picks.sports.map(s => chip('sport', s)).join('') + picks.leagues.map(l => chip('league', l)).join('') + picks.teams.map(t => chip('team', t)).join('') +
     '<button class="clear" data-clear="1">Clear picks</button>' +
-    '<span class="saved-note" title="Saved in this browser. Use Copy link to open the same picks on another device.">Saved on this device</span>' +
-    '<button class="clear" onclick="copyLink(this)">Copy link</button>';
+    '<span class="saved-note" title="Saved in this browser. Use Copy link (below) to open the same picks on another device.">Saved on this device</span>';
   const note = document.getElementById('savedNote');
   note.style.display = picked ? '' : 'none';
-  note.textContent = 'Your picks are saved on this device automatically. Use Copy link to open them on another device or share them.';
+  note.textContent = 'Your picks are saved on this device automatically. Use the Copy link button below to open them on another device or share them.';
   line.style.display = (picked && !pickerOpen) ? '' : 'none';
   document.getElementById('pickerBody').style.display = pickerOpen || !picked ? '' : 'none';
 
