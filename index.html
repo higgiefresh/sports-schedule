@@ -24,16 +24,17 @@
 <!--SEO-->
 <style>
 :root {
-  --bg: #e8e1d0;
-  --surface: #f6f1e4;
-  --ink: #26221a;
-  --ink-2: #5f5646;
-  --ink-3: #897f6c;
-  --line: #d5ccb6;
-  --line-strong: #bbb097;
-  --accent: #d93526;
+  /* light theme = a bakery counter: vanilla custard, whipped cream, dark chocolate, raspberry */
+  --bg: #f6e8d3;
+  --surface: #fffaf2;
+  --ink: #3d2314;
+  --ink-2: #6f4e3b;
+  --ink-3: #85644f;
+  --line: #ecd9bd;
+  --line-strong: #d8bc98;
+  --accent: #c8334f;
   --accent-ink: #ffffff;
-  --hover: #fffcf3;
+  --hover: #fff1dc;
   --font: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 :root[data-theme="dark"] {
@@ -55,7 +56,7 @@ main .game {
   border: 1px solid var(--line);
   border-radius: 8px;
   margin-bottom: 6px;
-  box-shadow: inset 4px 0 0 var(--s, var(--line-strong)), 0 1px 3px rgba(60,45,20,.12), 0 2px 8px rgba(60,45,20,.06);
+  box-shadow: inset 4px 0 0 var(--s, var(--line-strong)), 0 1px 3px rgba(61,35,20,.12), 0 2px 8px rgba(61,35,20,.06);
 }
 .schedule .game:hover { background: var(--hover); border-color: var(--line-strong); }
 :root[data-theme="dark"] .day-head { border-bottom-color: var(--line-strong); }
@@ -407,6 +408,25 @@ select.ctl { padding-right: 6px; }
 .brand-mark { font-weight: 800; color: var(--accent-ink); font-size: 1rem; line-height: 1; }
 .fav { color: var(--accent); margin-left: 8px; font-size: 0.85em; }
 
+
+/* ---------- Dessert touches (light theme only) ---------- */
+:root:not([data-theme="dark"]) body::before {
+  content: ''; display: block; height: 7px;
+  background: repeating-linear-gradient(90deg, #c8334f 0 28px, #fffaf2 28px 56px, #e9a36b 56px 84px, #fffaf2 84px 112px, #9fc47e 112px 140px, #fffaf2 140px 168px);
+}
+:root:not([data-theme="dark"]) .free-btn[aria-pressed="true"] { background: #6a994e; border-color: #6a994e; }
+
+/* ---------- Reset all, saved picks ---------- */
+.reset-all {
+  height: 38px; padding: 0 16px; background: transparent; color: var(--accent);
+  border: 1.5px solid var(--accent); border-radius: 6px; font-weight: 700; font-size: 0.86rem;
+}
+.reset-all:hover:not(:disabled) { background: var(--accent); color: var(--accent-ink); }
+.reset-all:disabled { opacity: 0.4; cursor: default; }
+.saved-note { color: var(--ink-3); font-size: 0.8rem; margin-top: 10px; }
+.picks-line .saved-note { margin: 0 0 0 auto; }
+.empty .more-btn { margin-top: 16px; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 640px) {
   .wrap { padding: 0 16px; }
@@ -476,6 +496,7 @@ select.ctl { padding-right: 6px; }
         <div class="suggest" id="suggest" role="listbox"></div>
       </div>
       <div class="pick-chips" id="pickChips"></div>
+      <p class="saved-note" id="savedNote" style="display:none"></p>
     </div>
     <div class="picks-line" id="picksLine" style="display:none"></div>
   </section>
@@ -491,8 +512,8 @@ select.ctl { padding-right: 6px; }
         <option value="">All networks</option>
       </select>
       <button class="free-btn" id="freeBtn" aria-pressed="false" onclick="toggleFree()">Free TV only</button>
-      <button class="clear" onclick="clearAllFilters()">Clear filters</button>
-      <button class="clear" id="shareBtn" onclick="copyLink()">Copy link</button>
+      <button class="reset-all" id="resetBtn" onclick="resetAll()" title="Clear your picks and every filter">Reset all</button>
+      <button class="clear" id="shareBtn" onclick="copyLink(this)">Copy link</button>
     </div>
   </div>
 </div>
@@ -839,6 +860,26 @@ function removePick(kind, val) {
   if (kind === 'league') return togglePickLeague(val);
   return toggleTeam(val);
 }
+function resetAll() {
+  picks = defaultPicks();
+  filters = { q: '', network: '', day: '', free: false };
+  document.getElementById('teamSearch').value = '';
+  document.getElementById('suggest').classList.remove('open');
+  rowsShown = PAGE_ROWS;
+  pickerOpen = !hasPicks();
+  try { localStorage.removeItem('picks'); localStorage.removeItem('myTeams'); } catch (e) {}
+  track('reset_all');
+  populateControls();
+  writeUrlState();
+  displaySchedule();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function updateResetState() {
+  const dirty = JSON.stringify(picks) !== JSON.stringify(defaultPicks()) || filters.q || filters.network || filters.day || filters.free;
+  const b = document.getElementById('resetBtn');
+  if (b) b.disabled = !dirty;
+}
+
 function clearPicks() {
   picks = { sports: [], leagues: [], teams: [] };
   pickerOpen = true;
@@ -867,7 +908,12 @@ function renderPicker() {
   const line = document.getElementById('picksLine');
   line.innerHTML = '<span class="none">Your picks:</span>' +
     picks.sports.map(s => chip('sport', s)).join('') + picks.leagues.map(l => chip('league', l)).join('') + picks.teams.map(t => chip('team', t)).join('') +
-    '<button class="clear" data-clear="1">Clear picks</button>';
+    '<button class="clear" data-clear="1">Clear picks</button>' +
+    '<span class="saved-note" title="Saved in this browser. Use Copy link to open the same picks on another device.">Saved on this device</span>' +
+    '<button class="clear" onclick="copyLink(this)">Copy link</button>';
+  const note = document.getElementById('savedNote');
+  note.style.display = picked ? '' : 'none';
+  note.textContent = 'Your picks are saved on this device automatically. Use Copy link to open them on another device or share them.';
   line.style.display = (picked && !pickerOpen) ? '' : 'none';
   document.getElementById('pickerBody').style.display = pickerOpen || !picked ? '' : 'none';
 
@@ -972,8 +1018,8 @@ function writeUrlState() {
   try { history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) {}
 }
 
-function copyLink() {
-  const btn = document.getElementById('shareBtn');
+function copyLink(el) {
+  const btn = el || document.getElementById('shareBtn');
   const done = () => { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = 'Copy link'; }, 1800); };
   track('copy_link');
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1039,6 +1085,7 @@ function displaySchedule() {
   }
   if (filters.network) list = list.filter(g => g.nets.some(n => n.n === filters.network));
   if (filters.day) list = list.filter(g => g.local.key === filters.day);
+  const preFree = list.length;
   if (filters.free) list = list.filter(g => g.nets.some(n => !n.l && n.type === 'free'));
 
   // Group by the viewer's local day; all-day / TBA rows lead their day.
@@ -1067,9 +1114,12 @@ function displaySchedule() {
   visibleGames = [];
   let html = '';
   if (!groups.length) {
-    html = hasPicks() && !allGames.some(g => matchesPicks(g) && !isFinished(g))
-      ? '<div class="empty"><strong>Nothing scheduled for your picks right now.</strong>Their next games may be outside the next 30 days. Try another team or sport.</div>'
-      : '<div class="empty"><strong>Nothing matches.</strong>Try clearing a filter, or check back soon.</div>';
+    const reset = '<br><button class="more-btn" onclick="resetAll()">Reset all</button>';
+    html = filters.free && preFree > 0
+      ? `<div class="empty"><strong>None of these games are on free over-the-air TV.</strong>Turn off "Free TV only" to see cable and streaming options.<br><button class="more-btn" onclick="toggleFree()">Show all options</button></div>`
+      : hasPicks() && !allGames.some(g => matchesPicks(g) && !isFinished(g))
+        ? `<div class="empty"><strong>Nothing scheduled for your picks right now.</strong>Their next games may be outside the next 30 days. Try another team or sport.${reset}</div>`
+        : `<div class="empty"><strong>Nothing matches.</strong>Try a different filter, or check back soon.${reset}</div>`;
   } else {
     shown.forEach(([key, games]) => {
       const [weekday, monthDay] = games[0].local.label.split(', ');
@@ -1101,6 +1151,7 @@ function displaySchedule() {
   }
   document.getElementById('schedule').innerHTML = html;
 
+  updateResetState();
   document.getElementById('resultsBar').innerHTML =
     `<span><b>${list.length.toLocaleString()}</b> ${list.length === 1 ? 'game' : 'games'}${hasPicks() ? ' for your picks' : ''}${hidden > 0 ? ` · showing the first ${(list.length - hidden).toLocaleString()}` : ''}</span>` +
     `<span class="legend"><span class="l-free">Free TV</span><span class="l-cable">Cable / satellite</span><span class="l-stream">Streaming</span><span class="l-local">Local / regional</span></span>`;
