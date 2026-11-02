@@ -299,7 +299,12 @@ select.ctl { padding-right: 6px; }
 @media (max-width: 640px) {
   .wrap { padding: 0 16px; }
   .intro { padding-top: 28px; }
-  .game { grid-template-columns: 78px 1fr; row-gap: 8px; padding: 14px 4px; }
+  .filters { position: static; }
+  .field { font-size: 16px; } /* 16px+ stops iOS zooming on focus */
+  .intro h1 { font-size: 2.1rem; }
+  .intro { padding-bottom: 16px; }
+  .day-name { font-size: 1.4rem; }
+  .game { grid-template-columns: 78px 1fr; row-gap: 8px; padding: 14px 12px 14px 18px; }
   .game .net { grid-column: 2; justify-self: start; }
   .field.sel { flex: 1 1 calc(50% - 4px); }
   .top-actions select.ctl { max-width: 118px; }
