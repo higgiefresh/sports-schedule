@@ -301,7 +301,10 @@ select.ctl { padding-right: 6px; }
 .picker-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .picker-head h2 { font-size: 1.25rem; font-weight: 800; font-stretch: 85%; letter-spacing: -0.01em; text-transform: uppercase; line-height: 1.15; }
 .picker-sub { color: var(--ink-2); font-size: 0.9rem; margin-top: 4px; max-width: 60ch; }
-.picker-toggle { flex: none; }
+.picker-toggle { flex: none; display: inline-flex; align-items: center; gap: 8px; }
+.picker-toggle .chev { width: 12px; height: 12px; transition: transform 0.15s; }
+.picker-toggle[aria-expanded="false"] .chev { transform: rotate(180deg); }
+.picker.collapsed .picker-head { align-items: center; }
 .pick-label { margin: 18px 0 8px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
 .chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-grid .chip { height: 34px; padding: 0 14px; font-size: 0.86rem; }
@@ -481,7 +484,7 @@ select.ctl { padding-right: 6px; }
         <h2 id="pickerTitle">Pick your teams or sports</h2>
         <p class="picker-sub" id="pickerSub">Choose what you follow and we'll show every place to watch it. Or skip this and browse everything below.</p>
       </div>
-      <button class="ctl picker-toggle" id="pickerToggle" onclick="togglePicker()" style="display:none">Edit picks</button>
+      <button class="ctl picker-toggle" id="pickerToggle" onclick="togglePicker()" aria-expanded="true" aria-controls="pickerBody"><span id="pickerToggleText">Hide</span><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 8l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
     <div id="pickerBody">
       <div class="pick-label">Sports</div>
@@ -866,8 +869,8 @@ function resetAll() {
   document.getElementById('teamSearch').value = '';
   document.getElementById('suggest').classList.remove('open');
   rowsShown = PAGE_ROWS;
-  pickerOpen = !hasPicks();
-  try { localStorage.removeItem('picks'); localStorage.removeItem('myTeams'); } catch (e) {}
+  pickerOpen = true;
+  try { localStorage.removeItem('picks'); localStorage.removeItem('myTeams'); localStorage.removeItem('pickerOpen'); } catch (e) {}
   track('reset_all');
   populateControls();
   writeUrlState();
@@ -885,7 +888,9 @@ function clearPicks() {
   pickerOpen = true;
   picksChanged();
 }
-function togglePicker() { pickerOpen = !pickerOpen; renderPicker(); }
+function loadPickerPref() { try { return localStorage.getItem('pickerOpen') !== '0'; } catch (e) { return true; } }   // open unless the user chose otherwise
+function savePickerPref() { try { localStorage.setItem('pickerOpen', pickerOpen ? '1' : '0'); } catch (e) {} }
+function togglePicker() { pickerOpen = !pickerOpen; savePickerPref(); track('toggle_picker', { open: pickerOpen }); renderPicker(); }
 
 function renderPicker() {
   const sports = sportsPresent();
@@ -913,15 +918,21 @@ function renderPicker() {
   const note = document.getElementById('savedNote');
   note.style.display = picked ? '' : 'none';
   note.textContent = 'Your picks are saved on this device automatically. Use the Copy link button below to open them on another device or share them.';
-  line.style.display = (picked && !pickerOpen) ? '' : 'none';
-  document.getElementById('pickerBody').style.display = pickerOpen || !picked ? '' : 'none';
+  if (!picked) line.innerHTML = '<span class="none">Nothing picked yet, so you\'re seeing everything.</span>';
+  line.style.display = pickerOpen ? 'none' : '';
+  document.getElementById('pickerBody').style.display = pickerOpen ? '' : 'none';
+  document.getElementById('picker').classList.toggle('collapsed', !pickerOpen);
+  document.getElementById('picker').classList.toggle('fresh', !picked && pickerOpen);
 
   const toggle = document.getElementById('pickerToggle');
-  toggle.style.display = picked ? '' : 'none';
-  toggle.textContent = pickerOpen ? 'Done' : 'Edit picks';
+  toggle.setAttribute('aria-expanded', pickerOpen);
+  toggle.setAttribute('aria-label', pickerOpen ? 'Collapse your picks' : 'Expand your picks');
+  document.getElementById('pickerToggleText').textContent = pickerOpen ? 'Hide' : (picked ? 'Edit picks' : 'Pick teams');
   document.getElementById('pickerTitle').textContent = picked ? 'Your picks' : 'Pick your teams or sports';
-  document.getElementById('pickerSub').textContent = picked
-    ? (pickerOpen ? 'Tap a sport to add or remove it, or search for a team below.' : 'Showing only what you follow. Everything else is hidden until you clear your picks.')
+  const sub = document.getElementById('pickerSub');
+  sub.style.display = pickerOpen ? '' : 'none';
+  sub.textContent = picked
+    ? 'Tap a sport to add or remove it, or search for a team below.'
     : "Choose what you follow and we'll show every place to watch it. Or skip this and browse everything below.";
 }
 
@@ -996,7 +1007,7 @@ function readUrlState() {
   filters.day = p.get('day') || '';
   filters.free = p.get('free') === '1';
   document.getElementById('teamSearch').value = filters.q;
-  pickerOpen = !hasPicks();
+  pickerOpen = loadPickerPref();
 }
 
 function writeUrlState() {
@@ -1228,7 +1239,6 @@ document.getElementById('detailTeams').addEventListener('click', e => {
   clearAllFilters();
   document.getElementById('teamSearch').value = b.dataset.team;
   filters.q = b.dataset.team;
-  pickerOpen = !hasPicks();
   renderPicker(); writeUrlState(); displaySchedule();
   window.scrollTo({ top: 0 });
 });
